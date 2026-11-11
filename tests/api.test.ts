@@ -75,11 +75,25 @@ test("AI sends approved context to Anthropic after quota check", async () => {
   }
 });
 
- test("reverse-proxy host is used while foreign origins remain rejected", async () => {
- const { sameOrigin } = await import("../lib/request-origin");
- assert.equal(sameOrigin(new Request("http://0.0.0.0:4173/api/assistant", {headers:{host:"127.0.0.1:4173",origin:"http://127.0.0.1:4173"}})), true);
- assert.equal(sameOrigin(new Request("http://0.0.0.0:4173/api/assistant", {headers:{host:"127.0.0.1:4173",origin:"https://evil.test"}})), false);
- });
+test("reverse-proxy host is used while foreign origins remain rejected", async () => {
+  const { sameOrigin } = await import("../lib/request-origin");
+  assert.equal(
+    sameOrigin(
+      new Request("http://0.0.0.0:4173/api/assistant", {
+        headers: { host: "127.0.0.1:4173", origin: "http://127.0.0.1:4173" },
+      }),
+    ),
+    true,
+  );
+  assert.equal(
+    sameOrigin(
+      new Request("http://0.0.0.0:4173/api/assistant", {
+        headers: { host: "127.0.0.1:4173", origin: "https://evil.test" },
+      }),
+    ),
+    false,
+  );
+});
 
 test("unclaimed shared row cannot accept a submitted hash", async () => {
   const previousFetch = global.fetch;
@@ -87,14 +101,26 @@ test("unclaimed shared row cannot accept a submitted hash", async () => {
   const oldToken = process.env.UPSTASH_REDIS_REST_TOKEN;
   process.env.UPSTASH_REDIS_REST_URL = "https://redis.test";
   process.env.UPSTASH_REDIS_REST_TOKEN = "test";
-  global.fetch = async () => Response.json({result: JSON.stringify({rows:[{id:"1", state:"open"}]})});
+  global.fetch = async () =>
+    Response.json({
+      result: JSON.stringify({ rows: [{ id: "1", state: "open" }] }),
+    });
   try {
-    const response = await board(request({action:"submit",secret:"a".repeat(64),row:"1",hash:"b".repeat(64)}));
-    assert.equal(response.status,400);
-    assert.match((await response.json()).error,/Invalid payment attempt/);
+    const response = await board(
+      request({
+        action: "submit",
+        secret: "a".repeat(64),
+        row: "1",
+        hash: "b".repeat(64),
+      }),
+    );
+    assert.equal(response.status, 400);
+    assert.match((await response.json()).error, /Invalid payment attempt/);
   } finally {
-    global.fetch=previousFetch;
-    if(oldUrl === undefined) delete process.env.UPSTASH_REDIS_REST_URL; else process.env.UPSTASH_REDIS_REST_URL=oldUrl;
-    if(oldToken === undefined) delete process.env.UPSTASH_REDIS_REST_TOKEN; else process.env.UPSTASH_REDIS_REST_TOKEN=oldToken;
+    global.fetch = previousFetch;
+    if (oldUrl === undefined) delete process.env.UPSTASH_REDIS_REST_URL;
+    else process.env.UPSTASH_REDIS_REST_URL = oldUrl;
+    if (oldToken === undefined) delete process.env.UPSTASH_REDIS_REST_TOKEN;
+    else process.env.UPSTASH_REDIS_REST_TOKEN = oldToken;
   }
 });

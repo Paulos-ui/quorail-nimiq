@@ -23,6 +23,12 @@ import {
 } from "lucide-react";
 import Brand from "./Brand";
 import ForecastPanel from "./ForecastPanel";
+import DecisionAid from "./DecisionAid";
+import {
+  exampleScenario,
+  scenarioLabels,
+  type Scenario,
+} from "@/lib/scenarios";
 import ReserveIndicator from "./ReserveIndicator";
 import AssistantPanel from "./AssistantPanel";
 import SharePlan from "./SharePlan";
@@ -35,7 +41,6 @@ import {
   dateAfter,
   forecast,
   settlePayment,
-  demoPlan,
   emptyPlan,
   validatePlan,
   type Plan,
@@ -68,6 +73,7 @@ export default function Console() {
   const [plan, setPlan] = useState<Plan>(emptyPlan);
   const planRef = useRef(plan);
   const [demo, setDemo] = useState(false);
+  const [scenario, setScenario] = useState<Scenario>("freelancer");
   const [address, setAddress] = useState("");
   const [accounts, setAccounts] = useState<string[]>([]);
   const [network, setNetwork] = useState<Network>("mainnet");
@@ -96,7 +102,11 @@ export default function Console() {
   );
   useEffect(() => {
     setWalletLink(openWalletUrl());
-    if (new URLSearchParams(location.search).get("demo") === "1") startDemo();
+    const params = new URLSearchParams(location.search);
+    if (params.get("demo") === "1") {
+      const s = params.get("scenario");
+      startDemo(s === "team" || s === "personal" ? s : "freelancer");
+    }
   }, []);
   useEffect(() => {
     planRef.current = plan;
@@ -185,13 +195,16 @@ export default function Console() {
     planRef.current = next;
     setPlan(next);
   }
-  function startDemo() {
+  function startDemo(name: Scenario = "freelancer") {
+    const sample = exampleScenario(name);
+    setScenario(name);
+    setSelected(null);
     provider.current = null;
     setAddress("");
     setAccounts([]);
     setDemo(true);
-    setBalance(1000 * LUNA);
-    const p = demoPlan();
+    setBalance(sample.balance);
+    const p = sample.plan;
     setPlan(p);
     planRef.current = p;
     setMessage(
@@ -762,7 +775,7 @@ export default function Console() {
                   </button>
                   <button
                     className="button outline"
-                    onClick={startDemo}
+                    onClick={() => startDemo()}
                     disabled={busy}
                   >
                     Explore example <ArrowRight size={16} />
@@ -780,6 +793,50 @@ export default function Console() {
             </section>
           ) : (
             <>
+              <div className="plan-signal">
+                <ReserveIndicator
+                  available={total.available}
+                  reserve={plan.reserve}
+                  known={balance !== null}
+                />
+              </div>
+              {demo && (
+                <section className="scenario-picker">
+                  <label>
+                    Explore an example
+                    <select
+                      value={scenario}
+                      onChange={(e) => startDemo(e.target.value as Scenario)}
+                    >
+                      {Object.entries(scenarioLabels).map(([value, label]) => (
+                        <option key={value} value={value}>
+                          {label}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <p className="helper">
+                    {exampleScenario(scenario).note} Switching examples resets
+                    example edits only. No funds move.
+                  </p>
+                </section>
+              )}
+              <details className="quick-path">
+                <summary>Your first real payment: four steps</summary>
+                <ol>
+                  <li>Add a commitment with a recipient you have checked.</li>
+                  <li>Preview the buffer and set your reserve.</li>
+                  <li>Approve personally in Nimiq Pay, checking the sender.</li>
+                  <li>
+                    Keep the workspace open for receipt verification. Open
+                    Activity to export records.
+                  </li>
+                </ol>
+                <p className="helper">
+                  A returned hash is pending until verified. Network timing
+                  varies.
+                </p>
+              </details>
               {address && (
                 <div className="account-strip">
                   <span>
@@ -1342,13 +1399,6 @@ export default function Console() {
               </button>
             </div>
             <h2>{payment.title}</h2>
-            <SharePlan
-              plan={plan}
-              address={address}
-              network={network}
-              payment={payment}
-              demo={demo}
-            />
             {payment.recurrence && (
               <p className="helper">
                 Repeats {payment.recurrence}. Due {payment.due}. No automatic
@@ -1547,6 +1597,19 @@ export default function Console() {
                 )}
               </>
             )}
+            <DecisionAid
+              key={payment.id}
+              plan={plan}
+              payment={payment}
+              balance={balance}
+            />
+            <SharePlan
+              plan={plan}
+              address={address}
+              network={network}
+              payment={payment}
+              demo={demo}
+            />
           </section>
         </div>
       )}

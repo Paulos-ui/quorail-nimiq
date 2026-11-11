@@ -10,6 +10,7 @@ import {
   MoveUpRight,
 } from "lucide-react";
 import Brand from "./Brand";
+import FloatingAssistant from "./FloatingAssistant";
 import InstallApp from "./InstallApp";
 export default function Landing() {
   const [selected, setSelected] = useState(false);
@@ -270,7 +271,71 @@ export default function Landing() {
             </small>
           </div>
         </section>
+        <section className="judge-path">
+          <span className="eyebrow">FROM BALANCE TO A DECISION</span>
+          <h2>
+            Your wallet shows what you have.
+            <br />
+            <em>Quorail shows what is already spoken for.</em>
+          </h2>
+          <div className="wallet-comparison">
+            <article>
+              <span>Wallet balance</span>
+              <strong>1,000 NIM</strong>
+              <p>The starting number.</p>
+            </article>
+            <article>
+              <span>Illustrative Quorail plan</span>
+              <strong>100 NIM buffer</strong>
+              <p>1,000 balance minus 700 commitments and a 200 reserve.</p>
+            </article>
+          </div>
+          <p>
+            Explore a realistic plan first, then connect inside Nimiq Pay for a
+            real payment.
+          </p>
+          <div className="scenario-links">
+            <Link
+              className="button outline"
+              href="/console/?demo=1&scenario=freelancer"
+            >
+              Freelancer studio ↗
+            </Link>
+            <Link
+              className="button outline"
+              href="/console/?demo=1&scenario=team"
+            >
+              Small team ↗
+            </Link>
+            <Link
+              className="button outline"
+              href="/console/?demo=1&scenario=personal"
+            >
+              Rent + buffer ↗
+            </Link>
+          </div>
+          <ol className="payment-walkthrough">
+            <li>
+              <b>01 / Plan</b> Add an amount, recipient and due date.
+            </li>
+            <li>
+              <b>02 / Decide</b> Check commitments and the remaining buffer.
+            </li>
+            <li>
+              <b>03 / Approve</b> Review and approve in your own Nimiq Pay
+              wallet.
+            </li>
+            <li>
+              <b>04 / Record</b> Keep the hash and verify its matching receipt.
+            </li>
+          </ol>
+          <p className="helper">
+            Example amounts only. Wallet approval and network confirmation times
+            vary.
+          </p>
+        </section>
       </main>
+      <FloatingAssistant />
       <footer>
         <Brand />
         <span>A payment is part of a bigger picture.</span>

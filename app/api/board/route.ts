@@ -13,8 +13,7 @@ export const maxDuration = 30;
 const reply = (data: unknown, status = 200) =>
   Response.json(data, { status, headers: { "Cache-Control": "no-store" } });
 export async function POST(req: Request) {
-  if (!sameOrigin(req))
-    return reply({ error: "Open from Quorail." }, 403);
+  if (!sameOrigin(req)) return reply({ error: "Open from Quorail." }, 403);
   try {
     const data = await smallJson(req);
     if (data.action === "create") {
@@ -74,7 +73,12 @@ export async function POST(req: Request) {
       row.claim = claim;
       row.state = "pending";
     } else if (data.action === "release") {
-      if (typeof row.claim !== "string" || row.state !== "pending" || row.claim !== data.claim || row.hash)
+      if (
+        typeof row.claim !== "string" ||
+        row.state !== "pending" ||
+        row.claim !== data.claim ||
+        row.hash
+      )
         throw new Error("Cannot release this payment.");
       row.state = "open";
       delete row.claim;

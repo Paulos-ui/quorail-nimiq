@@ -5,6 +5,10 @@ export function sameOrigin(req: Request): boolean {
   try {
     const origin = new URL(raw);
     const host = req.headers.get("host") || new URL(req.url).host;
-    return ["https:", "http:"].includes(origin.protocol) && origin.host === host;
-  } catch { return false; }
+    return (
+      ["https:", "http:"].includes(origin.protocol) && origin.host === host
+    );
+  } catch {
+    return false;
+  }
 }

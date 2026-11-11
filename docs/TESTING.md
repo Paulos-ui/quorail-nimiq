@@ -44,3 +44,9 @@ Run `npm ci`, `npm test`, `npm run typecheck`, `npm run build`. Tests use determ
 ## Release limits
 
 Native wallet, production Redis and real Anthropic calls require your own deployment test. No full on-chain plan restoration, auto-debits, authenticated team roles, USDT support or game rewards are implemented. Shared boards are expiring snapshots with receipt updates, not a fully synchronized private-plan database.
+
+## V3.1 additions
+
+Open the landing-page robot button. Check Escape and the close button return focus to the launcher. Submit a generic question after consent with your deployed Anthropic key. No private plan is loaded on the landing page.
+
+Try all three example links, then change the scenario from the workspace. Examples never create receipts or allow payments. Check the reserve signal on Overview, Payments and Activity. Preview a planned payment and open the two-week delay comparison. Verify it does not alter the due date. The AI question must visibly include the same deterministic figures before sending.

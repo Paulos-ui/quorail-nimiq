@@ -5,11 +5,19 @@ import type { Plan } from "@/lib/finance";
 export default function AssistantPanel({
   plan,
   balance,
+  initialOpen = false,
+  compact = false,
+  suggestedQuestions,
+  promptLabels,
 }: {
   plan: Plan;
   balance: number | null;
+  initialOpen?: boolean;
+  compact?: boolean;
+  suggestedQuestions?: string[];
+  promptLabels?: string[];
 }) {
-  const [open, setOpen] = useState(false),
+  const [open, setOpen] = useState(initialOpen),
     [question, setQuestion] = useState(""),
     [share, setShare] = useState(false),
     [consent, setConsent] = useState(false),
@@ -20,19 +28,21 @@ export default function AssistantPanel({
     balance !== null ? assistantContext(plan, balance) : undefined;
   return (
     <section className="ai-panel">
-      <div className="section-heading">
-        <div>
-          <span className="eyebrow">QUORAIL AI / POWERED BY ANTHROPIC</span>
-          <h2>Ask about your next move.</h2>
+      {!compact && (
+        <div className="section-heading">
+          <div>
+            <span className="eyebrow">QUORAIL AI / POWERED BY ANTHROPIC</span>
+            <h2>Ask about your next move.</h2>
+          </div>
+          <button
+            className="button outline"
+            aria-expanded={open}
+            onClick={() => setOpen(!open)}
+          >
+            {open ? "Close assistant" : "Ask Quorail AI"}
+          </button>
         </div>
-        <button
-          className="button outline"
-          aria-expanded={open}
-          onClick={() => setOpen(!open)}
-        >
-          {open ? "Close assistant" : "Ask Quorail AI"}
-        </button>
-      </div>
+      )}
       {open && (
         <form
           onSubmit={async (e) => {
@@ -69,13 +79,15 @@ export default function AssistantPanel({
             explain; it cannot approve payments or change your plan.
           </p>
           <div className="prompt-chips">
-            {[
-              "Explain my 30-day buffer.",
-              "How do recurring commitments affect my plan?",
-              "What does a pending receipt mean?",
-            ].map((q) => (
+            {(
+              suggestedQuestions || [
+                "Explain my 30-day buffer.",
+                "How do recurring commitments affect my plan?",
+                "What does a pending receipt mean?",
+              ]
+            ).map((q, i) => (
               <button type="button" key={q} onClick={() => setQuestion(q)}>
-                {q}
+                {promptLabels?.[i] || q}
               </button>
             ))}
           </div>

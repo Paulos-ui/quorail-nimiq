@@ -4,7 +4,11 @@
 
 Quorail helps independent workers and small teams plan NIM commitments, understand the remaining buffer, approve payments in Nimiq Pay and keep matching receipts. Built by Jayking: [GitHub](https://github.com/paulos-ui) · [X](https://x.com/__official__1).
 
-## Version 3
+## Version 3.1
+
+New: a floating landing-page Quorail AI robot; reserve signals across workspace tabs; freelancer, team and personal examples; a local two-week delay comparison; and payment-specific AI prompts with visible numbers. The landing assistant does not load private plans. A recording outline is included in `docs/DEMO_SCRIPT.md`; no live payment video is bundled.
+
+## Core functionality
 
 - Payment preview with covered, tight and reserve-at-risk signals. Adjust the reserve and see the calculation change immediately.
 - Real native wallet execution, transaction hashes linked to commitments and automatic receipt checks while the workspace is visible.
