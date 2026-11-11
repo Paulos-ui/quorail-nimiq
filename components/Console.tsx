@@ -22,6 +22,10 @@ import {
   SlidersHorizontal,
 } from "lucide-react";
 import Brand from "./Brand";
+import ForecastPanel from "./ForecastPanel";
+import ReserveIndicator from "./ReserveIndicator";
+import AssistantPanel from "./AssistantPanel";
+import SharePlan from "./SharePlan";
 import {
   LUNA,
   nim,
@@ -30,6 +34,7 @@ import {
   normalAddress,
   dateAfter,
   forecast,
+  settlePayment,
   demoPlan,
   emptyPlan,
   validatePlan,
@@ -74,6 +79,7 @@ export default function Console() {
   const [modal, setModal] = useState<"add" | "settings" | null>(null);
   const [selected, setSelected] = useState<string | null>(null);
   const [ack, setAck] = useState(false);
+  const [reserveInvalid, setReserveInvalid] = useState(false);
   const [recovery, setRecovery] = useState("");
   const [walletLink, setWalletLink] = useState("");
   const [filter, setFilter] = useState("");
@@ -97,6 +103,7 @@ export default function Console() {
   }, [plan]);
   useEffect(() => {
     setAck(false);
+    setReserveInvalid(false);
     setRecovery("");
   }, [selected]);
   useEffect(() => {
@@ -401,7 +408,7 @@ export default function Console() {
             return;
           }
           setMessage(
-            "Payment submitted. Check its receipt to verify inclusion and execution.",
+            "Payment pending. Quorail checks its receipt every 12 seconds while this page is visible. Approval alone does not confirm payment.",
           );
           setTab("Activity");
           setSelected(null);
@@ -426,24 +433,15 @@ export default function Console() {
       checkNetwork(network);
       const raw = await rpc(network, "getTransactionByHash", [hash]);
       const result = verifyReceipt(raw, { ...p, hash }, address, network);
-      const next = {
-        ...planRef.current,
-        payments: planRef.current.payments.map((x) =>
-          x.id === p.id
-            ? {
-                ...x,
-                hash,
-                status: result.status,
-                sender: result.sender,
-                fee: result.fee ?? x.fee,
-                confirmedAt:
-                  result.status === "confirmed"
-                    ? new Date().toISOString()
-                    : undefined,
-              }
-            : x,
-        ),
-      };
+      const latest = demo ? planRef.current : loadPlan(key);
+      const next = settlePayment(latest, p.id, {
+        hash,
+        status: result.status,
+        sender: result.sender,
+        fee: result.fee ?? p.fee,
+        confirmedAt:
+          result.status === "confirmed" ? new Date().toISOString() : undefined,
+      });
       update(next, true);
       if (result.status === "confirmed" && provider.current) {
         try {
@@ -468,6 +466,17 @@ export default function Console() {
       busyRef.current = false;
     }
   }
+  useEffect(() => {
+    if (demo || !address || storageError) return;
+    const timer = setInterval(() => {
+      if (document.visibilityState !== "visible" || busyRef.current) return;
+      const pending = planRef.current.payments.find(
+        (p) => p.status === "pending" && p.hash,
+      );
+      if (pending) void checkReceipt(pending);
+    }, 12000);
+    return () => clearInterval(timer);
+  }, [demo, address, network, storageError]);
   function addPayment(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     try {
@@ -489,6 +498,12 @@ export default function Console() {
         fee,
         due: String(d.get("due")),
         priority: d.get("priority") as Payment["priority"],
+        recurrence:
+          d.get("recurrence") === "once"
+            ? undefined
+            : (d.get("recurrence") as Payment["recurrence"]),
+        anchorDay: Number(String(d.get("due")).slice(-2)),
+        seriesId: edited?.seriesId,
         status: "planned",
         created: new Date().toISOString(),
       };
@@ -602,6 +617,9 @@ export default function Console() {
         </nav>
         <Link href="/play/" className="button outline">
           Play room ↗
+        </Link>
+        <Link className="button outline" href="/shared/">
+          Shared boards ↗
         </Link>
         <div className="sidebar-bottom">
           <div className="sidebar-note">
@@ -899,6 +917,14 @@ export default function Console() {
                       </div>
                     </section>
                   </div>
+                  <ForecastPanel plan={plan} balance={balance} />
+                  <AssistantPanel plan={plan} balance={balance} />
+                  <SharePlan
+                    plan={plan}
+                    address={address}
+                    network={network}
+                    demo={demo}
+                  />
                   <section className="section-heading">
                     <div>
                       <span className="eyebrow">UP NEXT</span>
@@ -1095,6 +1121,7 @@ export default function Console() {
           )}
           <div className="workspace-footer">
             <span>QUORAIL / A CONSIDERED WAY TO PAY</span>
+            <Link href="/shared/">Shared boards</Link>
             <Link href="/docs/#privacy">Local plans. Clear boundaries.</Link>
           </div>
         </main>
@@ -1206,6 +1233,22 @@ export default function Console() {
                     </select>
                   </label>
                 </div>
+                <label>
+                  Repeat commitment
+                  <select
+                    name="recurrence"
+                    defaultValue={edited?.recurrence || "once"}
+                  >
+                    <option value="once">One-time / custom date</option>
+                    <option value="weekly">Weekly</option>
+                    <option value="monthly">Monthly</option>
+                  </select>
+                </label>
+                <p className="helper">
+                  Each occurrence requires your approval. After confirmation,
+                  the next occurrence is added automatically. Edit or remove
+                  that next occurrence to change or stop the series.
+                </p>
                 <p className="helper">
                   The explicit fee is included in your forecast and sent to the
                   wallet. Nimiq supports zero-fee payments when the network
@@ -1299,10 +1342,57 @@ export default function Console() {
               </button>
             </div>
             <h2>{payment.title}</h2>
+            <SharePlan
+              plan={plan}
+              address={address}
+              network={network}
+              payment={payment}
+              demo={demo}
+            />
+            {payment.recurrence && (
+              <p className="helper">
+                Repeats {payment.recurrence}. Due {payment.due}. No automatic
+                wallet debit.
+              </p>
+            )}
             <p className="recipient">To {payment.recipient}</p>
             <div className="impact-total">
               {nim(payment.amount)} <small>NIM</small>
             </div>
+            {payment.status === "planned" && (
+              <>
+                <ReserveIndicator
+                  available={impact.available}
+                  reserve={plan.reserve}
+                  known={balance !== null}
+                />
+                <label className="reserve-adjust">
+                  Adjust reserve target (NIM)
+                  <input
+                    key={selected}
+                    inputMode="decimal"
+                    defaultValue={String(plan.reserve / LUNA)}
+                    onChange={(e) => {
+                      try {
+                        const reserve = parseNim(e.target.value);
+                        update({ ...planRef.current, reserve });
+                        setReserveInvalid(false);
+                        setMessage("");
+                      } catch {
+                        setReserveInvalid(true);
+                        setMessage(
+                          "Enter a non-negative reserve with at most 5 decimals.",
+                        );
+                      }
+                    }}
+                  />
+                </label>
+                <p className="helper">
+                  Reserve changes save immediately. Your forecast includes{" "}
+                  {plan.horizon} days and future recurring occurrences.
+                </p>
+              </>
+            )}
             <div className="impact-lines">
               <div>
                 <span>Current account balance</span>
@@ -1315,8 +1405,12 @@ export default function Console() {
                 <b>{nim(impact.cost)} NIM</b>
               </div>
               <div>
-                <span>Other commitments in window</span>
+                <span>Other commitments in {plan.horizon} days</span>
                 <b>{nim(impact.obligations)} NIM</b>
+              </div>
+              <div>
+                <span>Balance after this payment</span>
+                <b>{nim(impact.after)} NIM</b>
               </div>
               <div>
                 <span>Reserve target</span>
@@ -1375,6 +1469,7 @@ export default function Console() {
                     busy ||
                     !ack ||
                     impact.shortfall > 0 ||
+                    reserveInvalid ||
                     balance === null ||
                     unresolved ||
                     storageError
@@ -1384,7 +1479,7 @@ export default function Console() {
                     ? "Example only. No funds move."
                     : busy
                       ? "Waiting for wallet…"
-                      : "Review & approve in Nimiq Pay"}
+                      : "Pay with Nimiq Pay"}
                   <ArrowUpRight size={17} />
                 </button>
                 <button
@@ -1410,8 +1505,8 @@ export default function Console() {
             ) : (
               <>
                 <p className="helper">
-                  Status: {payment.status}. Attempted payments remain in your
-                  records. Do not resend an uncertain transaction.
+                  Receipt status: {payment.status}. Attempted payments remain in
+                  your records. Do not resend an uncertain transaction.
                 </p>
                 {payment.hash ? (
                   <div className="row wrap">

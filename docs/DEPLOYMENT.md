@@ -1,88 +1,46 @@
-# Deploy Quorail-Nimiq
+# V3 deployment and configuration
 
-## 1. Create a separate project folder
+## Existing Vercel project
 
-Extract this ZIP into a new `quorail-nimiq` folder on your Windows Desktop. Do not extract over the original Quorail repository. Open the new folder in your terminal. The folder containing `package.json` is the project root.
+Keep your current repository and domain. In Vercel Project Settings, Build and Deployment:
 
-From WSL, Windows Desktop is usually below `/mnt/c/Users/YOUR_WINDOWS_USERNAME/Desktop/`. Some computers use OneDrive/Desktop. Use the actual folder location on your machine.
+- Framework preset: Next.js.
+- Root directory: folder containing package.json.
+- Install command: npm ci.
+- Build command: npm run build.
+- Output directory: framework default. Remove the V2 override `out`.
+- Node.js: 22.
 
-```bash
-npm ci
-npm test
-npm run typecheck
-npm run build
-npm run dev
-```
+V3 requires server functions for `/api/assistant/` and `/api/board/`. It cannot be deployed as a static `out` folder. `vercel.json` now declares Next.js. Check project dashboard overrides as well.
 
-The development address is `http://localhost:3000`. No database, contract deployment or AI API key is required. Stop the dev server with Ctrl+C when finished.
+## Environment variables
 
-## 2. Create the new public GitHub repository
+Create an Anthropic API key in your own Anthropic Console. Create an Upstash Redis database and copy its REST URL and REST token from its dashboard. Add the following to Vercel for Production and any intended Preview environments:
 
-Create an empty public repository named `quorail-nimiq` under `paulos-ui`. Do not initialize it with another README or license.
+| Variable                      | Value                                                                      | Required for                |
+| ----------------------------- | -------------------------------------------------------------------------- | --------------------------- |
+| ANTHROPIC_API_KEY             | Your secret Anthropic API key                                              | AI                          |
+| ANTHROPIC_MODEL               | claude-haiku-4-5-20251001, or a compatible model available to your account | AI                          |
+| UPSTASH_REDIS_REST_URL        | Your database HTTPS REST URL                                               | AI limits and boards        |
+| UPSTASH_REDIS_REST_TOKEN      | Your database secret REST token                                            | AI limits and boards        |
+| AI_DAILY_REQUEST_LIMIT        | 100 initially, lower if desired                                            | AI global daily request cap |
+| NEXT_PUBLIC_NIMIQ_MAINNET_RPC | Optional public CORS-enabled RPC URL                                       | Receipt verification        |
+| NEXT_PUBLIC_NIMIQ_TESTNET_RPC | Optional public CORS-enabled testnet RPC URL                               | Receipt verification        |
 
-In the extracted project root:
+Do not put secrets in browser code, GitHub, NEXT_PUBLIC variables or screenshots. Do not send keys in chat. Use separate Redis databases for production and previews if you want isolation. Redeploy after changing environment settings. For local development, copy `.env.example` to `.env.local` and fill values there.
 
-```bash
-git init
-git branch -M main
-git add -A
-git commit -m "Build Quorail Nimiq payment planner"
-git remote add origin https://github.com/paulos-ui/quorail-nimiq.git
-git push -u origin main
-```
+AI fails closed if its key or Redis limits are unavailable. Default limits are 100 requests/day globally and 20/client/hour. Global configurable maximum is 1000/day. These are request limits, not a guaranteed currency spending cap. Set a spending limit in Anthropic too. Questions are limited to 1200 characters and responses to 650 tokens. No automatic or background AI calls occur.
 
-Use your existing GitHub identity. Before committing, inspect `git config user.name` and `git config user.email`; use your own name and verified email. Do not copy an unrelated author's identity. No Git history from the earlier project is bundled in this ZIP.
+Boards expire after 30 days. Creation is limited globally and by client. Anyone with a secret invite can view and claim a row. No user identity service or admin recovery panel is provided. Redis loss or expiry removes the board, not on-chain payments. Keep backups.
 
-## 3. Deploy on Vercel
+## Nimiq Pay
 
-1. Import the new repository.
-2. Use the repository root containing `package.json`.
-3. Select framework preset **Other** for this static export.
-4. Install command: `npm ci`.
-5. Build command: `npm run build`.
-6. Output directory: `out`.
-7. Use Node.js 22 or later.
-8. Deploy, then open the HTTPS URL and test `/`, `/console/`, `/console/?demo=1` and `/docs/`.
+Install or update Nimiq Pay. Open your deployed app within its Mini Apps browser using its custom URL entry if available. Connect there. Chrome and installed standalone Quorail do not inject the native wallet provider.
 
-`vercel.json` supplies these settings and standard security headers. No secret environment variables are needed. If overriding the public RPC endpoints, add the matching `NEXT_PUBLIC_NIMIQ_MAINNET_RPC` and `NEXT_PUBLIC_NIMIQ_TESTNET_RPC` variables, then redeploy.
+The app's open-wallet link uses `https://nimpay.app/miniapps/open/YOUR_DOMAIN` without a path. If the directory says the app is not listed, use the wallet's custom Mini App URL flow rather than assuming the directory entry exists. Registration in a public directory is separate from deployment.
 
-The app is static. `next start` is not used for production. Other static hosts can serve the generated `out/` directory with directory-index routing.
+Shared links include their secret after `#`. Preserve the full link when opening it inside the wallet. Never post a private team invite publicly.
 
-## 4. Open in Nimiq Pay
+## Acceptance before announcing
 
-On the deployed connection screen, tap **Open this app in Nimiq Pay**. The app creates a deep link from its current domain to its `/console/` route. Nimiq Pay may warn before opening an unlisted Mini App.
-
-Alternatively, use the documented URL pattern, replacing the domain:
-
-```text
-https://nimpay.app/miniapps/open/YOUR_DEPLOYED_DOMAIN/console/
-```
-
-The exact handling of a path-bearing deep link must be checked on your installed Nimiq Pay version. If it does not preserve the path, open the root domain through Nimiq Pay and use the Open Quorail button inside the app.
-
-The native host must expose its network and `getBalance`. Update Nimiq Pay if the app asks. Unknown networks do not silently default to mainnet.
-
-## 5. Perform the device acceptance test
-
-Follow `TESTING.md`. Use testnet first. You must personally approve wallet prompts. Verify the actual transaction in the network-appropriate explorer before recording a successful demo.
-
-Use only an ordinary account you control as the planning account. Confirm that Nimiq Pay chooses that same account in its native send dialog. Use another wallet you control as the recipient for your acceptance test.
-
-## 6. Prepare submission
-
-Update `docs/SUBMISSION.md` with the real deployed URL, public repository URL, demo URL and genuine test evidence. Submit through the official competition portal. Verify the submission is accepted before the official deadline. Publishing a repository alone does not submit the entry.
-
-## Operations
-
-- Keep the domain and deployment origin stable to preserve local plans.
-- Maintain a working RPC service for each supported network.
-- Confirm CORS from the actual deployed origin.
-- Keep the app live and review dependency updates.
-- Back up plans before changing browser storage or moving devices.
-- If receipt checks fail, inspect the explorer and RPC health. Do not tell users to resend pending payments.
-
-## Version 2 installation checks
-
-Deploy the full Next.js project or the entire static `out` folder at the domain root. Serve `/manifest.webmanifest`, `/sw.js`, `/offline.html` and `/icons/` without redirects to the landing page. Do not cache `sw.js` indefinitely. HTTPS is required. Verify the install action on Android Chrome, Windows Edge and iOS Safari. Installed standalone Quorail does not have Nimiq Pay's wallet bridge. Wallet payments continue inside Nimiq Pay.
-
-After deploying, test the Play room, then reopen inside Nimiq Pay and complete the existing testnet payment acceptance checklist. Practice games pay no NIM. Do not advertise earning rewards from this release.
+Follow TESTING.md. Verify real wallet execution with testnet or a personally approved small transfer, then verify the explorer receipt. Check one actual Anthropic response with your key and two browsers viewing the same shared board. No credentials or live payment approval are bundled in the ZIP.

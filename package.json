@@ -1,14 +1,15 @@
 {
   "name": "quorail-nimiq",
-  "version": "1.0.0",
+  "version": "3.0.0",
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "next dev -H 0.0.0.0",
+    "dev": "node scripts/dev.mjs",
     "build": "next build",
     "typecheck": "tsc --noEmit",
     "test": "node --import tsx --test tests/*.test.ts",
-    "format": "prettier --write app components lib tests docs README.md *.json *.ts"
+    "format": "prettier --write app components lib tests docs README.md *.json *.ts",
+    "start": "next start"
   },
   "dependencies": {
     "@nimiq/mini-app-sdk": "^0.2.4",

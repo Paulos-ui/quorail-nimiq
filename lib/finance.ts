@@ -22,6 +22,9 @@ export type Payment = {
   sender?: string;
   confirmedAt?: string;
   note?: string;
+  recurrence?: "weekly" | "monthly";
+  anchorDay?: number;
+  seriesId?: string;
 };
 export type Plan = {
   version: 1;
@@ -63,6 +66,41 @@ export function validDate(s: string) {
     new Date(`${s}T12:00:00Z`).toISOString().slice(0, 10) === s
   );
 }
+export function nextDue(p: Payment): string {
+  const d = new Date(`${p.due}T12:00:00Z`);
+  if (p.recurrence === "weekly") d.setUTCDate(d.getUTCDate() + 7);
+  else {
+    const day = p.anchorDay || d.getUTCDate();
+    d.setUTCDate(1);
+    d.setUTCMonth(d.getUTCMonth() + 1);
+    const last = new Date(
+      Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + 1, 0),
+    ).getUTCDate();
+    d.setUTCDate(Math.min(day, last));
+  }
+  return d.toISOString().slice(0, 10);
+}
+export function occurrences(
+  plan: Plan,
+  days: number,
+  now = new Date(),
+): Payment[] {
+  const end = dateAfter(days, now);
+  const result: Payment[] = [];
+  for (const payment of plan.payments) {
+    if (payment.status === "confirmed") continue;
+    let p = payment;
+    let i = 0;
+    while (p.due <= end && i < 1000) {
+      result.push(p);
+      if (!payment.recurrence) break;
+      const due = nextDue(p);
+      i++;
+      p = { ...p, id: `${payment.id}:future:${i}`, due };
+    }
+  }
+  return result;
+}
 export function committed(p: Payment, horizon: number, now = new Date()) {
   return p.status !== "confirmed" && p.due <= dateAfter(horizon, now);
 }
@@ -72,8 +110,8 @@ export function forecast(
   candidate?: Payment,
   now = new Date(),
 ) {
-  const others = plan.payments.filter(
-    (p) => p.id !== candidate?.id && committed(p, plan.horizon, now),
+  const others = occurrences(plan, plan.horizon, now).filter(
+    (p) => p.id !== candidate?.id,
   );
   const obligations = others.reduce((a, p) => a + p.amount + p.fee, 0);
   const cost = candidate ? candidate.amount + candidate.fee : 0;
@@ -85,6 +123,72 @@ export function forecast(
     available: after - obligations - plan.reserve,
     reserve: plan.reserve,
     shortfall: Math.max(0, obligations + plan.reserve - after),
+  };
+}
+export function reserveStatus(available: number, reserve: number) {
+  return available < 0
+    ? "risky"
+    : available <= Math.max(LUNA, Math.ceil(reserve * 0.1))
+      ? "tight"
+      : "covered";
+}
+export function settlePayment(
+  plan: Plan,
+  id: string,
+  patch: Partial<Payment>,
+): Plan {
+  const prior = plan.payments.find((p) => p.id === id);
+  if (!prior) return plan;
+  let payments = plan.payments.map((p) =>
+    p.id === id ? { ...p, ...patch } : p,
+  );
+  if (
+    patch.status === "confirmed" &&
+    prior.status !== "confirmed" &&
+    prior.recurrence
+  ) {
+    const due = nextDue(prior),
+      seriesId = prior.seriesId || prior.id.slice(0, 64);
+    const nextId = `${seriesId}:${due}`;
+    if (!payments.some((p) => p.id === nextId))
+      payments.push({
+        ...prior,
+        id: nextId,
+        seriesId,
+        due,
+        status: "planned",
+        hash: undefined,
+        sender: undefined,
+        confirmedAt: undefined,
+        created: new Date().toISOString(),
+      });
+    payments = payments.map((p) =>
+      p.id === id ? { ...p, recurrence: undefined } : p,
+    );
+  }
+  return validatePlan({ ...plan, payments });
+}
+export function projection(
+  balance: number,
+  plan: Plan,
+  days: number,
+  now = new Date(),
+) {
+  const rows = occurrences(plan, days, now).sort((a, b) =>
+    a.due.localeCompare(b.due),
+  );
+  let remaining = balance;
+  let breach: string | null = balance < plan.reserve ? dateAfter(0, now) : null;
+  for (const p of rows) {
+    remaining -= p.amount + p.fee;
+    if (!breach && remaining < plan.reserve) breach = p.due;
+  }
+  return {
+    total: balance - remaining,
+    remaining,
+    buffer: remaining - plan.reserve,
+    breach,
+    count: rows.length,
   };
 }
 export function validatePlan(input: unknown): Plan {
@@ -100,7 +204,7 @@ export function validatePlan(input: unknown): Plan {
     p.horizon < 1 ||
     p.horizon > 365 ||
     !Array.isArray(p.payments) ||
-    p.payments.length > 500
+    p.payments.length > 2000
   )
     throw new Error("Invalid plan settings.");
   const ids = new Set<string>();
@@ -133,11 +237,27 @@ export function validatePlan(input: unknown): Plan {
         "failed",
         "mismatch",
       ].includes(x.status) ||
-      (x.hash !== undefined && !/^[a-f0-9]{64}$/i.test(x.hash))
+      (x.hash !== undefined && !/^[a-f0-9]{64}$/i.test(x.hash)) ||
+      (x.recurrence !== undefined &&
+        !["weekly", "monthly"].includes(x.recurrence)) ||
+      (x.anchorDay !== undefined &&
+        (!Number.isInteger(x.anchorDay) ||
+          x.anchorDay < 1 ||
+          x.anchorDay > 31)) ||
+      (x.seriesId !== undefined &&
+        (typeof x.seriesId !== "string" || x.seriesId.length > 64)) ||
+      (x.recurrence !== undefined && x.due < "2020-01-01")
     )
       throw new Error("Invalid payment in plan.");
     ids.add(x.id);
   }
+  // Bound worst-case expansion to retain exact integer arithmetic.
+  const maximum = p.payments.reduce(
+    (sum, row) => sum + (row.amount + row.fee) * (row.recurrence ? 1000 : 1),
+    p.reserve,
+  );
+  if (!Number.isSafeInteger(maximum) || maximum > Number.MAX_SAFE_INTEGER / 4)
+    throw new Error("Plan totals exceed the supported calculation range.");
   return p;
 }
 export const emptyPlan = (): Plan => ({
@@ -159,6 +279,8 @@ export function demoPlan(): Plan {
         fee: 0,
         recipient: "NQ07 0000 0000 0000 0000 0000 0000 0000 0000",
         due: dateAfter(2),
+        recurrence: "monthly",
+        anchorDay: Number(dateAfter(2).slice(-2)),
         priority: "essential",
         status: "planned",
         created: new Date().toISOString(),

@@ -127,13 +127,47 @@ export default function Docs() {
             Receipt checks send a transaction hash and your IP address to a
             public Nimiq RPC operator. Google Fonts receives a font request and
             your IP address. Hosting providers may keep ordinary access logs.
-            Quorail adds no analytics, advertising trackers or AI service.
-            Payment details are public on the blockchain; private labels are not
-            sent as transaction messages.
+            Quorail adds no advertising trackers. Optional Quorail AI sends your
+            question to Anthropic through our server only after consent. You may
+            additionally share a previewed summary of balance, reserve and
+            forecast totals. Titles, addresses and receipts are excluded from
+            that automatic summary. Avoid entering secrets in your question.
+            Payment details are public on the blockchain.
           </p>
         </section>
         <section>
-          <h2>06. An example is an example.</h2>
+          <h2>06. Recurring plans, shared boards and AI.</h2>
+          <p>
+            Weekly and monthly commitments appear in the 30, 60 and 90 day
+            projections. Confirmation creates the next occurrence. Each payment
+            still needs wallet approval. There is no automatic debit.
+          </p>
+          <p>
+            Shared boards are optional snapshots stored on the deployment's
+            Redis service for 30 days. Anyone with an invite can read titles,
+            addresses, amounts, due dates and responsibility labels. Share links
+            only with trusted people. Labels are not verified identities.
+            Private plan edits do not sync into a board. Keep payment execution
+            in one place to avoid duplicate payments.
+          </p>
+          <p>
+            Collection boards divide a contribution request into exact shares.
+            Each share has a public transaction reference. Confirmed shares
+            update the board total. Collecting a contribution does not pay the
+            original outgoing commitment. A matching reference, amount,
+            recipient and network are required to verify a receipt. No funds are
+            held by Quorail.
+          </p>
+          <p>
+            AI explains your plan and cannot execute transactions. Responses may
+            be inaccurate; use the deterministic preview for the calculation.
+            The service uses request limits and temporarily stores salted client
+            hashes for rate limiting. Shared board records expire; keep a local
+            JSON backup. A blockchain reference alone cannot restore a plan.
+          </p>
+        </section>
+        <section>
+          <h2>07. An example is an example.</h2>
           <p>
             The example workspace lets you explore payment planning without a
             wallet. Its balance and commitments are illustrative. It cannot send
@@ -142,7 +176,7 @@ export default function Docs() {
           </p>
         </section>
         <section>
-          <h2>07. Built by Jayking.</h2>
+          <h2>08. Built by Jayking.</h2>
           <p>
             Quorail-Nimiq adapts the original Quorail consequence-planning
             concept into a Nimiq Pay Mini App. The implementation replaces the

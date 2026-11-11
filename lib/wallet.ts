@@ -2,7 +2,14 @@ import { init, getHostNetwork, NimiqProviderError } from "@nimiq/mini-app-sdk";
 export type Provider = Awaited<ReturnType<typeof init>>;
 export type Network = "mainnet" | "testnet";
 export async function connectWallet() {
-  const provider = await init({ timeout: 8000 });
+  let provider: Provider;
+  try {
+    provider = await init({ timeout: 8000 });
+  } catch {
+    throw new Error(
+      "Open Nimiq Pay on your phone, go to Mini Apps, choose Custom URL and paste this website address. A regular browser cannot connect to the native wallet.",
+    );
+  }
   const network = getHostNetwork();
   if (!network)
     throw new Error(
@@ -37,5 +44,5 @@ export const cancelled = (e: unknown) =>
 export const explorerUrl = (network: Network, hash: string) =>
   `https://${network === "testnet" ? "test." : ""}nimiq.watch/#${encodeURIComponent(hash)}`;
 export function openWalletUrl() {
-  return `https://nimpay.app/miniapps/open/${window.location.host}/console/`;
+  return `https://nimpay.app/miniapps/open/${window.location.host}`;
 }

@@ -1,146 +1,69 @@
-<div align="center">
+# Quorail for Nimiq Pay
 
-# QUORAIL
+**See what a payment leaves behind.**
 
-### See what a payment leaves behind.
+Quorail helps independent workers and small teams plan NIM commitments, understand the remaining buffer, approve payments in Nimiq Pay and keep matching receipts. Built by Jayking: [GitHub](https://github.com/paulos-ui) · [X](https://x.com/__official__1).
 
-A Nimiq Pay Mini App for people whose money already has a purpose.
+## Version 3
 
-**Plan commitments. Preview the consequences. Approve in your wallet.**
+- Payment preview with covered, tight and reserve-at-risk signals. Adjust the reserve and see the calculation change immediately.
+- Real native wallet execution, transaction hashes linked to commitments and automatic receipt checks while the workspace is visible.
+- One-time, weekly and monthly commitments with custom due dates and 30/60/90-day projections. Confirming a recurring payment creates its next occurrence once. No automatic debits.
+- Shareable collection requests with exact split amounts, unique public transaction references and partial/full collection totals.
+- Shared team snapshots with responsibility labels and live receipt statuses. Every payer approves in their own wallet.
+- Quorail AI through Anthropic, with explicit consent, optional numeric context, server-only keys and Redis-backed request limits.
+- Chess against a local bot or a friend, plus tic-tac-toe. Practice only, no NIM rewards.
+- Installable web app, offline notice, local backup/export and responsive cream, sage and violet UI.
 
-[Getting started](#getting-started) · [How it works](#the-payment-perspective) · [Deployment](docs/DEPLOYMENT.md) · [Verification](docs/TESTING.md) · [Submission](docs/SUBMISSION.md)
+## Run
 
-Built by **Jayking** · [GitHub @paulos-ui](https://github.com/paulos-ui) · [X @\_\_official\_\_1](https://x.com/__official__1)
-
-</div>
-
-## The problem
-
-A wallet balance does not tell you what you can comfortably pay.
-
-A freelancer may have enough NIM to buy equipment today while that same balance is already needed for rent and a collaborator next week. Wallets make sending straightforward. The missing context is what the payment leaves behind.
-
-Quorail puts recorded commitments beside the balance. Before requesting a payment, it calculates the remaining room after other upcoming payments, explicit fees and the user's reserve target. A user can revise a commitment, defer it beyond the planning window or change their reserve preference before approving a transfer.
-
-The first audience is independent workers and small teams with a single spending account. This is a personal planning tool, not a shared treasury or accounting system.
-
-## The payment perspective
-
-An illustrative plan has:
-
-| Item                         |   NIM |
-| ---------------------------- | ----: |
-| Account balance              | 1,000 |
-| Studio rent                  |   420 |
-| Collaborator payment         |   230 |
-| Reserve target               |   200 |
-| Proposed equipment payment   |   250 |
-| Room left after that payment |  -100 |
-
-The wallet can cover the equipment payment. The complete recorded plan cannot. Quorail makes that difference visible before the native wallet approval.
-
-The formula for a selected payment is:
-
-```text
-Remaining room = current account balance
-               - selected payment and its fee
-               - other outstanding commitments within the planning window
-               - reserve target
-```
-
-The selected payment is excluded from other commitments so it is never counted twice. Overdue commitments remain included. All money arithmetic uses integer Luna, with 100,000 Luna per NIM. No floating-point multiplication is used to parse user-entered amounts.
-
-## What is implemented
-
-| Capability             | Behavior                                                                                                           |
-| ---------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| Nimiq Pay connection   | SDK initialization, account permission, host-network detection and consensus checks                                |
-| Live balance           | Reads the selected planning address through the native `getBalance` method                                         |
-| Payment planning       | Create, edit, search and remove unsent commitments with amount, explicit fee, date and priority                    |
-| Payment impact         | Computes the balance after the selected transfer, competing obligations, reserve and shortfall                     |
-| NIM payment            | Calls `sendBasicTransaction` only after fresh balance, consensus and planning checks                               |
-| User control           | Native Nimiq Pay approval is required; the app never holds keys or signs in the background                         |
-| Receipt reconciliation | Matches hash, inclusion, sender, recipient, value, network and execution result                                    |
-| Recovery               | Persists payment attempts before submission; interrupted attempts become uncertain after reload                    |
-| Local workspaces       | Plans separated by address and network in local storage                                                            |
-| Backup                 | JSON export; same-account import merges new records and rechecks imported attempts                                 |
-| Example workspace      | Clearly labeled illustrative balance; sending and fake receipts are disabled                                       |
-| Interface              | Responsive landing page, mobile bottom navigation, desktop sidebar, payment detail dialogs, reduced-motion support |
-| Documentation          | In-app field guide, privacy explanation, deployment guide, device test matrix and submission material              |
-
-**Asset scope:** NIM. USDT, staking, on/off-ramp services, recurring automatic payments and custody are not implemented.
-
-## What Nimiq contributes
-
-Nimiq Pay is the actual wallet execution environment. It shares addresses, exposes the host network, reports the account balance and consensus, and presents the approval for each basic NIM transaction. The integration is central to the payment flow.
-
-The app imports `init`, `getHostNetwork` and `NimiqProviderError` from `@nimiq/mini-app-sdk`. Account balance access requires an up-to-date Nimiq Pay host. Unknown host networks are rejected rather than silently assumed to be mainnet.
-
-**Important signer distinction:** `listAccounts()` shares addresses. It does not prove ownership, and selecting an address in Quorail does not choose the native wallet signer. The review asks the user to verify the sending account in Nimiq Pay. Reconciliation checks the actual on-chain sender against the planning account. A mismatch pauses new sends until investigated.
-
-## Architecture
-
-```mermaid
-flowchart TD
-    UI[Payment workspace] --> Plan[Local commitment plan]
-    Plan --> Engine[Integer Luna calculation]
-    UI --> SDK[Nimiq Mini App SDK]
-    SDK --> Wallet[Nimiq Pay approval]
-    Wallet --> Chain[Nimiq network]
-    Chain --> RPC[Network-specific RPC]
-    RPC --> Receipt[Receipt verification]
-    Receipt --> Plan
-```
-
-| File                     | Responsibility                                                                        |
-| ------------------------ | ------------------------------------------------------------------------------------- |
-| `lib/finance.ts`         | Exact amounts, Nimiq checksum validation, commitments, forecast and backup validation |
-| `lib/wallet.ts`          | SDK initialization, network checks, wallet error mapping and deep links               |
-| `lib/receipt.ts`         | Runtime validation of transaction evidence                                            |
-| `lib/rpc.ts`             | Read-only RPC calls with a timeout and network-specific configuration                 |
-| `lib/storage.ts`         | Address-scoped and network-scoped persistence and export                              |
-| `components/Console.tsx` | Payment state machine and workspace interactions                                      |
-| `components/Landing.tsx` | Interactive introduction and scroll-triggered text sections                           |
-| `app/docs/page.tsx`      | User guide and privacy information                                                    |
-| `tests/finance.test.ts`  | Monetary, planning, recovery and receipt tests                                        |
-
-The application is a static Next.js export. There is no application backend, database password, AI key, relayer, Solidity contract or server-side wallet. This keeps the first version small and deployable, with transparent local-storage tradeoffs.
-
-## Payment states
-
-```mermaid
-stateDiagram-v2
-    planned --> submitting: Fresh checks pass
-    submitting --> planned: User declines
-    submitting --> pending: Hash returned
-    submitting --> uncertain: Error or interrupted session
-    pending --> confirmed: Matching successful inclusion
-    pending --> failed: Execution failed
-    pending --> mismatch: Evidence differs
-    uncertain --> confirmed: Recovered hash verifies
-    uncertain --> mismatch: Recovered evidence differs
-```
-
-An ordinary submission error is not treated as proof that nothing was sent. Pending, submitting, uncertain or mismatched records block further sends through this workspace. The user can recover a hash from wallet history and verify it. There is no blind retry or automatic reset of ambiguous attempts.
-
-Browser Web Locks serialize payment requests for the same origin, address and network. A device without Web Locks cannot send through this version. Record writes happen before the native payment request. If storage fails after a hash returns, the UI retains the hash in memory and requests immediate export.
-
-## Design: the payment perspective
-
-The interface uses paper ivory, midnight blue, muted sage and restrained gold. An authored orbital drawing connects commitments to the account balance. The landing interaction previews a payment with real explanatory arithmetic. Motion reveals the story as you scroll, while operational screens remain direct and quick.
-
-Mobile navigation contains Overview, Payments and Activity. The primary action is a payment review, with the before-and-after consequences visible above wallet approval. All motion respects `prefers-reduced-motion`. The project does not use generated raster imagery or a stock dashboard template.
-
-## Getting started
-
-Requirements: Node.js 22 or later and npm.
+Use Node.js 22 and npm. In the folder containing this file:
 
 ```bash
 npm ci
+cp .env.example .env.local
 npm run dev
 ```
 
-Open `http://localhost:3000` for the introduction. Use `/console/?demo=1` for the example workspace. Native wallet methods require the deployed HTTPS app to run inside Nimiq Pay.
+Open http://localhost:3000. `/console/?demo=1` is an illustrative workspace with payments disabled. Native wallet operations require opening the deployed HTTPS app inside Nimiq Pay.
+
+For AI, set `ANTHROPIC_API_KEY`, `ANTHROPIC_MODEL`, `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN` and optionally `AI_DAILY_REQUEST_LIMIT`. Shared boards require the two Redis values. The private planner and games work without these services. Never prefix server secrets with `NEXT_PUBLIC_`.
+
+## Deploy
+
+**V3 uses server routes. Change Vercel's framework preset to Next.js and remove the old `out` output-directory override.** Build with `npm run build`, install with `npm ci`, leave output directory at the framework default. Add server variables in Vercel and redeploy. See [deployment guide](docs/DEPLOYMENT.md) and [start here](START_HERE.md).
+
+## How the calculation works
+
+Amounts use integer Luna, with 100,000 Luna per NIM. The preview subtracts the candidate once, its fee, other outstanding occurrences within the selected horizon, and the reserve. Overdue commitments remain included. Projections assume no new income, price changes or unrecorded spending. Pending transfers remain reserved until verified, making the view temporarily conservative. Covered means covered by the recorded plan, not a guarantee of affordability.
+
+## Payment integrity
+
+The native provider controls signing. Selecting an address in Quorail does not select the native signer. The user must check sender, network, recipient, amount and fee in the wallet. Receipts must match hash, sender, recipient, amount and network and report successful inclusion. Shared receipts additionally require the board's unique transaction reference. Wallet approval or a returned hash alone is not payment confirmation.
+
+An interrupted attempt remains uncertain and blocks repeat sending. Recover the hash from wallet history and verify it instead of retrying blindly. Confirmed means inclusion reported by the configured RPC, not an independent finality proof. Cross-tab locking and persisted attempts reduce duplicates on the same browser. They do not coordinate every external wallet or device.
+
+## Shared plans and privacy
+
+Private plans remain unencrypted in browser local storage, scoped by address and network. Export a backup before upgrading or clearing browser data. Sharing publishes only the selected snapshot to the configured Redis service for 30 days. Invite links are bearer capabilities: anyone with the link can read and claim rows. Responsibility labels are not authenticated identities. Use trusted groups. Private edits do not sync into existing boards; execute each obligation in one place.
+
+Collection requests are incoming contributions, separate from the original outgoing commitment. Receiving contributions never marks rent or another outgoing bill paid. Shared totals update only after matching on-chain verification. No escrow or pooled custody is provided.
+
+AI sends the typed question and, only when selected, numeric balance/reserve/forecast totals to Anthropic through the server. No addresses, titles or hashes are automatically included. The assistant cannot invoke wallet tools or edit plans. Responses may be wrong. Public endpoints are rate limited with Redis, but are not authenticated user accounts. Configure Anthropic spending limits too.
+
+Shared references are public transaction data. Full plans are not stored on chain. A hash cannot restore a lost plan. This version deliberately does not claim on-chain backup or automatic cross-device restoration.
+
+## Architecture
+
+Next.js App Router + React + TypeScript; Nimiq Mini App SDK; chess.js rules; Node API routes for Anthropic and Redis. No Arc contracts, GOAT agent or custody service is required.
+
+- `lib/finance.ts`: exact amounts, recurrence, projections and reserve logic.
+- `components/Console.tsx`: private planner and payment lifecycle.
+- `components/SharedBoard.tsx`, `app/api/board/route.ts`: shared execution and receipt verification.
+- `app/api/assistant/route.ts`: validated, limited Anthropic requests.
+- `lib/chess-bot.ts`: local chess opponent, independent of AI API credits.
+
+## Verification
 
 ```bash
 npm test
@@ -148,73 +71,6 @@ npm run typecheck
 npm run build
 ```
 
-`npm run build` produces `out/`, a static website ready for Vercel or another HTTPS static host. Do not use `next start` to serve a static export. Use the development server locally or a static host for `out/`.
+Automated tests cover monetary precision, recurrence anchors, duplicate confirmation, receipt mismatches, board references, AI privacy and limits, and game rules. Live Anthropic, Redis and native wallet acceptance require deployment credentials and device testing. See [testing checklist](docs/TESTING.md).
 
-### Optional RPC configuration
-
-No environment variables are required for the default public RPC services. To operate a dedicated RPC, copy `.env.example` to `.env.local` and configure the endpoints before building. They are browser-visible public URLs, not secret credentials. Each must match its designated network and allow the app origin through CORS.
-
-The default Nimiq Watch RPC services are listed by the Nimiq Developer Center. They are community infrastructure with no uptime guarantee. A dedicated production endpoint is recommended. If a receipt service is unavailable, the app retains the pending state rather than inventing confirmation.
-
-## Privacy and boundaries
-
-- Plans and labels stay in unencrypted local storage. They are not authenticated private server records.
-- Browser profile access can expose local plans. Clearing browser data can lose plans and attempt history.
-- Workspaces do not sync between devices. Export before moving devices or changing deployment origins.
-- Backup imports are convenience records, not cryptographic payment proofs.
-- A reserve target does not lock funds. Quorail cannot prevent payments outside this application.
-- Forecasts only cover entered commitments. They do not infer other bills or future income.
-- Pending balances may be conservative until receipt verification and balance refresh complete.
-- RPC receipt checks expose transaction hashes and the client IP address to the RPC operator.
-- Google Fonts requests and ordinary hosting logs may expose client IP addresses to those providers.
-- Confirmation reflects successful inclusion reported by the RPC. It is not an independently verified finality proof.
-- Basic spendable NIM accounts are the supported path. Contract or staking balances are not treated as available spending accounts.
-- No real-user counts, payment volumes, partnerships or competition outcomes are claimed.
-
-## Validation status
-
-The implementation includes automated tests and a production build. See [TESTING.md](docs/TESTING.md) for the exact verified checks and the remaining native-device acceptance tests. Do not describe native wallet payments as tested until the real-device checklist has been completed with genuine transaction evidence.
-
-## From Quorail to Quorail-Nimiq
-
-This is a separate Nimiq adaptation of Jayking's original Quorail project. The consequence-planning concept is retained and rewritten for integer Luna and user-approved wallet payments.
-
-The old chain-specific vault, server signer, owner-only authentication, autonomous AI execution, database setup and bridge tooling are removed from this distribution. They are not hidden behind a new logo. See [MIGRATION.md](docs/MIGRATION.md) for the replacement map.
-
-## Competition entry
-
-Intended category: **Pay**. The central use case is a real NIM payment made with awareness of other commitments. See [SUBMISSION.md](docs/SUBMISSION.md) for the description, demo outline and launch checklist. A submitted entry, recorded demo and real usage must be completed separately.
-
-## Official references
-
-- [Nimiq Mini Apps overview](https://nimiq.dev/mini-apps)
-- [Nimiq provider API](https://nimiq.dev/mini-apps/api-reference/nimiq-provider)
-- [Nimiq RPC services](https://nimiq.dev/rpc/open-servers)
-- [Competition rules](https://miniappscompetition.com/rules)
-- [Competition scoring](https://miniappscompetition.com/scoring)
-
-## License
-
-MIT. Original Quorail attribution is preserved in `LICENSE`. Third-party dependencies retain their own licenses. Quorail is an independent application and does not imply Nimiq endorsement.
-
-## Version 2: a clearer next move
-
-The second release adds a cream, ink, yellow and violet visual identity, bolder typography, tactile cards, mobile navigation, scroll reveals and reduced-motion support. The design takes broad inspiration from approachable Nimiq community apps while keeping original Quorail branding and artwork.
-
-### Play room
-
-Visit `/play/` for tic-tac-toe against a minimax bot, local two-player chess, and a payment planning exercise. Chess supports legal destinations, check, checkmate, castling, en passant, promotion choice, repetition draws, move history and undo using chess.js. Games run locally and reset on a page reload. There is no online multiplayer or chess bot.
-
-Games are free practice with no stakes, NIM payouts, redeemable points or reward balances. A funded sponsor campaign, server-authoritative result verification, eligibility rules, abuse controls and an audited payout process are prerequisites for future financial rewards. This release remains a **Pay** submission, with practice as a supporting experience.
-
-### Install on a device
-
-Use **Add to your device** on the home page or Play room. Chromium browsers can expose a native install prompt when eligible. Other browsers show installation instructions. iOS uses Safari's Share menu; desktop Safari uses Add to Dock. Installation requires HTTPS in production. Wallet WebViews may not support installation; open the same URL in a regular browser.
-
-The installed app does not supply a wallet bridge. Actual wallet approvals still require Nimiq Pay. Local storage is specific to the browser or WebView, so use JSON export/import when moving an existing plan between them. The service worker only caches a connection-loss page, never wallet balances, transactions, RPC responses or application code. Quorail requires a connection to reopen and use the app.
-
-### Verification for this release
-
-15 automated tests pass, including all v1 monetary and receipt guards, exhaustive tic-tac-toe human move paths, illegal chess moves, checkmate and repetition history. The production build and TypeScript checks pass. Browser checks cover the new landing page, tic-tac-toe bot response, a legal chess move and the money exercise. Native wallet signing, real-device installation and real NIM transfers still require device acceptance testing after deployment.
-
-Chess rules are provided by chess.js under BSD-2-Clause. See `docs/CHESS-LICENSE.txt`. The Quorail source remains MIT licensed.
+MIT License. chess.js retains its BSD license in `docs/CHESS-LICENSE.txt`. Independently built; no claim of official Nimiq endorsement.

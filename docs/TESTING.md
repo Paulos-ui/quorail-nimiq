@@ -1,105 +1,46 @@
-# Verification and device acceptance
+# V3 acceptance checklist
 
-Verified on November 10, 2026.
+## Automated
 
-## Completed in the build environment
+Run `npm ci`, `npm test`, `npm run typecheck`, `npm run build`. Tests use deterministic data and mocked provider requests. They are not evidence of a real transfer, funded reward or deployed external service.
 
-| Check                                      | Result                                                                                    |
-| ------------------------------------------ | ----------------------------------------------------------------------------------------- |
-| TypeScript strict typecheck                | Passed                                                                                    |
-| Next.js production build and static export | Passed                                                                                    |
-| Automated tests                            | 12 passed, 0 failed                                                                       |
-| Production dependency audit                | 0 reported vulnerabilities after PostCSS override                                         |
-| Desktop landing                            | Visually inspected; payment-preview toggle updates figures                                |
-| Example workspace                          | Visually inspected; demo sending is disabled                                              |
-| Mobile workspace at 390px                  | Inspected in a browser iframe at mobile viewport width                                    |
-| Payment editing                            | Changing example equipment from 250 to 100 NIM updates remaining room from -100 to 50 NIM |
-| New payment validation                     | Invalid address rejected; valid 1.23456 NIM example commitment added accurately           |
-| Settings                                   | Reserve change recalculates remaining room                                                |
-| Dialogs                                    | Keyboard focus managed; Escape and focus-cycle behavior implemented                       |
-| Mainnet RPC                                | Read-only getTransactionByHash request succeeded; response fields match receipt parser    |
-| Testnet RPC                                | Read-only latest-block request succeeded                                                  |
-| RPC CORS                                   | Both default endpoints returned Access-Control-Allow-Origin: *                            |
-| Copy scan                                  | No em dashes in shipped source or documentation                                           |
+## Browser
 
-A public blockchain transaction was read to check the RPC response shape. It was not created by Quorail and is not evidence of app usage. No native wallet payment was performed by the build agent.
+- Open `/console/?demo=1`. Switch 30/60/90 days. Monthly studio rent should increase future commitments.
+- Preview a payment and adjust the reserve. Invalid input must prevent payment; risky totals remain blocked.
+- Add weekly/monthly commitments. Inspect due dates, fees and horizon totals. Month-end anchors should recover after February.
+- Open Quorail AI. Submit requires consent. Numeric context is opt-in and previewed. Missing deployment settings show a clear error.
+- Open `/play/`, choose chess, play a white move and observe a legal black reply. Undo, restart and friend mode work. No rewards are advertised.
+- Check narrow mobile layout, keyboard focus, dialogs and footer links.
 
-## Automated coverage
+## Native wallet
 
-1. Exact integer Luna conversion, including 0.00001 NIM.
-2. Rejection of negative, exponential, malformed and over-precision amounts.
-3. Selected payment excluded from competing obligations; fee counted once.
-4. Overdue commitments included; outside-window commitments excluded.
-5. Pending payments remain reserved; confirmed payments leave outstanding totals.
-6. Nimiq address format and checksum validation.
-7. Invalid backup settings and duplicate IDs rejected.
-8. Matching included successful receipts confirm; failed execution does not.
-9. Wrong sender, recipient, amount, hash and network cannot confirm.
-10. A hash alone or incomplete evidence remains pending.
-11. Storage scope distinguishes account and network.
-12. Interrupted submission recovers as uncertain after reload.
+1. Export a backup. Open the deployed HTTPS app inside Nimiq Pay.
+2. Connect, verify network and choose an ordinary spendable account. Confirm this matches the native wallet sender.
+3. Create a small commitment to another account you control. Set a reserve that permits it.
+4. Preview, approve personally in the wallet and check the returned hash is attached to the commitment.
+5. Keep the workspace open. Confirm automatic verification updates the receipt, balance and plan. Inspect the same hash in the appropriate explorer.
+6. Check a recurring confirmation produces exactly one next occurrence and preserves the old receipt.
+7. Cancel another native prompt. It must return to planned. If the wallet reports an ambiguous error, do not retry; recover its hash and verify it.
+8. Reload during a pending attempt. It must not become freely payable again.
 
-Run:
+## Shared boards with Redis configured
 
-```bash
-npm ci
-npm test
-npm run typecheck
-npm run build
-npm audit --omit=dev --audit-level=high
-```
+- Create a team snapshot with trusted test accounts. Copy the full fragment invite to another browser. Both must see matching rows and totals.
+- Claim one row and verify another browser cannot claim it concurrently.
+- Approve a small payment in Nimiq Pay. Native details must contain the board reference. Verify only the matching receipt confirms that row.
+- Wrong reference, recipient, amount or network must not confirm. A plain ordinary payment without the memo is not a board receipt.
+- Create a split collection with an odd Luna remainder. All shares must sum exactly to the commitment amount. Verify one share gives a partial collection total and all shares give a full total.
+- Collection must not mark the original outgoing bill paid. Private plan edits do not change a board snapshot.
+- Keep uncertain claims blocked and recover hashes from wallet history. Do not force-reset a possibly sent transfer.
 
-## Required real-device checks before submission
+## Anthropic with credentials configured
 
-These remain unverified until the builder runs them in Nimiq Pay. A normal browser and an iframe do not reproduce the native wallet bridge.
+- Ask a generic question with context off, then a question with the numeric summary on.
+- Confirm a real answer and check usage in your own Anthropic Console.
+- Confirm the API key is not present in browser bundles, responses or Git history.
+- Test request limit and unavailable Redis feedback. Configure your provider spending controls.
 
-| Scenario                                 | Expected outcome                                                               |
-| ---------------------------------------- | ------------------------------------------------------------------------------ |
-| Open deployed HTTPS app inside Nimiq Pay | SDK initializes; host network is shown correctly                               |
-| Deny account access                      | Clear cancellation; no fabricated connected state                              |
-| Connect a current host                   | Shared addresses and actual selected-account balance appear                    |
-| Switch planning account                  | Correct account-specific local plan and balance load                           |
-| Testnet and mainnet                      | Correct network, RPC service and explorer link                                 |
-| Add a small testnet payment              | Recipient checksum and five-decimal amount accepted                            |
-| Preview a target-crossing payment        | Approval action blocked with exact shortfall                                   |
-| Approve an affordable testnet payment    | Native wallet shows correct recipient, value and explicit fee                  |
-| Verify native sender                     | Same account as the selected planning account                                  |
-| Cancel approval                          | Record remains planned and can be reviewed again                               |
-| Approve transfer                         | Returned hash stored; state pending, not immediately confirmed                 |
-| Check receipt                            | Sender, recipient, network, value, successful execution and inclusion verified |
-| Reload while pending                     | Attempt retained; duplicate send blocked                                       |
-| Interrupt during submission              | Record becomes uncertain; no automatic retry                                   |
-| RPC unavailable                          | Pending state preserved; clear error, no invented confirmation                 |
-| Export and import backup                 | Same-account records merge; attempted imports require verification             |
-| Reopen same origin on same device        | Local plan still available                                                     |
-| Phone back button, keyboard, long labels | No trapped or hidden critical controls                                         |
+## Release limits
 
-Start on testnet and send only between accounts you control. The builder must approve wallet dialogs. Do not perform destructive interruption experiments with meaningful mainnet funds.
-
-## Acceptance record
-
-Fill this in after device testing:
-
-- Deployed URL:
-- Nimiq Pay version:
-- Phone / operating system:
-- Network:
-- Public transaction hash:
-- Explorer URL:
-- Successful receipt verified:
-- Cancelled approval verified:
-- Reload recovery verified:
-- Tester feedback and fixes:
-
-## Limits of these checks
-
-Automated arithmetic and receipt tests do not constitute a security audit. A successful build does not prove native host compatibility. The public RPC services have no uptime guarantee. Local records are not tamper-proof and cannot establish ownership or payment success without on-chain verification.
-
-## Version 2 checks
-
-- Tic-tac-toe bot response, reset, draw and terminal-state locking.
-- Chess: e2 to e4, undo, reset, legal destination indicators, promotion selector.
-- Money moves: reject 250 and 350; explain 150 and the effect of fees.
-- Install button: native prompt when available, platform instructions otherwise.
-- Mobile widths: landing, Play room and console at 390px.
-- Remaining device acceptance: HTTPS production installation, service-worker offline fallback and Nimiq Pay testnet transaction. These are not claimed as tested in the desktop preview.
+Native wallet, production Redis and real Anthropic calls require your own deployment test. No full on-chain plan restoration, auto-debits, authenticated team roles, USDT support or game rewards are implemented. Shared boards are expiring snapshots with receipt updates, not a fully synchronized private-plan database.

@@ -1,5 +1,6 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { chessBotMove } from "@/lib/chess-bot";
 import { Chess, type Square } from "chess.js";
 import Link from "next/link";
 import Brand from "./Brand";
@@ -25,6 +26,22 @@ export default function PlayRoom() {
   const [chess, setChess] = useState(() => new Chess()),
     [from, setFrom] = useState<Square | null>(null),
     [promotion, setPromotion] = useState("q");
+  const [opponent, setOpponent] = useState("bot");
+  const thinking =
+    opponent === "bot" && chess.turn() === "b" && !chess.isGameOver();
+  useEffect(() => {
+    if (!thinking || mode !== "chess") return;
+    const timer = setTimeout(() => {
+      const m = chessBotMove(chess.history());
+      if (m) {
+        const next = new Chess();
+        for (const move of chess.history()) next.move(move);
+        next.move(m);
+        setChess(next);
+      }
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [chess, thinking, mode]);
   const [solved, setSolved] = useState<number | null>(null);
   const win = winner(board),
     over = !!win || board.every(Boolean);
@@ -32,7 +49,7 @@ export default function PlayRoom() {
     ? chess.moves({ square: from, verbose: true }).map((m) => m.to)
     : [];
   function move(square: Square) {
-    if (chess.isGameOver()) return;
+    if (chess.isGameOver() || thinking) return;
     if (from && legal.includes(square)) {
       const next = new Chess();
       for (const m of chess.history()) next.move(m);
@@ -127,12 +144,32 @@ export default function PlayRoom() {
               <>
                 <div className="game-title">
                   <h2>Think a move ahead.</h2>
-                  <span className="small-tag">LOCAL TWO PLAYER</span>
+                  <span className="small-tag">
+                    {opponent === "bot"
+                      ? "YOU / QUORAIL BOT"
+                      : "LOCAL TWO PLAYER"}
+                  </span>
                 </div>
                 <p>
-                  Pass the device between turns. Tap a piece, then a highlighted
-                  square.
+                  {opponent === "bot"
+                    ? "You play White. The practice bot plays Black and looks two plies ahead."
+                    : "Pass the device between turns."}{" "}
+                  Tap a piece, then a highlighted square.
                 </p>
+                <label className="opponent-select">
+                  Opponent
+                  <select
+                    value={opponent}
+                    onChange={(e) => {
+                      setOpponent(e.target.value);
+                      setChess(new Chess());
+                      setFrom(null);
+                    }}
+                  >
+                    <option value="bot">Quorail bot</option>
+                    <option value="local">Friend on this device</option>
+                  </select>
+                </label>
                 <div className="chess-board">
                   {chess
                     .board()
@@ -156,11 +193,13 @@ export default function PlayRoom() {
                     })}
                 </div>
                 <p className="game-status" role="status">
-                  {chess.isCheckmate()
-                    ? `Checkmate. ${chess.turn() === "w" ? "Black" : "White"} wins.`
-                    : chess.isDraw()
-                      ? "Draw."
-                      : `${chess.turn() === "w" ? "White" : "Black"} to move${chess.isCheck() ? " • Check" : ""}.`}
+                  {thinking
+                    ? "Quorail bot is thinking…"
+                    : chess.isCheckmate()
+                      ? `Checkmate. ${chess.turn() === "w" ? "Black" : "White"} wins.`
+                      : chess.isDraw()
+                        ? "Draw."
+                        : `${chess.turn() === "w" ? "White" : "Black"} to move${chess.isCheck() ? " • Check" : ""}.`}
                 </p>
                 <div className="game-actions">
                   <button
@@ -168,7 +207,13 @@ export default function PlayRoom() {
                     disabled={!chess.history().length}
                     onClick={() => {
                       const n = new Chess();
-                      for (const m of chess.history().slice(0, -1)) n.move(m);
+                      for (const m of chess
+                        .history()
+                        .slice(
+                          0,
+                          -(opponent === "bot" && chess.turn() === "w" ? 2 : 1),
+                        ))
+                        n.move(m);
                       setChess(n);
                       setFrom(null);
                     }}
