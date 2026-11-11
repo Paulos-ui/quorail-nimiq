@@ -1,8 +1,8 @@
-# Upgrade your existing deployment to V3.1
+# Upgrade your existing deployment to V4
 
 1. Export your real plan from Quorail before upgrading. Keep your deployment domain unchanged.
 2. Extract this ZIP into your existing repository folder, where `package.json` lives. It has no enclosing folder and no `.git`, so your Git history remains yours. Your local `.env.local` is not included or overwritten.
-3. Run `npm ci`, `npm test`, `npm run typecheck`, then `npm run build`.
+3. Run `npm ci`, `npm test`, `npm run build`, then `npm run typecheck`.
 4. Configure the Vercel project as **Next.js**. Clear any old output-directory override pointing at `out`. Do not deploy the old static output.
 5. Add Anthropic and Redis environment variables using `docs/DEPLOYMENT.md`, then push and redeploy.
 6. Test the deployed app inside Nimiq Pay. AI and shared services must be checked with your real configuration before advertising them as live.
@@ -11,14 +11,14 @@ From WSL, after downloading the ZIP into the existing Desktop repository folder:
 
 ```bash
 cd /mnt/c/Users/YOUR_WINDOWS_USERNAME/Desktop/quorail-nimiq
-unzip -oq quorail-nimiq-v3.1.zip -d .
-rm quorail-nimiq-v3.1.zip
+unzip -oq quorail-nimiq-v4.zip -d .
+rm quorail-nimiq-v4.zip
 npm ci
 npm test
-npm run typecheck
 npm run build
+npm run typecheck
 git add -A
-git commit -m "Upgrade Quorail planning payments shared boards and AI"
+git commit -m "Release Quorail V4 offline backups games and payment upgrades"
 git push origin HEAD
 ```
 

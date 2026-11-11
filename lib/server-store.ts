@@ -1,11 +1,12 @@
+import { redisConfig } from "./server-config";
 import { createHash } from "node:crypto";
 export async function redis(command: (string | number)[]) {
-  const url = process.env.UPSTASH_REDIS_REST_URL,
-    token = process.env.UPSTASH_REDIS_REST_TOKEN;
-  if (!url || !token)
+  const config = redisConfig();
+  if (!config)
     throw new Error(
       "Shared boards need the deployment Redis settings. Private plans still work.",
     );
+  const { url, token } = config;
   const r = await fetch(url, {
     method: "POST",
     headers: {

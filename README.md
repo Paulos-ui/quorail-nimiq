@@ -4,7 +4,23 @@
 
 Quorail helps independent workers and small teams plan NIM commitments, understand the remaining buffer, approve payments in Nimiq Pay and keep matching receipts. Built by Jayking: [GitHub](https://github.com/paulos-ui) · [X](https://x.com/__official__1).
 
-## Version 3.1
+## Version 4.0
+
+This full release includes all V3.2 and V3.2.1 changes, including Vercel Redis credential aliases and clearer AI setup errors.
+
+- Read-only offline companion: choose a plan saved in this browser, inspect saved commitments and export a local JSON backup. No cached live balance or payment capability. Load the site online once and allow the service worker to activate first.
+- Optional encrypted JSON backups using browser AES-GCM with a password-derived key. Restore through Planning settings with the original wallet/network. The password never goes to Quorail's server. Browser storage itself remains unencrypted.
+- Connect Four against a local tactical bot, alongside chess, tic-tac-toe and Money Moves. No stakes or payouts.
+- Mobile game controls, stronger keyboard focus states and reduced-motion support.
+- Complete deployment and native acceptance instructions in START_HERE.md and docs/DEPLOYMENT.md.
+
+NFT minting remains out of scope. This is a Pay release; no mint, rewards or blockchain recovery is implied. See docs/V4_RELEASE.md for verification and limits.
+
+## Previous Version 3.2
+
+New: shared-payment reserve previews with a fresh pre-send balance check; rotating shared receipt checks; due-date risk review with focused AI explanation; verified receipt CSV export; an offline notice; and a full-backup card. Private-plan reserve signals stay visible while scrolling. CSV exports protect spreadsheet formula cells and include only confirmed records. Example records and user imports are not independent proof of payment; verification still relies on the configured RPC.
+
+## Previous Version 3.1
 
 New: a floating landing-page Quorail AI robot; reserve signals across workspace tabs; freelancer, team and personal examples; a local two-week delay comparison; and payment-specific AI prompts with visible numbers. The landing assistant does not load private plans. A recording outline is included in `docs/DEMO_SCRIPT.md`; no live payment video is bundled.
 
@@ -35,7 +51,7 @@ For AI, set `ANTHROPIC_API_KEY`, `ANTHROPIC_MODEL`, `UPSTASH_REDIS_REST_URL`, `U
 
 ## Deploy
 
-**V3 uses server routes. Change Vercel's framework preset to Next.js and remove the old `out` output-directory override.** Build with `npm run build`, install with `npm ci`, leave output directory at the framework default. Add server variables in Vercel and redeploy. See [deployment guide](docs/DEPLOYMENT.md) and [start here](START_HERE.md).
+**V4 uses server routes. Change Vercel's framework preset to Next.js and remove the old `out` output-directory override.** Build with `npm run build`, install with `npm ci`, leave output directory at the framework default. Add server variables in Vercel and redeploy. See [deployment guide](docs/DEPLOYMENT.md) and [start here](START_HERE.md).
 
 ## How the calculation works
 

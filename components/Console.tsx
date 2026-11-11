@@ -23,6 +23,11 @@ import {
 } from "lucide-react";
 import Brand from "./Brand";
 import ForecastPanel from "./ForecastPanel";
+import { decryptBackup } from "@/lib/secure-backup";
+import BackupCard from "./BackupCard";
+import RiskReview from "./RiskReview";
+import ConnectionNotice from "./ConnectionNotice";
+import { receiptCsv } from "@/lib/release-tools";
 import DecisionAid from "./DecisionAid";
 import {
   exampleScenario,
@@ -69,6 +74,7 @@ const icons = {
 const short = (a: string) =>
   a.length > 20 ? `${a.slice(0, 9)}…${a.slice(-4)}` : a;
 export default function Console() {
+  const [importPassword, setImportPassword] = useState("");
   const [tab, setTab] = useState<Tab>("Overview");
   const [plan, setPlan] = useState<Plan>(emptyPlan);
   const planRef = useRef(plan);
@@ -295,6 +301,10 @@ export default function Console() {
     }
   }
   async function send() {
+    if (!navigator.onLine) {
+      setMessage("Reconnect before sending a payment.");
+      return;
+    }
     if (
       !payment ||
       demo ||
@@ -569,8 +579,16 @@ export default function Console() {
   async function importFile(file?: File) {
     if (!file) return;
     try {
-      if (file.size > 500000) throw new Error("Plan file is too large.");
-      const data = JSON.parse(await file.text());
+      if (file.size > 750000) throw new Error("Plan file is too large.");
+      let data = JSON.parse(await file.text());
+      if (data?.format === "quorail-encrypted") {
+        if (!importPassword)
+          throw new Error(
+            "Enter your backup password in Planning settings, then select the file again.",
+          );
+        data = await decryptBackup(data, importPassword);
+        setImportPassword("");
+      }
       if (
         data.network !== network ||
         normalAddress(data.address) !== normalAddress(address)
@@ -793,6 +811,7 @@ export default function Console() {
             </section>
           ) : (
             <>
+              <ConnectionNotice />
               <div className="plan-signal">
                 <ReserveIndicator
                   available={total.available}
@@ -975,7 +994,7 @@ export default function Console() {
                     </section>
                   </div>
                   <ForecastPanel plan={plan} balance={balance} />
-                  <AssistantPanel plan={plan} balance={balance} />
+                  <RiskReview plan={plan} balance={balance} />
                   <SharePlan
                     plan={plan}
                     address={address}
@@ -1079,8 +1098,35 @@ export default function Console() {
                 </section>
               ) : (
                 <section className="activity-list">
+                  <BackupCard
+                    plan={plan}
+                    network={network}
+                    address={address || "example"}
+                  />
                   <div className="list-toolbar">
                     <span>PAYMENT RECORDS</span>
+                    <button
+                      className="text-link"
+                      disabled={
+                        !plan.payments.some(
+                          (p) => p.status === "confirmed" && p.hash,
+                        )
+                      }
+                      onClick={() => {
+                        const url = URL.createObjectURL(
+                          new Blob([receiptCsv(plan, network, address)], {
+                            type: "text/csv;charset=utf-8",
+                          }),
+                        );
+                        const a = document.createElement("a");
+                        a.href = url;
+                        a.download = "quorail-verified-receipts.csv";
+                        a.click();
+                        setTimeout(() => URL.revokeObjectURL(url), 1000);
+                      }}
+                    >
+                      Export verified CSV
+                    </button>
                     <button
                       className="text-link"
                       onClick={() =>
@@ -1346,6 +1392,21 @@ export default function Console() {
                 <button className="button dark full">
                   Save preferences <Check size={17} />
                 </button>
+                {!demo && (
+                  <label>
+                    Backup password (encrypted imports only)
+                    <input
+                      type="password"
+                      autoComplete="off"
+                      value={importPassword}
+                      onChange={(e) => setImportPassword(e.target.value)}
+                    />
+                    <small>
+                      Used on this device only. Leave blank for a plain JSON
+                      backup.
+                    </small>
+                  </label>
+                )}
                 <div className="backup-controls">
                   <button
                     type="button"
@@ -1359,11 +1420,15 @@ export default function Console() {
                   </button>
                   {!demo && (
                     <label className="text-link">
-                      Import backup
+                      Import JSON or encrypted backup
                       <input
                         type="file"
                         accept="application/json"
-                        onChange={(e) => importFile(e.target.files?.[0])}
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          e.target.value = "";
+                          void importFile(file);
+                        }}
                       />
                     </label>
                   )}

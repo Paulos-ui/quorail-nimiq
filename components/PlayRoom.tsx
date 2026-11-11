@@ -4,6 +4,7 @@ import { chessBotMove } from "@/lib/chess-bot";
 import { Chess, type Square } from "chess.js";
 import Link from "next/link";
 import Brand from "./Brand";
+import ConnectFour from "./ConnectFour";
 import InstallApp from "./InstallApp";
 import { winner, bestMove, type Mark } from "@/lib/play";
 const glyphs: Record<string, string> = {
@@ -87,6 +88,7 @@ export default function PlayRoom() {
             ["tic", "01 / Tic-tac-toe"],
             ["chess", "02 / Chess"],
             ["plan", "03 / Money moves"],
+            ["four", "04 / Connect Four"],
           ].map(([id, label]) => (
             <button
               key={id}
@@ -99,7 +101,9 @@ export default function PlayRoom() {
         </div>
         <div className="play-layout">
           <section className="game-card">
-            {mode === "tic" ? (
+            {mode === "four" ? (
+              <ConnectFour />
+            ) : mode === "tic" ? (
               <>
                 <div className="game-title">
                   <h2>Three in a row.</h2>

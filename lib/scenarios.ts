@@ -27,16 +27,14 @@ export function exampleScenario(name: Scenario): {
   }
   if (name === "personal") {
     plan.reserve = 150 * LUNA;
-    plan.payments = plan.payments
-      .slice(0, 2)
-      .map((p, i) => ({
-        ...p,
-        title: i === 0 ? "Monthly rent" : "Groceries",
-        amount: (i === 0 ? 400 : 70) * LUNA,
-        due: dateAfter(i === 0 ? 5 : 2),
-        recurrence: i === 0 ? "monthly" : "weekly",
-        anchorDay: Number(dateAfter(i === 0 ? 5 : 2).slice(-2)),
-      }));
+    plan.payments = plan.payments.slice(0, 2).map((p, i) => ({
+      ...p,
+      title: i === 0 ? "Monthly rent" : "Groceries",
+      amount: (i === 0 ? 400 : 70) * LUNA,
+      due: dateAfter(i === 0 ? 5 : 2),
+      recurrence: i === 0 ? "monthly" : "weekly",
+      anchorDay: Number(dateAfter(i === 0 ? 5 : 2).slice(-2)),
+    }));
     return {
       plan: validatePlan(plan),
       balance: 1200 * LUNA,

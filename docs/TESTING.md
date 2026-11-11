@@ -50,3 +50,12 @@ Native wallet, production Redis and real Anthropic calls require your own deploy
 Open the landing-page robot button. Check Escape and the close button return focus to the launcher. Submit a generic question after consent with your deployed Anthropic key. No private plan is loaded on the landing page.
 
 Try all three example links, then change the scenario from the workspace. Examples never create receipts or allow payments. Check the reserve signal on Overview, Payments and Activity. Preview a planned payment and open the two-week delay comparison. Verify it does not alter the due date. The AI question must visibly include the same deterministic figures before sending.
+
+## V4 device acceptance
+
+- Visit online, close existing Quorail tabs and reopen to activate the new service worker. Go offline and navigate again. Select a saved plan, check the read-only warning and export a JSON copy. Browser stores are separate from wallet webviews. No current balance or payment action should appear offline.
+- Export an encrypted backup using a new password with at least 12 characters. In Planning settings, enter that password and import the file using the same account/network. Wrong passwords and changed files must fail without changing the plan. Existing records/settings stay unchanged; imported attempts need verification.
+- Play Connect Four on phone and desktop. Test reset while the bot is thinking, full columns, wins and a draw. Check keyboard tab focus and reduced-motion preference. Games have no rewards.
+- Test an actual AI response after Vercel environment configuration. No new keys are needed for V4.
+
+Automated V4 verification: 51 tests, TypeScript and production build passed. Browser visual verification remains outstanding because the local browser could not launch and the remote browser could not reach the local preview.

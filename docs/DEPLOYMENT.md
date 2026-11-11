@@ -1,4 +1,4 @@
-# V3 deployment and configuration
+# V4 deployment and configuration
 
 ## Existing Vercel project
 
@@ -11,7 +11,7 @@ Keep your current repository and domain. In Vercel Project Settings, Build and D
 - Output directory: framework default. Remove the V2 override `out`.
 - Node.js: 22.
 
-V3 requires server functions for `/api/assistant/` and `/api/board/`. It cannot be deployed as a static `out` folder. `vercel.json` now declares Next.js. Check project dashboard overrides as well.
+V4 requires server functions for `/api/assistant/` and `/api/board/`. It cannot be deployed as a static `out` folder. `vercel.json` now declares Next.js. Check project dashboard overrides as well.
 
 ## Environment variables
 
@@ -44,3 +44,13 @@ Shared links include their secret after `#`. Preserve the full link when opening
 ## Acceptance before announcing
 
 Follow TESTING.md. Verify real wallet execution with testnet or a personally approved small transfer, then verify the explorer receipt. Check one actual Anthropic response with your key and two browsers viewing the same shared board. No credentials or live payment approval are bundled in the ZIP.
+
+## V4 compatibility and offline upgrade
+
+Vercel-injected `KV_REST_API_URL` and `KV_REST_API_TOKEN` are accepted as an alternative complete pair to the Upstash variables. Use a read/write REST token, not a read-only token or a TCP REDIS_URL. No new secrets are required for V4.
+
+After deploying, close all old Quorail tabs and reopen online so the updated service worker can activate. The offline companion must be cached on that browser before an offline visit. Some wallet webviews may disable service workers or downloads; test on your device. The companion is read-only and cannot see storage from another browser or wallet webview.
+
+Production is not updated by downloading this ZIP. Push to the repository connected to your Vercel project, confirm the new deployment is Ready, then perform the native acceptance tests. Keep the same domain and export your plan first.
+
+Official deployment reference: https://vercel.com/docs/frameworks/full-stack/nextjs

@@ -1,6 +1,9 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import ReserveIndicator from "./ReserveIndicator";
+import ConnectionNotice from "./ConnectionNotice";
+import { sharedCandidate, nextPendingReceipt } from "@/lib/release-tools";
 import Brand from "./Brand";
 import { type Board, type BoardRow, boardMemo } from "@/lib/boards";
 import {
@@ -23,6 +26,13 @@ export default function SharedBoard() {
     [ack, setAck] = useState(false),
     [hashes, setHashes] = useState<Record<string, string>>({}),
     [saved, setSaved] = useState<{ url: string; title: string }[]>([]);
+  const [preview, setPreview] = useState<{
+    row: string;
+    balance: number;
+    reserve: number;
+    impact: ReturnType<typeof forecast>;
+  } | null>(null);
+  const receiptCursor = useRef(0);
   const host = useRef<Provider | null>(null),
     busyRef = useRef(false);
   async function api(
@@ -59,8 +69,9 @@ export default function SharedBoard() {
       try {
         const d = await api("read");
         setBoard(d.board);
-        const p = (d.board as Board).rows.find(
-          (r) => r.state === "pending" && r.hash,
+        const p = nextPendingReceipt(
+          (d.board as Board).rows,
+          receiptCursor.current++,
         );
         if (p) {
           const verified = await api("verify", { row: p.id });
@@ -95,7 +106,41 @@ export default function SharedBoard() {
       busyRef.current = false;
     }
   }
+  async function review(row: BoardRow) {
+    if (!board || !host.current || !address || busyRef.current) return;
+    busyRef.current = true;
+    setBusy(true);
+    setPreview(null);
+    setError("");
+    setAck(false);
+    try {
+      if (!navigator.onLine)
+        throw new Error("Reconnect before reviewing a payment.");
+      checkNetwork(board.network);
+      const plan = loadPlan(storageKey(board.network, address)),
+        candidate = sharedCandidate(plan, board, row);
+      const balance = await host.current.getBalance(address);
+      if (!Number.isSafeInteger(balance) || balance < 0)
+        throw new Error("Wallet balance unavailable.");
+      setPreview({
+        row: row.id,
+        balance,
+        reserve: plan.reserve,
+        impact: forecast(balance, plan, candidate),
+      });
+    } catch (e) {
+      setError(errorMessage(e));
+    } finally {
+      busyRef.current = false;
+      setBusy(false);
+    }
+  }
   async function pay(row: BoardRow) {
+    if (!navigator.onLine) {
+      setError("Reconnect before sending a payment.");
+      return;
+    }
+    if (preview?.row !== row.id) return;
     if (!board || !host.current || !address || !ack || busyRef.current) return;
     busyRef.current = true;
     setBusy(true);
@@ -113,10 +158,7 @@ export default function SharedBoard() {
           checkNetwork(board.network);
           if (!(await provider.isConsensusEstablished()))
             throw new Error("Wallet is syncing.");
-          const latest = loadPlan(key),
-            existing = latest.payments.find(
-              (p) => p.id === (row.sourceId || `board:${board.id}:${row.id}`),
-            );
+          const latest = loadPlan(key);
           if (
             latest.payments.some((p) =>
               ["pending", "submitting", "uncertain", "mismatch"].includes(
@@ -127,27 +169,7 @@ export default function SharedBoard() {
             throw new Error(
               "Resolve pending payments in your private plan first.",
             );
-          if (
-            existing &&
-            (existing.status !== "planned" ||
-              existing.amount !== row.amount ||
-              normalAddress(existing.recipient) !==
-                normalAddress(row.recipient))
-          )
-            throw new Error(
-              "This shared commitment differs from, or was already paid in, your private plan.",
-            );
-          const payment: Payment = existing || {
-            id: `board:${board.id}:${row.id}`,
-            title: row.title,
-            recipient: row.recipient,
-            amount: row.amount,
-            fee: 0,
-            due: row.due,
-            status: "planned",
-            priority: "normal",
-            created: new Date().toISOString(),
-          };
+          const payment = sharedCandidate(latest, board, row);
           if (normalAddress(address) === normalAddress(row.recipient))
             throw new Error("Choose an account other than the recipient.");
           const balance = await provider.getBalance(address);
@@ -159,6 +181,19 @@ export default function SharedBoard() {
             throw new Error(
               "This payment exceeds your recorded commitments or reserve. Review your private plan first.",
             );
+          const currentImpact = forecast(balance, latest, payment);
+          if (
+            balance !== preview.balance ||
+            latest.reserve !== preview.reserve ||
+            currentImpact.cost !== preview.impact.cost ||
+            currentImpact.obligations !== preview.impact.obligations
+          ) {
+            setPreview(null);
+            setAck(false);
+            throw new Error(
+              "Your balance or plan changed. Preview this share again before approving.",
+            );
+          }
           const claimed = await api("claim", { row: row.id });
           setBoard(claimed.board);
           const pendingPlan = {
@@ -260,6 +295,7 @@ export default function SharedBoard() {
         </Link>
       </header>
       <main className="shared-page">
+        <ConnectionNotice />
         <span className="eyebrow">QUORAIL / SHARED PAYMENT BOARD</span>
         <h1>{board?.title || "A plan you can share."}</h1>
         {error && (
@@ -328,6 +364,7 @@ export default function SharedBoard() {
                     value={address}
                     onChange={(e) => {
                       setAddress(e.target.value);
+                      setPreview(null);
                       setAck(false);
                     }}
                   >
@@ -335,15 +372,6 @@ export default function SharedBoard() {
                       <option key={a}>{a}</option>
                     ))}
                   </select>
-                </label>
-                <label className="checkbox">
-                  <input
-                    type="checkbox"
-                    checked={ack}
-                    onChange={(e) => setAck(e.target.checked)}
-                  />
-                  I will verify the recipient, amount and sending account in
-                  Nimiq Pay. The wallet chooses the actual signer.
                 </label>
               </>
             )}
@@ -368,13 +396,65 @@ export default function SharedBoard() {
                   )}
                   <small>Reference: {boardMemo(board.id, row.id)}</small>
                   {row.state === "open" && (
-                    <button
-                      className="button dark"
-                      disabled={busy || !address || !ack}
-                      onClick={() => pay(row)}
-                    >
-                      Pay this share in Nimiq Pay
-                    </button>
+                    <>
+                      <button
+                        className="button outline"
+                        disabled={busy || !address}
+                        onClick={() => review(row)}
+                      >
+                        Preview this share
+                      </button>
+                      {preview?.row === row.id && (
+                        <div className="share-preview">
+                          <ReserveIndicator
+                            available={preview.impact.available}
+                            reserve={preview.reserve}
+                            known={true}
+                          />
+                          <dl>
+                            <dt>Current balance</dt>
+                            <dd>{nim(preview.balance)} NIM</dd>
+                            <dt>Payment + planned fee</dt>
+                            <dd>{nim(preview.impact.cost)} NIM</dd>
+                            <dt>Balance after payment</dt>
+                            <dd>{nim(preview.impact.after)} NIM</dd>
+                            <dt>Other recorded commitments</dt>
+                            <dd>{nim(preview.impact.obligations)} NIM</dd>
+                            <dt>Reserve target</dt>
+                            <dd>{nim(preview.reserve)} NIM</dd>
+                            <dt>Remaining buffer</dt>
+                            <dd>{nim(preview.impact.available)} NIM</dd>
+                          </dl>
+                          <p className="helper">
+                            Your reserve target is not spent or locked. Balance
+                            and plan are checked again before the wallet prompt.
+                          </p>{" "}
+                          <label className="checkbox">
+                            <input
+                              type="checkbox"
+                              checked={ack}
+                              onChange={(e) => setAck(e.target.checked)}
+                            />
+                            I will verify the recipient, amount and sending
+                            account in Nimiq Pay. The wallet chooses the actual
+                            signer.
+                          </label>
+                        </div>
+                      )}
+                      <button
+                        className="button dark"
+                        disabled={
+                          busy ||
+                          !address ||
+                          !ack ||
+                          preview?.row !== row.id ||
+                          preview.impact.shortfall > 0
+                        }
+                        onClick={() => pay(row)}
+                      >
+                        Pay this share in Nimiq Pay
+                      </button>
+                    </>
                   )}
                   {row.hash && (
                     <a

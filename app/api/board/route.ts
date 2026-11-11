@@ -1,3 +1,4 @@
+import { redisConfig } from "@/lib/server-config";
 import { sameOrigin } from "@/lib/request-origin";
 import { randomBytes, createHash } from "node:crypto";
 import { redis, boardKey, smallJson } from "@/lib/server-store";
@@ -23,7 +24,7 @@ export async function POST(req: Request) {
         ? req.headers.get("x-vercel-forwarded-for") || "unknown"
         : "local";
       const client = createHash("sha256")
-        .update(ip + (process.env.UPSTASH_REDIS_REST_TOKEN || ""))
+        .update(ip + (redisConfig()?.token || ""))
         .digest("hex");
       const quota = await redis([
         "EVAL",

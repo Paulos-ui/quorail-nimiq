@@ -1,3 +1,4 @@
+import { redisConfig } from "@/lib/server-config";
 import { sameOrigin } from "@/lib/request-origin";
 import { createHash } from "node:crypto";
 import { validateAssistant } from "@/lib/assistant";
@@ -43,17 +44,27 @@ export async function POST(req: Request) {
       400,
     );
   }
-  const key = process.env.ANTHROPIC_API_KEY;
-  const redis = process.env.UPSTASH_REDIS_REST_URL,
-    token = process.env.UPSTASH_REDIS_REST_TOKEN;
-  if (!key || !redis || !token)
+  const key = process.env.ANTHROPIC_API_KEY?.trim();
+  const config = redisConfig();
+  if (!key)
     return json(
       {
         error:
-          "Quorail AI is not configured yet. The planner and payments still work.",
+          "Quorail AI is unavailable because its Anthropic API key is missing from this deployment. The planner and payments still work.",
+        code: "AI_KEY_MISSING",
       },
       503,
     );
+  if (!config)
+    return json(
+      {
+        error:
+          "Quorail AI is unavailable because its request-limit storage is not connected. The planner and payments still work.",
+        code: "AI_REDIS_MISSING",
+      },
+      503,
+    );
+  const { url: redis, token } = config;
   try {
     // Atomic global daily budget and per-client hourly quota, shared across serverless instances.
     // Vercel overwrites x-vercel-forwarded-for. Outside Vercel share one conservative quota.
