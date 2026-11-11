@@ -1,4 +1,4 @@
-# Upgrade your existing deployment to V4
+# Upgrade your existing deployment to V4.2
 
 1. Export your real plan from Quorail before upgrading. Keep your deployment domain unchanged.
 2. Extract this ZIP into your existing repository folder, where `package.json` lives. It has no enclosing folder and no `.git`, so your Git history remains yours. Your local `.env.local` is not included or overwritten.
@@ -11,8 +11,8 @@ From WSL, after downloading the ZIP into the existing Desktop repository folder:
 
 ```bash
 cd /mnt/c/Users/YOUR_WINDOWS_USERNAME/Desktop/quorail-nimiq
-unzip -oq quorail-nimiq-v4.zip -d .
-rm quorail-nimiq-v4.zip
+unzip -oq quorail-nimiq-v4.2.zip -d .
+rm quorail-nimiq-v4.2.zip
 npm ci
 npm test
 npm run build

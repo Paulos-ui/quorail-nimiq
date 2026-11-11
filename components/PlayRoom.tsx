@@ -1,4 +1,5 @@
 "use client";
+import { useLanguage } from "./Preferences";
 import { useEffect, useState } from "react";
 import { chessBotMove } from "@/lib/chess-bot";
 import { Chess, type Square } from "chess.js";
@@ -22,6 +23,7 @@ const glyphs: Record<string, string> = {
   bp: "♟",
 };
 export default function PlayRoom() {
+  const { tr } = useLanguage();
   const [mode, setMode] = useState("tic"),
     [board, setBoard] = useState<Mark[]>(Array(9).fill(null));
   const [chess, setChess] = useState(() => new Chess()),
@@ -64,8 +66,8 @@ export default function PlayRoom() {
       <header className="site-header">
         <Brand />
         <nav>
-          <Link href="/">Home</Link>
-          <Link href="/docs/">Guide</Link>
+          <Link href="/">{tr("Home")}</Link>
+          <Link href="/docs/">{tr("Guide")}</Link>
         </nav>
         <Link className="button small dark" href="/console/">
           Payment planner ↗

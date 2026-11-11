@@ -1,3 +1,5 @@
+"use client";
+import { useLanguage } from "./Preferences";
 import { reserveStatus, nim } from "@/lib/finance";
 export default function ReserveIndicator({
   available,
@@ -8,6 +10,7 @@ export default function ReserveIndicator({
   reserve: number;
   known: boolean;
 }) {
+  const { tr } = useLanguage();
   const state = known ? reserveStatus(available, reserve) : "unknown";
   return (
     <div className={`reserve-indicator ${state}`} role="status">
@@ -15,12 +18,12 @@ export default function ReserveIndicator({
       <div>
         <b>
           {state === "covered"
-            ? "Covered by your plan"
+            ? tr("Covered by your plan")
             : state === "tight"
-              ? "Tight buffer"
+              ? tr("Tight buffer")
               : state === "risky"
-                ? "Reserve target at risk"
-                : "Balance unavailable"}
+                ? tr("Reserve target at risk")
+                : tr("Balance unavailable")}
         </b>
         <p>
           {!known

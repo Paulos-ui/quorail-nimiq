@@ -1,4 +1,5 @@
 "use client";
+import { useLanguage } from "./Preferences";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import Link from "next/link";
 import {
@@ -21,6 +22,7 @@ import {
   Trash2,
   SlidersHorizontal,
 } from "lucide-react";
+import { readWalletBalance } from "@/lib/balance";
 import Brand from "./Brand";
 import ForecastPanel from "./ForecastPanel";
 import { decryptBackup } from "@/lib/secure-backup";
@@ -57,7 +59,6 @@ import {
   errorMessage,
   cancelled,
   explorerUrl,
-  openWalletUrl,
   type Provider,
   type Network,
 } from "@/lib/wallet";
@@ -74,6 +75,7 @@ const icons = {
 const short = (a: string) =>
   a.length > 20 ? `${a.slice(0, 9)}…${a.slice(-4)}` : a;
 export default function Console() {
+  const { tr } = useLanguage();
   const [importPassword, setImportPassword] = useState("");
   const [tab, setTab] = useState<Tab>("Overview");
   const [plan, setPlan] = useState<Plan>(emptyPlan);
@@ -83,6 +85,9 @@ export default function Console() {
   const [address, setAddress] = useState("");
   const [accounts, setAccounts] = useState<string[]>([]);
   const [network, setNetwork] = useState<Network>("mainnet");
+  const [balanceError, setBalanceError] = useState("");
+  const [balanceChecked, setBalanceChecked] = useState("");
+  const [formError, setFormError] = useState("");
   const [balance, setBalance] = useState<number | null>(null);
   const [busy, setBusy] = useState(false);
   const busyRef = useRef(false);
@@ -93,7 +98,6 @@ export default function Console() {
   const [ack, setAck] = useState(false);
   const [reserveInvalid, setReserveInvalid] = useState(false);
   const [recovery, setRecovery] = useState("");
-  const [walletLink, setWalletLink] = useState("");
   const [filter, setFilter] = useState("");
   const [editing, setEditing] = useState<string | null>(null);
   const [storageError, setStorageError] = useState(false);
@@ -107,7 +111,6 @@ export default function Console() {
     ["submitting", "pending", "uncertain", "mismatch"].includes(p.status),
   );
   useEffect(() => {
-    setWalletLink(openWalletUrl());
     const params = new URLSearchParams(location.search);
     if (params.get("demo") === "1") {
       const s = params.get("scenario");
@@ -219,6 +222,10 @@ export default function Console() {
     setStorageError(false);
   }
   async function connect() {
+    if (!(window as Window & { nimiq?: unknown }).nimiq) {
+      window.dispatchEvent(new Event("quorail-wallet-setup"));
+      return;
+    }
     if (busyRef.current) return;
     busyRef.current = true;
     setBusy(true);
@@ -239,9 +246,6 @@ export default function Console() {
   }
   async function chooseAccount(a: string, n = network, p = provider.current) {
     if (!p) return;
-    const b = await p.getBalance(a);
-    if (!Number.isSafeInteger(b) || b < 0)
-      throw new Error("Wallet returned an invalid balance.");
     const k = storageKey(n, a);
     let saved: Plan;
     try {
@@ -255,13 +259,25 @@ export default function Console() {
     }
     setStorageError(false);
     setAddress(a);
-    setBalance(b);
+    setBalance(null);
+    setBalanceError("");
+    setBalanceChecked("");
     setPlan(saved);
     planRef.current = saved;
     setSelected(null);
-    setMessage(
-      "Wallet connected. Confirm the same sending account in the native payment dialog.",
-    );
+    setMessage("Account connected. Checking its current balance…");
+    try {
+      const b = await readWalletBalance(p, a);
+      setBalance(b);
+      setBalanceChecked(new Date().toLocaleTimeString());
+      setMessage(
+        "Account connected. Confirm this same sending account in the wallet payment dialog.",
+      );
+    } catch (e) {
+      const reason = errorMessage(e);
+      setBalanceError(reason);
+      setMessage(reason);
+    }
   }
   function disconnect() {
     if (busyRef.current) return;
@@ -287,13 +303,15 @@ export default function Console() {
     busyRef.current = true;
     try {
       checkNetwork(network);
-      const b = await provider.current.getBalance(address);
-      if (!Number.isSafeInteger(b) || b < 0)
-        throw new Error("Invalid balance response.");
+      setBalance(null);
+      setBalanceError("");
+      const b = await readWalletBalance(provider.current, address);
       setBalance(b);
+      setBalanceChecked(new Date().toLocaleTimeString());
       setMessage("Balance refreshed from Nimiq Pay.");
     } catch (e) {
       setBalance(null);
+      setBalanceError(errorMessage(e));
       setMessage(errorMessage(e));
     } finally {
       setBusy(false);
@@ -349,11 +367,16 @@ export default function Console() {
             throw new Error(
               "Resolve the existing payment in Activity before sending another.",
             );
-          if (!(await host.isConsensusEstablished()))
-            throw new Error("Wallet is syncing. Wait for network consensus.");
-          const b = await host.getBalance(address);
-          if (!Number.isSafeInteger(b) || b < 0)
-            throw new Error("Invalid balance response.");
+          let b: number;
+          try {
+            b = await readWalletBalance(host, address);
+          } catch (e) {
+            setBalance(null);
+            setBalanceError(errorMessage(e));
+            throw e;
+          }
+          setBalanceError("");
+          setBalanceChecked(new Date().toLocaleTimeString());
           setBalance(b);
           if (b < target.amount + target.fee)
             throw new Error("Insufficient NIM for the payment and fee.");
@@ -468,9 +491,12 @@ export default function Console() {
       update(next, true);
       if (result.status === "confirmed" && provider.current) {
         try {
-          setBalance(await provider.current.getBalance(address));
-        } catch {
+          setBalance(await readWalletBalance(provider.current, address));
+          setBalanceError("");
+          setBalanceChecked(new Date().toLocaleTimeString());
+        } catch (e) {
           setBalance(null);
+          setBalanceError(errorMessage(e));
         }
       }
       setMessage(
@@ -502,10 +528,24 @@ export default function Console() {
   }, [demo, address, network, storageError]);
   function addPayment(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    setFormError("");
     try {
       const d = new FormData(e.currentTarget);
-      const amount = parseNim(String(d.get("amount"))),
+      let amount: number, fee: number;
+      try {
+        amount = parseNim(String(d.get("amount")));
+      } catch {
+        throw new Error(
+          "Amount: enter a NIM value such as 5000 or 0.5, with no leading zeros and no more than 5 decimal places.",
+        );
+      }
+      try {
         fee = parseNim(String(d.get("fee")));
+      } catch {
+        throw new Error(
+          "Fee: enter 0, 0.5 or 5, not 05. Fees are in NIM. Quorail will not guess the amount you intended.",
+        );
+      }
       const recipient = String(d.get("recipient")).trim();
       if (!validAddress(recipient))
         throw new Error("Enter a valid Nimiq address, including its checksum.");
@@ -542,6 +582,7 @@ export default function Console() {
       setEditing(null);
       setMessage(editing ? "Payment updated." : "Payment added to your plan.");
     } catch (e) {
+      setFormError(errorMessage(e));
       setMessage(errorMessage(e));
     }
   }
@@ -636,7 +677,7 @@ export default function Console() {
                 }}
               >
                 <Icon size={19} />
-                {t}
+                {tr(t)}
                 {t === "Payments" && (
                   <span>
                     {plan.payments.filter((p) => p.status === "planned").length}
@@ -661,7 +702,7 @@ export default function Console() {
             </p>
           </div>
           <Link href="/docs/">
-            Field guide <ArrowUpRight size={15} />
+            {tr("Field guide")} <ArrowUpRight size={15} />
           </Link>
           <span className="powered">
             <i /> BUILT FOR NIMIQ PAY
@@ -789,19 +830,24 @@ export default function Console() {
                     disabled={busy}
                   >
                     <Wallet size={18} />
-                    Connect Nimiq Pay
+                    {tr("Connect Nimiq Pay")}
                   </button>
                   <button
                     className="button outline"
                     onClick={() => startDemo()}
                     disabled={busy}
                   >
-                    Explore example <ArrowRight size={16} />
+                    {tr("Explore example")} <ArrowRight size={16} />
                   </button>
                 </div>
-                <a className="text-link" href={walletLink || "#"}>
-                  Open this app in Nimiq Pay <ArrowUpRight size={15} />
-                </a>
+                <button
+                  className="text-link"
+                  onClick={() =>
+                    window.dispatchEvent(new Event("quorail-wallet-setup"))
+                  }
+                >
+                  {tr("Get Nimiq Pay")} <ArrowUpRight size={15} />
+                </button>
                 <small>
                   Plans are stored locally, unencrypted. Export a backup before
                   clearing browser data. Read the{" "}
@@ -859,7 +905,7 @@ export default function Console() {
               {address && (
                 <div className="account-strip">
                   <span>
-                    <Wallet size={14} /> Planning account
+                    <Wallet size={14} /> {tr("Planning account")}
                   </span>
                   <select
                     aria-label="Planning account"
@@ -890,7 +936,7 @@ export default function Console() {
                     disabled={busy}
                   >
                     <RefreshCw size={14} />
-                    Refresh
+                    {tr("Refresh")}
                   </button>
                 </div>
               )}
@@ -911,6 +957,36 @@ export default function Console() {
               )}
               {tab === "Overview" && (
                 <>
+                  {!demo && (
+                    <div className="balance-health" role="status">
+                      <b>
+                        {network === "testnet" ? "Testnet" : "Mainnet"} ·
+                        Selected account balance
+                      </b>
+                      <p>
+                        {balanceError ||
+                          (balance === null
+                            ? "Balance unavailable. Use Refresh to retry."
+                            : `Last checked ${balanceChecked || "this session"}. This is one account, not the wallet's combined total.`)}
+                      </p>
+                      {balance === 0 && (
+                        <p>
+                          If Nimiq Pay shows funds elsewhere, select the funded
+                          account above. A valid zero response is not replaced
+                          with an assumed wallet total.
+                        </p>
+                      )}
+                      {balance === null && (
+                        <button
+                          className="button outline"
+                          disabled={busy}
+                          onClick={refresh}
+                        >
+                          {busy ? "Checking wallet…" : "Retry balance"}
+                        </button>
+                      )}
+                    </div>
+                  )}
                   <div className="overview-grid">
                     <section className="balance-card">
                       <div className="card-label">
@@ -1270,9 +1346,18 @@ export default function Console() {
               </p>
             )}
             {modal === "add" ? (
-              <form onSubmit={addPayment}>
+              <form
+                onSubmit={addPayment}
+                onChange={() => setFormError("")}
+                onInvalidCapture={(e) => {
+                  const field = e.target as HTMLInputElement;
+                  setFormError(
+                    `Check ${field.name || "the highlighted field"}: ${field.validationMessage}`,
+                  );
+                }}
+              >
                 <label>
-                  Payment name
+                  {tr("Payment name")}
                   <input
                     name="title"
                     defaultValue={edited?.title}
@@ -1283,7 +1368,7 @@ export default function Console() {
                   />
                 </label>
                 <label>
-                  Recipient Nimiq address
+                  {tr("Recipient Nimiq address")}
                   <input
                     name="recipient"
                     defaultValue={edited?.recipient}
@@ -1294,7 +1379,7 @@ export default function Console() {
                 </label>
                 <div className="form-grid">
                   <label>
-                    Amount in NIM
+                    {tr("Amount in NIM")}
                     <input
                       name="amount"
                       defaultValue={
@@ -1306,7 +1391,7 @@ export default function Console() {
                     />
                   </label>
                   <label>
-                    Fee in NIM
+                    {tr("Fee in NIM")}
                     <input
                       name="fee"
                       inputMode="decimal"
@@ -1317,7 +1402,7 @@ export default function Console() {
                 </div>
                 <div className="form-grid">
                   <label>
-                    Due date
+                    {tr("Due date")}
                     <input
                       name="due"
                       type="date"
@@ -1326,25 +1411,25 @@ export default function Console() {
                     />
                   </label>
                   <label>
-                    Priority
+                    {tr("Priority")}
                     <select
                       name="priority"
                       defaultValue={edited?.priority || "normal"}
                     >
-                      <option value="normal">Normal</option>
-                      <option value="essential">Essential</option>
+                      <option value="normal">{tr("Normal")}</option>
+                      <option value="essential">{tr("Essential")}</option>
                     </select>
                   </label>
                 </div>
                 <label>
-                  Repeat commitment
+                  {tr("Repeat commitment")}
                   <select
                     name="recurrence"
                     defaultValue={edited?.recurrence || "once"}
                   >
-                    <option value="once">One-time / custom date</option>
-                    <option value="weekly">Weekly</option>
-                    <option value="monthly">Monthly</option>
+                    <option value="once">{tr("One-time / custom date")}</option>
+                    <option value="weekly">{tr("Weekly")}</option>
+                    <option value="monthly">{tr("Monthly")}</option>
                   </select>
                 </label>
                 <p className="helper">
@@ -1357,15 +1442,20 @@ export default function Console() {
                   wallet. Nimiq supports zero-fee payments when the network
                   permits. Adding a payment does not send funds.
                 </p>
+                {formError && (
+                  <p className="form-message mobile-form-error" role="alert">
+                    {formError}
+                  </p>
+                )}
                 <button className="button dark full" type="submit">
-                  {editing ? "Save payment" : "Add to my plan"}{" "}
+                  {editing ? tr("Save payment") : tr("Add to my plan")}{" "}
                   <Plus size={17} />
                 </button>
               </form>
             ) : (
               <form onSubmit={settings}>
                 <label>
-                  Reserve target in NIM
+                  {tr("Reserve target in NIM")}
                   <input
                     name="reserve"
                     required
@@ -1390,7 +1480,7 @@ export default function Console() {
                   in your wallet.
                 </p>
                 <button className="button dark full">
-                  Save preferences <Check size={17} />
+                  {tr("Save preferences")} <Check size={17} />
                 </button>
                 {!demo && (
                   <label>
@@ -1416,7 +1506,7 @@ export default function Console() {
                     }
                   >
                     <Download size={16} />
-                    Export backup
+                    {tr("Export backup")}
                   </button>
                   {!demo && (
                     <label className="text-link">
@@ -1510,7 +1600,7 @@ export default function Console() {
             )}
             <div className="impact-lines">
               <div>
-                <span>Current account balance</span>
+                <span>{tr("Current account balance")}</span>
                 <b>
                   {balance === null ? "Unavailable" : nim(balance) + " NIM"}
                 </b>
@@ -1576,6 +1666,34 @@ export default function Console() {
                     signer.
                   </label>
                 )}
+                <p className="payment-readiness" role="status">
+                  {demo
+                    ? "Example mode does not send funds."
+                    : busy
+                      ? "A wallet request is in progress. Return to Quorail after approving or cancelling. Do not submit again while its result is unknown."
+                      : balance === null
+                        ? "Payment paused: refresh your wallet balance first."
+                        : storageError
+                          ? "Payment paused: local storage needs recovery."
+                          : unresolved
+                            ? "Payment paused: resolve the earlier attempt in Activity first."
+                            : reserveInvalid
+                              ? "Payment paused: enter a valid reserve target."
+                              : impact.shortfall > 0
+                                ? "Payment paused: this plan crosses your reserve target. Review the commitments or reserve."
+                                : !ack
+                                  ? "Before paying, tick the account confirmation above."
+                                  : "Ready for your approval in Nimiq Pay. Nothing is sent until you approve."}
+                </p>
+                {balance === null && !demo && (
+                  <button
+                    className="button outline"
+                    disabled={busy}
+                    onClick={refresh}
+                  >
+                    {tr("Retry balance")}
+                  </button>
+                )}
                 <button
                   className="button dark full"
                   onClick={send}
@@ -1594,7 +1712,7 @@ export default function Console() {
                     ? "Example only. No funds move."
                     : busy
                       ? "Waiting for wallet…"
-                      : "Pay with Nimiq Pay"}
+                      : tr("Pay with Nimiq Pay")}
                   <ArrowUpRight size={17} />
                 </button>
                 <button
@@ -1606,7 +1724,7 @@ export default function Console() {
                     setModal("add");
                   }}
                 >
-                  Edit payment details
+                  {tr("Edit payment details")}
                 </button>
                 <button
                   className="text-link delete-link"

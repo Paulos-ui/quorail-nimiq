@@ -17,13 +17,8 @@ export async function connectWallet() {
     );
   if (typeof provider.getBalance !== "function")
     throw new Error("Update Nimiq Pay to enable balance access.");
-  provider.disconnect();
   const accounts = await provider.listAccounts();
   if (!accounts.length) throw new Error("No Nimiq accounts were shared.");
-  if (!(await provider.isConsensusEstablished()))
-    throw new Error(
-      "Your wallet is syncing. Try again when Nimiq Pay is connected.",
-    );
   return { provider, accounts, network };
 }
 export function checkNetwork(network: Network) {

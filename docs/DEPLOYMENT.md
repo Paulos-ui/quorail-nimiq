@@ -37,7 +37,7 @@ Boards expire after 30 days. Creation is limited globally and by client. Anyone 
 
 Install or update Nimiq Pay. Open your deployed app within its Mini Apps browser using its custom URL entry if available. Connect there. Chrome and installed standalone Quorail do not inject the native wallet provider.
 
-The app's open-wallet link uses `https://nimpay.app/miniapps/open/YOUR_DOMAIN` without a path. If the directory says the app is not listed, use the wallet's custom Mini App URL flow rather than assuming the directory entry exists. Registration in a public directory is separate from deployment.
+V4.2 replaces the directory deep link with a setup dialog. Users can scan an official store QR, tap a store link on the same phone, or copy Quorail's URL into Nimiq Pay's Mini Apps. Browser installation detection is not reliable; only native provider presence is detected.
 
 Shared links include their secret after `#`. Preserve the full link when opening it inside the wallet. Never post a private team invite publicly.
 

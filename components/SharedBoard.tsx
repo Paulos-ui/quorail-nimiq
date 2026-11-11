@@ -1,9 +1,11 @@
 "use client";
+import { useLanguage } from "./Preferences";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import ReserveIndicator from "./ReserveIndicator";
 import ConnectionNotice from "./ConnectionNotice";
 import { sharedCandidate, nextPendingReceipt } from "@/lib/release-tools";
+import { readWalletBalance } from "@/lib/balance";
 import Brand from "./Brand";
 import { type Board, type BoardRow, boardMemo } from "@/lib/boards";
 import {
@@ -17,6 +19,7 @@ import {
 import { nim, normalAddress, forecast, type Payment } from "@/lib/finance";
 import { loadPlan, savePlan, storageKey } from "@/lib/storage";
 export default function SharedBoard() {
+  const { tr } = useLanguage();
   const [secret, setSecret] = useState(""),
     [board, setBoard] = useState<Board | null>(null),
     [error, setError] = useState(""),
@@ -86,6 +89,10 @@ export default function SharedBoard() {
     return () => clearInterval(timer);
   }, [secret]);
   async function connect() {
+    if (!(window as Window & { nimiq?: unknown }).nimiq) {
+      window.dispatchEvent(new Event("quorail-wallet-setup"));
+      return;
+    }
     if (busyRef.current) return;
     busyRef.current = true;
     setBusy(true);
@@ -119,7 +126,7 @@ export default function SharedBoard() {
       checkNetwork(board.network);
       const plan = loadPlan(storageKey(board.network, address)),
         candidate = sharedCandidate(plan, board, row);
-      const balance = await host.current.getBalance(address);
+      const balance = await readWalletBalance(host.current, address);
       if (!Number.isSafeInteger(balance) || balance < 0)
         throw new Error("Wallet balance unavailable.");
       setPreview({
@@ -156,8 +163,6 @@ export default function SharedBoard() {
         async (lock) => {
           if (!lock) throw new Error("Another payment is being processed.");
           checkNetwork(board.network);
-          if (!(await provider.isConsensusEstablished()))
-            throw new Error("Wallet is syncing.");
           const latest = loadPlan(key);
           if (
             latest.payments.some((p) =>
@@ -172,7 +177,7 @@ export default function SharedBoard() {
           const payment = sharedCandidate(latest, board, row);
           if (normalAddress(address) === normalAddress(row.recipient))
             throw new Error("Choose an account other than the recipient.");
-          const balance = await provider.getBalance(address);
+          const balance = await readWalletBalance(provider, address);
           if (
             !Number.isSafeInteger(balance) ||
             balance < 0 ||
@@ -353,12 +358,12 @@ export default function SharedBoard() {
             </p>
             {!address ? (
               <button className="button dark" disabled={busy} onClick={connect}>
-                Connect Nimiq Pay
+                {tr("Connect Nimiq Pay")}
               </button>
             ) : (
               <>
                 <label>
-                  Planning account
+                  {tr("Planning account")}
                   <select
                     disabled={busy}
                     value={address}

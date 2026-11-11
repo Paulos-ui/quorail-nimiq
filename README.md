@@ -4,7 +4,26 @@
 
 Quorail helps independent workers and small teams plan NIM commitments, understand the remaining buffer, approve payments in Nimiq Pay and keep matching receipts. Built by Jayking: [GitHub](https://github.com/paulos-ui) · [X](https://x.com/__official__1).
 
-## Version 4.0
+## Version 4.2: language, appearance and wallet setup
+
+Includes the complete V4.1 release and its mobile balance/payment fixes.
+
+- English, Spanish, German and French for primary navigation, payment form labels, reserve status headings and wallet installation. Longer explanations, errors, docs and some content remain English; the language selector explicitly states this scope. This is not a complete localization.
+- Light, dark and system appearance with saved preferences and keyboard-accessible controls.
+- Outside Nimiq Pay, Connect opens a setup dialog with locally bundled QR codes and direct official Android/iPhone store links. Nothing is sent to a QR generation service.
+- Already-installed users can copy the Quorail URL and open it from Nimiq Pay's Mini Apps. Shared board invites preserve their fragment when copied. Store QR codes contain only store URLs, never account data or invite secrets.
+- The website cannot reliably detect a native installation. It detects only whether the wallet provider is currently injected. A browser with the app installed still gets setup instructions. Inside Nimiq Pay, Connect uses the original native wallet flow.
+
+## Previous Version 4.1 mobile payment fixes
+
+- Network consensus is checked before displaying any native balance. Lookup errors and timeouts show unavailable rather than zero. A successful zero response remains zero.
+- Retry balance, selected account/network and last successful check are visible. Quorail shows one account, not the wallet's combined holdings.
+- Validation errors appear immediately above the add-payment button on mobile. Ambiguous fees such as 05 are rejected with explicit examples instead of silently interpreted.
+- Payment previews explain disabled states, including missing acknowledgement, unavailable balance, reserve breach and unresolved prior payment.
+- Read-only calls have bounded waits. Transaction submission is never automatically retried or unlocked on a timeout.
+- Nimiq Pay server outages still require the wallet connection to recover. No live funds were sent during development.
+
+## Previous Version 4.0
 
 This full release includes all V3.2 and V3.2.1 changes, including Vercel Redis credential aliases and clearer AI setup errors.
 

@@ -1,4 +1,5 @@
 "use client";
+import { useLanguage } from "./Preferences";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
@@ -13,6 +14,7 @@ import Brand from "./Brand";
 import FloatingAssistant from "./FloatingAssistant";
 import InstallApp from "./InstallApp";
 export default function Landing() {
+  const { tr } = useLanguage();
   const [selected, setSelected] = useState(false);
   useEffect(() => {
     const io = new IntersectionObserver(
@@ -34,12 +36,12 @@ export default function Landing() {
       <header className="site-header">
         <Brand />
         <nav>
-          <a href="#how">The approach</a>
-          <Link href="/play/">Play room</Link>
-          <Link href="/docs/">Field guide</Link>
+          <a href="#how">{tr("The approach")}</a>
+          <Link href="/play/">{tr("Play room")}</Link>
+          <Link href="/docs/">{tr("Field guide")}</Link>
         </nav>
         <Link href="/console/" className="button small dark">
-          Open Quorail <ArrowUpRight size={16} />
+          {tr("Open Quorail")} <ArrowUpRight size={16} />
         </Link>
       </header>
       <main>

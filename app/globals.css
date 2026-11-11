@@ -3376,3 +3376,278 @@ select:focus-visible {
     transition-duration: 0.01ms !important;
   }
 }
+
+.balance-health {
+  padding: 18px;
+  border: 1px solid #c9c4b4;
+  border-radius: 16px;
+  margin: 16px 0;
+  background: #fff9e9;
+  overflow-wrap: anywhere;
+}
+.balance-health p,
+.payment-readiness {
+  font-size: 14px;
+  line-height: 1.6;
+}
+.mobile-form-error {
+  border: 2px solid #a33c30;
+  background: #fff0e9;
+  color: #70251b;
+  padding: 14px;
+  border-radius: 12px;
+}
+.payment-readiness {
+  padding: 12px;
+  background: #eee8da;
+  border-radius: 12px;
+}
+.modal input[name="recipient"] {
+  font-family: monospace;
+  font-size: 16px;
+}
+/* V4.2 preferences and wallet installation */
+.preferences-bar {
+  position: relative;
+  z-index: 60;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 14px;
+  padding: 8px 5%;
+  background: var(--paper);
+  border-bottom: 1px solid var(--line);
+  font-size: 12px;
+  min-height: 44px;
+}
+.preferences-bar > span {
+  letter-spacing: 0.16em;
+  margin-right: auto;
+}
+.preferences-bar select {
+  background: var(--white);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  padding: 5px;
+}
+.language-scope {
+  position: relative;
+  z-index: 60;
+  background: var(--paper);
+  color: var(--muted);
+  font-size: 12px;
+  padding: 6px 5%;
+  text-align: right;
+}
+.wallet-setup-backdrop {
+  z-index: 500;
+}
+.wallet-setup h2 {
+  margin: 0;
+}
+.wallet-setup p {
+  margin: 12px 0;
+}
+.wallet-setup h3 {
+  margin-top: 22px;
+}
+.wallet-download-qr {
+  display: block;
+  background: white;
+  border: 10px solid white;
+  margin: 18px auto;
+  max-width: 100%;
+  height: auto;
+}
+.store-tabs {
+  display: flex;
+  gap: 8px;
+  margin-top: 18px;
+}
+.store-tabs button {
+  flex: 1;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--white);
+  color: var(--ink);
+}
+.store-tabs button[aria-pressed="true"] {
+  background: #6845b7;
+  color: white;
+}
+.wallet-setup .modal-head button {
+  background: transparent;
+  padding: 10px;
+  color: var(--ink);
+}
+html[data-theme="dark"] {
+  color-scheme: dark;
+  --paper: #15141d;
+  --white: #201f2a;
+  --cream: #15141d;
+  --ink: #f4f0e7;
+  --muted: #b9b5c4;
+  --line: #45424f;
+  --sage: #b29ae9;
+  --red: #ffb49e;
+}
+html[data-theme="dark"] body {
+  background-image: radial-gradient(#ffffff0a 0.8px, transparent 0.8px);
+}
+html[data-theme="dark"]
+  :is(
+    .sidebar,
+    .site-header,
+    .topbar,
+    .plan-signal,
+    .connect-panel,
+    .payment-list,
+    .activity-list,
+    .game-card,
+    .play-note,
+    .backup-card,
+    .risk-review,
+    .quick-path,
+    .wallet-comparison article,
+    .ai-panel,
+    .floating-ai-panel,
+    .install-help,
+    .balance-health,
+    .modal,
+    .doc-section,
+    .share-plan,
+    .shared-rows article
+  ) {
+  background: #201f2a;
+  color: #f4f0e7;
+  border-color: #45424f;
+}
+html[data-theme="dark"]
+  :is(
+    .hero-instrument,
+    .balance-center,
+    .connect-art,
+    .available-card,
+    .timing-comparison,
+    .payment-readiness,
+    .budget-slip,
+    .float-label,
+    .payment-icon
+  ) {
+  background: #2c2938;
+  color: #f4f0e7;
+}
+html[data-theme="dark"]
+  :is(input, select, textarea, .button.outline, .play-tabs button) {
+  background: #191823;
+  color: #f4f0e7;
+  border-color: #625d70;
+}
+html[data-theme="dark"] :is(.button.dark, .button.primary) {
+  background: #8362d3;
+  color: white;
+  border-color: #b49ce9;
+  box-shadow: 3px 4px 0 #09080d;
+}
+html[data-theme="dark"]
+  :is(.form-message, .notice, .install-help, .connection-notice) {
+  background: #302d38;
+  color: #f1e8d4;
+}
+html[data-theme="dark"]
+  :is(.reserve-indicator.covered, .payment-status.confirmed, .impact-result) {
+  background: #17382e;
+  color: #c5f5d8;
+  border-color: #618d74;
+}
+html[data-theme="dark"]
+  :is(.reserve-indicator.tight, .notice.warning, .demo-pill) {
+  background: #3c321c;
+  color: #ffe3a6;
+  border-color: #9c8148;
+}
+html[data-theme="dark"]
+  :is(
+    .reserve-indicator.risky,
+    .mobile-form-error,
+    .impact-result.negative,
+    .payment-status.failed,
+    .payment-status.mismatch,
+    .payment-status.uncertain
+  ) {
+  background: #43272b;
+  color: #ffcec1;
+  border-color: #b56c65;
+}
+html[data-theme="dark"] .reserve-indicator.unknown {
+  background: #302d3c;
+  color: #ded7ee;
+}
+html[data-theme="dark"]
+  :is(
+    .payment-row:hover,
+    .sidebar nav button.active,
+    .play-tabs button.active
+  ) {
+  background: #3d305a;
+  color: #f2e9ff;
+}
+html[data-theme="dark"] .balance-card {
+  background: #242036;
+  color: #fff;
+}
+html[data-theme="dark"] .chess-board button {
+  color: #191728;
+}
+html[data-theme="dark"] :is(.helper, .muted, .eyebrow) {
+  color: #c2b8cf;
+}
+html[data-theme="dark"] .wallet-download-qr {
+  background: white;
+}
+@media (max-width: 600px) {
+  .preferences-bar {
+    gap: 8px;
+    padding: 8px 12px;
+  }
+  .preferences-bar > span {
+    display: none;
+  }
+  .wallet-setup {
+    padding: 20px;
+  }
+  .language-scope {
+    text-align: left;
+  }
+}
+html[data-theme="dark"]
+  :is(
+    .scenario-switch,
+    .method-grid article,
+    .promo-board span,
+    .floating-ai-window,
+    .forecast-panel,
+    .share-preview,
+    .prompt-chips button,
+    .ai-answer
+  ) {
+  background: #272432;
+  color: #f4f0e7;
+  border-color: #625d70;
+  box-shadow: none;
+}
+html[data-theme="dark"] :is(.editorial-divider, .sidebar-note, .hero h1 em) {
+  color: #201e30;
+}
+html[data-theme="dark"]
+  :is(.reserve-indicator small, .game-card p, .play-note p) {
+  color: #c9c3d4;
+}
+html[data-theme="dark"] .method-grid article:nth-child(2) {
+  background: #33274a;
+}
+html[data-theme="dark"] .method-grid article:nth-child(3) {
+  background: #3c321c;
+}
