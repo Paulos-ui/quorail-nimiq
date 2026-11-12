@@ -1,7 +1,71 @@
 "use client";
 import { createContext, useContext, useEffect, useState } from "react";
+import { Sun, Moon, Globe2 } from "lucide-react";
 import { translate, type Language } from "@/lib/translations";
-const Context = createContext({ tr: (text: string) => text });
+const Context = createContext({
+  tr: (text: string) => text,
+  language: "en" as Language,
+  theme: "system",
+  resolved: "light",
+  setLanguage: (_: Language) => {},
+  setTheme: (_: string) => {},
+});
+export function PreferenceControls() {
+  const { tr, language, theme, resolved, setLanguage, setTheme } =
+    useLanguage();
+  return (
+    <div className="preference-controls">
+      <button
+        className="icon-button theme-toggle"
+        aria-label={tr(resolved === "dark" ? "Light" : "Dark")}
+        title={tr(resolved === "dark" ? "Light" : "Dark")}
+        onClick={() =>
+          setTheme(
+            document.documentElement.dataset.resolved === "dark"
+              ? "light"
+              : "dark",
+          )
+        }
+      >
+        {resolved === "dark" ? <Moon size={19} /> : <Sun size={19} />}
+      </button>
+      <details
+        className="language-menu"
+        onKeyDown={(e) => {
+          if (e.key === "Escape") e.currentTarget.removeAttribute("open");
+        }}
+      >
+        <summary aria-label={tr("Language")} title={tr("Language")}>
+          <Globe2 size={19} />
+        </summary>
+        <div className="language-options">
+          <label>
+            {tr("Language")}
+            <select
+              value={language}
+              onChange={(e) => setLanguage(e.target.value as Language)}
+            >
+              <option value="en">English</option>
+              <option value="es">Español</option>
+              <option value="de">Deutsch</option>
+              <option value="fr">Français</option>
+            </select>
+          </label>
+          <label>
+            {tr("Appearance")}
+            <select value={theme} onChange={(e) => setTheme(e.target.value)}>
+              {["system", "light", "dark"].map((t) => (
+                <option key={t} value={t}>
+                  {tr(t[0].toUpperCase() + t.slice(1))}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
+      </details>
+    </div>
+  );
+}
 export const useLanguage = () => useContext(Context);
 export default function Preferences({
   children,
@@ -9,7 +73,8 @@ export default function Preferences({
   children: React.ReactNode;
 }) {
   const [language, setLanguage] = useState<Language>("en"),
-    [theme, setTheme] = useState("system");
+    [theme, setTheme] = useState("system"),
+    [resolved, setResolved] = useState("light");
   useEffect(() => {
     try {
       const l = localStorage.getItem("quorail-language");
@@ -27,8 +92,10 @@ export default function Preferences({
   useEffect(() => {
     const query = matchMedia("(prefers-color-scheme: dark)");
     const apply = () => {
-      document.documentElement.dataset.theme =
+      const value =
         theme === "system" ? (query.matches ? "dark" : "light") : theme;
+      document.documentElement.dataset.theme = value;
+      setResolved(value);
     };
     apply();
     query.addEventListener("change", apply);
@@ -39,46 +106,9 @@ export default function Preferences({
   }, [theme]);
   const tr = (text: string) => translate(language, text);
   return (
-    <Context.Provider value={{ tr }}>
-      <div className="preferences-bar">
-        <span>QUORAIL</span>
-        <label>
-          🌐{" "}
-          <select
-            aria-label="Language"
-            value={language}
-            onChange={(e) => setLanguage(e.target.value as Language)}
-          >
-            <option value="en">English</option>
-            <option value="es">Español</option>
-            <option value="de">Deutsch</option>
-            <option value="fr">Français</option>
-          </select>
-        </label>
-        <label>
-          ◐{" "}
-          <select
-            aria-label="Appearance"
-            value={theme}
-            onChange={(e) => setTheme(e.target.value)}
-          >
-            {["system", "light", "dark"].map((t) => (
-              <option key={t} value={t}>
-                {tr(t[0].toUpperCase() + t.slice(1))}
-              </option>
-            ))}
-          </select>
-        </label>
-      </div>
-      {language !== "en" && (
-        <p className="language-scope">
-          {language === "es"
-            ? "Interfaz principal traducida. La guía, los mensajes técnicos y parte del contenido siguen en inglés."
-            : language === "de"
-              ? "Die Hauptbedienung ist übersetzt. Anleitung, technische Meldungen und einige Inhalte bleiben auf Englisch."
-              : "L’interface principale est traduite. Le guide, les messages techniques et certains contenus restent en anglais."}
-        </p>
-      )}
+    <Context.Provider
+      value={{ tr, language, theme, resolved, setLanguage, setTheme }}
+    >
       {children}
     </Context.Provider>
   );

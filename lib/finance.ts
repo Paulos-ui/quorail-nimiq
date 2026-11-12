@@ -20,6 +20,7 @@ export type Payment = {
   hash?: string;
   created: string;
   sender?: string;
+  expectedSender?: string;
   confirmedAt?: string;
   note?: string;
   recurrence?: "weekly" | "monthly";
@@ -159,6 +160,7 @@ export function settlePayment(
         status: "planned",
         hash: undefined,
         sender: undefined,
+        expectedSender: undefined,
         confirmedAt: undefined,
         created: new Date().toISOString(),
       });
@@ -237,6 +239,9 @@ export function validatePlan(input: unknown): Plan {
         "failed",
         "mismatch",
       ].includes(x.status) ||
+      (x.expectedSender !== undefined &&
+        (typeof x.expectedSender !== "string" ||
+          !validAddress(x.expectedSender))) ||
       (x.hash !== undefined && !/^[a-f0-9]{64}$/i.test(x.hash)) ||
       (x.recurrence !== undefined &&
         !["weekly", "monthly"].includes(x.recurrence)) ||

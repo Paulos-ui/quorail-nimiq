@@ -1,4 +1,6 @@
 "use client";
+import Localized from "@/components/Localized";
+
 import { useLanguage } from "./Preferences";
 import { useEffect, useState } from "react";
 import Link from "next/link";
@@ -30,8 +32,12 @@ export default function Landing() {
   return (
     <>
       <div className="welcome-strip">
-        A little clarity before your next payment.{" "}
-        <Link href="/console/?demo=1">Try the 60-second example ↗</Link>
+        {" "}
+        <Localized text={"A little clarity before your next payment."} />
+        <Localized text={" "} />
+        <Link href="/console/?demo=1">
+          <Localized text={"Try the 60-second example ↗"} />
+        </Link>
       </div>
       <header className="site-header">
         <Brand />
@@ -48,36 +54,52 @@ export default function Landing() {
         <section className="hero">
           <div className="hero-copy">
             <div className="eyebrow">
-              <span className="tiny-square" /> A MORE CONSIDERED WAY TO PAY
+              <span className="tiny-square" />{" "}
+              <Localized text={"A MORE CONSIDERED WAY TO PAY"} />{" "}
             </div>
             <h1>
-              Make your
-              <br />
-              next move
-              <br />
-              <em>make sense.</em>
+              {" "}
+              <Localized text={"Make your"} /> <br />{" "}
+              <Localized text={"next move"} /> <br />
+              <em>
+                <Localized text={"make sense."} />
+              </em>
             </h1>
             <p>
-              Rent. Your team. The things you are building.
-              <br />
-              See what a payment changes before you send it.
+              {" "}
+              <Localized
+                text={"Rent. Your team. The things you are building."}
+              />{" "}
+              <br />{" "}
+              <Localized
+                text={"See what a payment changes before you send it."}
+              />{" "}
             </p>
             <div className="hero-actions">
               <Link className="button dark" href="/console/">
-                Plan your next payment <ArrowUpRight size={18} />
+                {" "}
+                <Localized text={"Plan your next payment"} />{" "}
+                <ArrowUpRight size={18} />
               </Link>
               <Link className="text-link" href="/console/?demo=1">
-                Explore an example <ArrowRight size={16} />
+                {" "}
+                <Localized text={"Explore an example"} />{" "}
+                <ArrowRight size={16} />
               </Link>
             </div>
             <div className="hero-trust">
-              <ShieldCheck size={16} /> Your wallet. Your approval. Always.
+              <ShieldCheck size={16} />{" "}
+              <Localized text={"Your wallet. Your approval. Always."} />{" "}
             </div>
           </div>
           <div className="hero-instrument">
             <div className="instrument-top">
-              <span>THE PAYMENT PERSPECTIVE</span>
-              <span className="small-tag">ILLUSTRATIVE PLAN</span>
+              <span>
+                <Localized text={"THE PAYMENT PERSPECTIVE"} />
+              </span>
+              <span className="small-tag">
+                <Localized text={"ILLUSTRATIVE PLAN"} />
+              </span>
             </div>
             <div className="orbit-stage">
               <svg className="orbit" viewBox="0 0 540 440" aria-hidden="true">
@@ -103,28 +125,42 @@ export default function Landing() {
                 <circle cx="484" cy="196" r="5" className="orbit-dot" />
               </svg>
               <div className="balance-center">
-                <span>WALLET BALANCE</span>
+                <span>
+                  <Localized text={"WALLET BALANCE"} />
+                </span>
                 <strong>
-                  {selected ? "750" : "1,000"}
-                  <small>NIM</small>
+                  <Localized text={selected ? "750" : "1,000"} />
+                  <small>
+                    <Localized text={"NIM"} />
+                  </small>
                 </strong>
                 <span>
-                  {selected
-                    ? "AFTER EQUIPMENT PAYMENT"
-                    : "BEFORE YOUR NEXT MOVE"}
+                  <Localized
+                    text={
+                      selected
+                        ? "AFTER EQUIPMENT PAYMENT"
+                        : "BEFORE YOUR NEXT MOVE"
+                    }
+                  />
                 </span>
               </div>
               <div className="float-label rent">
-                <i />
-                Studio rent <b>420 NIM</b>
+                <i /> <Localized text={"Studio rent"} />{" "}
+                <b>
+                  <Localized text={"420 NIM"} />
+                </b>
               </div>
               <div className="float-label reserve">
-                <i />
-                Reserve target <b>200 NIM</b>
+                <i /> <Localized text={"Reserve target"} />{" "}
+                <b>
+                  <Localized text={"200 NIM"} />
+                </b>
               </div>
               <div className="float-label collaborator">
-                <i />
-                Collaborator <b>230 NIM</b>
+                <i /> <Localized text={"Collaborator"} />{" "}
+                <b>
+                  <Localized text={"230 NIM"} />
+                </b>
               </div>
             </div>
             <button
@@ -136,14 +172,22 @@ export default function Landing() {
               </span>
               <span>
                 <b>
-                  {selected
-                    ? "Equipment payment preview"
-                    : "What if I pay for equipment?"}
+                  <Localized
+                    text={
+                      selected
+                        ? "Equipment payment preview"
+                        : "What if I pay for equipment?"
+                    }
+                  />
                 </b>
                 <small>
-                  {selected
-                    ? "100 NIM below your reserve target"
-                    : "Preview a 250 NIM payment"}
+                  <Localized
+                    text={
+                      selected
+                        ? "100 NIM below your reserve target"
+                        : "Preview a 250 NIM payment"
+                    }
+                  />
                 </small>
               </span>
               <span className="switch-track">
@@ -152,82 +196,131 @@ export default function Landing() {
             </button>
             <div className="instrument-bottom">
               <span className={selected ? "danger-text" : ""}>
-                {selected
-                  ? "A little context changes the decision."
-                  : "Every commitment has its place."}
+                <Localized
+                  text={
+                    selected
+                      ? "A little context changes the decision."
+                      : "Every commitment has its place."
+                  }
+                />
               </span>
               <span>01 / 03</span>
             </div>
           </div>
         </section>
         <div className="editorial-divider">
-          <span>BUILT FOR INDEPENDENT PEOPLE & SMALL TEAMS</span>
+          <span>
+            <Localized text={"BUILT FOR INDEPENDENT PEOPLE & SMALL TEAMS"} />
+          </span>
           <a href="#how">
-            A balance is only the beginning <ChevronDown size={14} />
+            {" "}
+            <Localized text={"A balance is only the beginning"} />{" "}
+            <ChevronDown size={14} />
           </a>
         </div>
         <section className="statement reveal" id="how">
-          <span className="eyebrow">01 / THE THINKING</span>
+          <span className="eyebrow">
+            <Localized text={"01 / THE THINKING"} />
+          </span>
           <h2>
-            Enough to send.
-            <br />
-            <em>But enough for what comes next?</em>
+            {" "}
+            <Localized text={"Enough to send."} /> <br />
+            <em>
+              <Localized text={"But enough for what comes next?"} />
+            </em>
           </h2>
           <p>
-            A wallet shows what you have. Quorail adds what you have promised.
-            Your rent, your collaborators, your next deadline. Together, they
-            tell a more useful story.
+            {" "}
+            <Localized
+              text={
+                "A wallet shows what you have. Quorail adds what you have promised. Your rent, your collaborators, your next deadline. Together, they tell a more useful story."
+              }
+            />{" "}
           </p>
         </section>
         <section className="method-grid">
           <article className="reveal">
             <span className="step-number">01</span>
             <Layers3 />
-            <h3>Give your money context.</h3>
+            <h3>
+              <Localized text={"Give your money context."} />
+            </h3>
             <p>
-              Record the payments ahead. Set a reserve target and choose how far
-              to look.
+              {" "}
+              <Localized
+                text={
+                  "Record the payments ahead. Set a reserve target and choose how far to look."
+                }
+              />{" "}
             </p>
-            <span className="step-footer">A PLAN THAT STARTS WITH YOU</span>
+            <span className="step-footer">
+              <Localized text={"A PLAN THAT STARTS WITH YOU"} />
+            </span>
           </article>
           <article className="reveal">
             <span className="step-number">02</span>
             <MoveUpRight />
-            <h3>See the after, before.</h3>
+            <h3>
+              <Localized text={"See the after, before."} />
+            </h3>
             <p>
-              Preview the balance, commitments and remaining buffer before
-              approving a payment.
+              {" "}
+              <Localized
+                text={
+                  "Preview the balance, commitments and remaining buffer before approving a payment."
+                }
+              />{" "}
             </p>
-            <span className="step-footer">EVERY DECISION IN PERSPECTIVE</span>
+            <span className="step-footer">
+              <Localized text={"EVERY DECISION IN PERSPECTIVE"} />
+            </span>
           </article>
           <article className="reveal">
             <span className="step-number">03</span>
             <ShieldCheck />
-            <h3>Pay with your own say.</h3>
+            <h3>
+              <Localized text={"Pay with your own say."} />
+            </h3>
             <p>
-              Approve in Nimiq Pay. Follow the transaction and keep the receipt
-              alongside your plan.
+              {" "}
+              <Localized
+                text={
+                  "Approve in Nimiq Pay. Follow the transaction and keep the receipt alongside your plan."
+                }
+              />{" "}
             </p>
-            <span className="step-footer">NIM PAYMENTS. NATIVE APPROVAL.</span>
+            <span className="step-footer">
+              <Localized text={"NIM PAYMENTS. NATIVE APPROVAL."} />
+            </span>
           </article>
         </section>
         <section className="play-promo reveal">
           <div>
-            <span className="eyebrow">A CLEARER HEAD. A BETTER NEXT MOVE.</span>
+            <span className="eyebrow">
+              <Localized text={"A CLEARER HEAD. A BETTER NEXT MOVE."} />
+            </span>
             <h2>
-              Pause. Play.
-              <br />
-              <em>Think ahead.</em>
+              {" "}
+              <Localized text={"Pause. Play."} /> <br />
+              <em>
+                <Localized text={"Think ahead."} />
+              </em>
             </h2>
             <p>
-              A pocket-sized play room for the space between decisions.
-              Challenge the bot, share a chessboard, or put your payment
-              instincts to work.
+              {" "}
+              <Localized
+                text={
+                  "A pocket-sized play room for the space between decisions. Challenge the bot, share a chessboard, or put your payment instincts to work."
+                }
+              />{" "}
             </p>
             <Link href="/play/" className="button dark">
-              Step into the Play room ↗
+              {" "}
+              <Localized text={"Step into the Play room ↗"} />{" "}
             </Link>
-            <small>Free practice. No stakes or NIM rewards.</small>
+            <small>
+              <Localized text={"Free practice. No stakes or NIM rewards."} />
+            </small>
           </div>
           <div className="promo-board" aria-hidden="true">
             <span>×</span>
@@ -242,107 +335,177 @@ export default function Landing() {
           </div>
         </section>
         <section className="install-section reveal">
-          <span className="eyebrow">YOUR EVERYDAY COMPANION</span>
-          <h2>A place on your home screen.</h2>
+          <span className="eyebrow">
+            <Localized text={"YOUR EVERYDAY COMPANION"} />
+          </span>
+          <h2>
+            <Localized text={"A place on your home screen."} />
+          </h2>
           <p>
-            Open your planner and games from your phone or desktop. Approve
-            payments securely inside Nimiq Pay.
+            {" "}
+            <Localized
+              text={
+                "Open your planner and games from your phone or desktop. Approve payments securely inside Nimiq Pay."
+              }
+            />{" "}
           </p>
           <InstallApp />
         </section>
         <section className="closing reveal">
           <div>
-            <span className="eyebrow">A LITTLE CLARITY GOES A LONG WAY</span>
+            <span className="eyebrow">
+              <Localized text={"A LITTLE CLARITY GOES A LONG WAY"} />
+            </span>
             <h2>
-              Make room
-              <br />
-              for <em>what matters.</em>
+              {" "}
+              <Localized text={"Make room"} /> <br /> <Localized text={"for"} />{" "}
+              <em>
+                <Localized text={"what matters."} />
+              </em>
             </h2>
           </div>
           <div>
             <p>
-              Built around real commitments.
-              <br />
-              Designed for a moment of clarity.
+              {" "}
+              <Localized text={"Built around real commitments."} /> <br />{" "}
+              <Localized text={"Designed for a moment of clarity."} />{" "}
             </p>
             <Link className="button gold" href="/console/">
-              Find your perspective <ArrowUpRight size={18} />
+              {" "}
+              <Localized text={"Find your perspective"} />{" "}
+              <ArrowUpRight size={18} />
             </Link>
             <small>
-              Plans stay on this device. Reserve targets do not lock funds.
+              {" "}
+              <Localized
+                text={
+                  "Plans stay on this device. Reserve targets do not lock funds."
+                }
+              />{" "}
             </small>
           </div>
         </section>
         <section className="judge-path">
-          <span className="eyebrow">FROM BALANCE TO A DECISION</span>
+          <span className="eyebrow">
+            <Localized text={"FROM BALANCE TO A DECISION"} />
+          </span>
           <h2>
-            Your wallet shows what you have.
-            <br />
-            <em>Quorail shows what is already spoken for.</em>
+            {" "}
+            <Localized text={"Your wallet shows what you have."} /> <br />
+            <em>
+              <Localized text={"Quorail shows what is already spoken for."} />
+            </em>
           </h2>
           <div className="wallet-comparison">
             <article>
-              <span>Wallet balance</span>
-              <strong>1,000 NIM</strong>
-              <p>The starting number.</p>
+              <span>
+                <Localized text={"Wallet balance"} />
+              </span>
+              <strong>
+                <Localized text={"1,000 NIM"} />
+              </strong>
+              <p>
+                <Localized text={"The starting number."} />
+              </p>
             </article>
             <article>
-              <span>Illustrative Quorail plan</span>
-              <strong>100 NIM buffer</strong>
-              <p>1,000 balance minus 700 commitments and a 200 reserve.</p>
+              <span>
+                <Localized text={"Illustrative Quorail plan"} />
+              </span>
+              <strong>
+                <Localized text={"100 NIM buffer"} />
+              </strong>
+              <p>
+                <Localized
+                  text={
+                    "1,000 balance minus 700 commitments and a 200 reserve."
+                  }
+                />
+              </p>
             </article>
           </div>
           <p>
-            Explore a realistic plan first, then connect inside Nimiq Pay for a
-            real payment.
+            {" "}
+            <Localized
+              text={
+                "Explore a realistic plan first, then connect inside Nimiq Pay for a real payment."
+              }
+            />{" "}
           </p>
           <div className="scenario-links">
             <Link
               className="button outline"
               href="/console/?demo=1&scenario=freelancer"
             >
-              Freelancer studio ↗
+              {" "}
+              <Localized text={"Freelancer studio ↗"} />{" "}
             </Link>
             <Link
               className="button outline"
               href="/console/?demo=1&scenario=team"
             >
-              Small team ↗
+              {" "}
+              <Localized text={"Small team ↗"} />{" "}
             </Link>
             <Link
               className="button outline"
               href="/console/?demo=1&scenario=personal"
             >
-              Rent + buffer ↗
+              {" "}
+              <Localized text={"Rent + buffer ↗"} />{" "}
             </Link>
           </div>
           <ol className="payment-walkthrough">
             <li>
-              <b>01 / Plan</b> Add an amount, recipient and due date.
+              <b>
+                <Localized text={"01 / Plan"} />
+              </b>{" "}
+              <Localized text={"Add an amount, recipient and due date."} />{" "}
             </li>
             <li>
-              <b>02 / Decide</b> Check commitments and the remaining buffer.
+              <b>
+                <Localized text={"02 / Decide"} />
+              </b>{" "}
+              <Localized
+                text={"Check commitments and the remaining buffer."}
+              />{" "}
             </li>
             <li>
-              <b>03 / Approve</b> Review and approve in your own Nimiq Pay
-              wallet.
+              <b>
+                <Localized text={"03 / Approve"} />
+              </b>{" "}
+              <Localized
+                text={"Review and approve in your own Nimiq Pay wallet."}
+              />{" "}
             </li>
             <li>
-              <b>04 / Record</b> Keep the hash and verify its matching receipt.
+              <b>
+                <Localized text={"04 / Record"} />
+              </b>{" "}
+              <Localized
+                text={"Keep the hash and verify its matching receipt."}
+              />{" "}
             </li>
           </ol>
           <p className="helper">
-            Example amounts only. Wallet approval and network confirmation times
-            vary.
+            {" "}
+            <Localized
+              text={
+                "Example amounts only. Wallet approval and network confirmation times vary."
+              }
+            />{" "}
           </p>
         </section>
       </main>
       <FloatingAssistant />
       <footer>
         <Brand />
-        <span>A payment is part of a bigger picture.</span>
+        <span>
+          <Localized text={"A payment is part of a bigger picture."} />
+        </span>
         <Link href="/docs/">
-          About & privacy <ArrowUpRight size={14} />
+          {" "}
+          <Localized text={"About & privacy"} /> <ArrowUpRight size={14} />
         </Link>
       </footer>
     </>

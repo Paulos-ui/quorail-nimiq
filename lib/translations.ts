@@ -1,3 +1,5 @@
+import { translatePattern } from "./translation-patterns";
+import extended from "./ui-translations.json";
 export const translations = {
   en: {
     Overview: "Overview",
@@ -226,5 +228,11 @@ export const translations = {
 } as const;
 export type Language = keyof typeof translations;
 export function translate(language: Language, text: string) {
-  return (translations[language] as Record<string, string>)[text] || text;
+  const key = text.replace(/\s+/g, " ").trim();
+  return (
+    (extended[language] as Record<string, string>)[key] ||
+    (translations[language] as Record<string, string>)[key] ||
+    translatePattern(language, key) ||
+    text
+  );
 }

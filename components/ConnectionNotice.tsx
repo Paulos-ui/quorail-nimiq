@@ -1,4 +1,6 @@
 "use client";
+import Localized from "@/components/Localized";
+
 import { useEffect, useState } from "react";
 export default function ConnectionNotice() {
   const [offline, setOffline] = useState(false);
@@ -14,8 +16,12 @@ export default function ConnectionNotice() {
   }, []);
   return offline ? (
     <div className="connection-notice" role="alert">
-      You are offline. Wallet balances and receipts may be stale. Reconnect
-      before sending or using AI. Your saved local plan remains on this device.
+      {" "}
+      <Localized
+        text={
+          "You are offline. Wallet balances and receipts may be stale. Reconnect before sending or using AI. Your saved local plan remains on this device."
+        }
+      />{" "}
     </div>
   ) : null;
 }

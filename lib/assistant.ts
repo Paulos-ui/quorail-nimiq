@@ -26,6 +26,7 @@ export function assistantContext(plan: Plan, balance: number): Context {
 }
 export function validateAssistant(input: unknown): {
   question: string;
+  language?: "en" | "es" | "de" | "fr";
   context?: Context;
 } {
   if (!input || typeof input !== "object") throw new Error("Invalid request.");
@@ -70,5 +71,15 @@ export function validateAssistant(input: unknown): {
       }),
     };
   }
-  return { question: o.question.trim(), context };
+  const language = o.language;
+  if (
+    language !== undefined &&
+    !["en", "es", "de", "fr"].includes(language as string)
+  )
+    throw new Error("Invalid language.");
+  return {
+    question: o.question.trim(),
+    context,
+    ...(language ? { language: language as "en" | "es" | "de" | "fr" } : {}),
+  };
 }

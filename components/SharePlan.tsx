@@ -1,4 +1,7 @@
 "use client";
+import { useLanguage as useUILanguage } from "./Preferences";
+import Localized from "@/components/Localized";
+
 import { useState } from "react";
 import { nim, type Plan, type Payment } from "@/lib/finance";
 import type { Board } from "@/lib/boards";
@@ -15,6 +18,8 @@ export default function SharePlan({
   payment?: Payment;
   demo: boolean;
 }) {
+  const { tr: ui } = useUILanguage();
+
   const [consent, setConsent] = useState(false),
     [busy, setBusy] = useState(false),
     [link, setLink] = useState(""),
@@ -87,18 +92,27 @@ export default function SharePlan({
   return (
     <details className="share-panel">
       <summary>
-        {payment
-          ? "Request contributions / split this cost"
-          : "Create a shared team board"}
+        <Localized
+          text={
+            payment
+              ? "Request contributions / split this cost"
+              : "Create a shared team board"
+          }
+        />
       </summary>
       <p>
-        {payment
-          ? `Collect ${nim(payment.amount)} NIM into your connected planning account. Incoming contributions do not mark the outgoing bill as paid.`
-          : "Publish up to 20 currently planned commitments. Members view the same board and approve their own payments. Future recurring occurrences are not published."}
+        <Localized
+          text={
+            payment
+              ? `Collect ${nim(payment.amount)} NIM into your connected planning account. Incoming contributions do not mark the outgoing bill as paid.`
+              : "Publish up to 20 currently planned commitments. Members view the same board and approve their own payments. Future recurring occurrences are not published."
+          }
+        />
       </p>
       {payment && (
         <label>
-          Number of shares
+          {" "}
+          <Localized text={"Number of shares"} />{" "}
           <select
             value={parts}
             onChange={(e) => setParts(Number(e.target.value))}
@@ -112,12 +126,15 @@ export default function SharePlan({
         </label>
       )}
       <label>
-        Responsible people (comma-separated, optional)
+        {" "}
+        <Localized
+          text={"Responsible people (comma-separated, optional)"}
+        />{" "}
         <input
           maxLength={800}
           value={labels}
           onChange={(e) => setLabels(e.target.value)}
-          placeholder="Jayking, Designer, Developer"
+          placeholder={ui("Jayking, Designer, Developer")}
         />
       </label>
       <label className="checkbox">
@@ -125,15 +142,20 @@ export default function SharePlan({
           type="checkbox"
           checked={consent}
           onChange={(e) => setConsent(e.target.checked)}
-        />
-        Publish these titles, addresses, amounts, dates and labels to a shared
-        board for 30 days. Anyone with the invite link can view it. Labels are
-        not verified identities.
+        />{" "}
+        <Localized
+          text={
+            "Publish these titles, addresses, amounts, dates and labels to a shared board for 30 days. Anyone with the invite link can view it. Labels are not verified identities."
+          }
+        />{" "}
       </label>
       <p className="helper">
-        This is a separate shared snapshot with live receipt status. Edits and
-        payments do not automatically sync back into your private plan. Avoid
-        paying the same commitment from both places.
+        {" "}
+        <Localized
+          text={
+            "This is a separate shared snapshot with live receipt status. Edits and payments do not automatically sync back into your private plan. Avoid paying the same commitment from both places."
+          }
+        />{" "}
       </p>
       <button
         type="button"
@@ -141,22 +163,26 @@ export default function SharePlan({
         disabled={!consent || busy || demo || !address}
         onClick={create}
       >
-        {busy
-          ? "Creating…"
-          : demo
-            ? "Connect a wallet to share"
-            : "Create invite link"}
+        <Localized
+          text={
+            busy
+              ? "Creating…"
+              : demo
+                ? "Connect a wallet to share"
+                : "Create invite link"
+          }
+        />
       </button>
       {error && (
         <p role="alert" className="form-message">
-          {error}
+          <Localized text={error} />
         </p>
       )}
       {link && (
         <div className="share-result">
           <label>
-            Invite link
-            <input readOnly value={link} />
+            {" "}
+            <Localized text={"Invite link"} /> <input readOnly value={link} />
           </label>
           <button
             type="button"
@@ -170,10 +196,11 @@ export default function SharePlan({
               }
             }}
           >
-            {copied ? "Copied" : "Copy link"}
+            <Localized text={copied ? "Copied" : "Copy link"} />
           </button>
           <a className="text-link" href={link}>
-            Open board ↗
+            {" "}
+            <Localized text={"Open board ↗"} />{" "}
           </a>
         </div>
       )}

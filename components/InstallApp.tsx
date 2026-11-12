@@ -1,4 +1,6 @@
 "use client";
+import Localized from "@/components/Localized";
+
 import { useEffect, useState } from "react";
 import { Download } from "lucide-react";
 type InstallEvent = Event & {
@@ -48,20 +50,28 @@ export default function InstallApp() {
         }}
       >
         <Download size={17} />
-        {installed ? "App installed" : "Add to your device"}
+        <Localized text={installed ? "App installed" : "Add to your device"} />
       </button>
       {help && (
         <div className="install-help" role="status">
-          <b>Keep Quorail one tap away.</b>
+          <b>
+            <Localized text={"Keep Quorail one tap away."} />
+          </b>
           <p>
-            Chrome or Edge: open the browser menu and choose Install app. iPhone
-            or iPad: open in Safari, tap Share, then Add to Home Screen. On Mac
-            Safari, choose File, Add to Dock.
+            {" "}
+            <Localized
+              text={
+                "Chrome or Edge: open the browser menu and choose Install app. iPhone or iPad: open in Safari, tap Share, then Add to Home Screen. On Mac Safari, choose File, Add to Dock."
+              }
+            />{" "}
           </p>
           <p>
-            Inside Nimiq Pay? Open this website in your regular browser to
-            install. Payments still require Nimiq Pay and an internet
-            connection.
+            {" "}
+            <Localized
+              text={
+                "Inside Nimiq Pay? Open this website in your regular browser to install. Payments still require Nimiq Pay and an internet connection."
+              }
+            />{" "}
           </p>
         </div>
       )}

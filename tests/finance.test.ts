@@ -156,3 +156,20 @@ test("reload after interrupted submission becomes uncertain, never payable", () 
   assert.equal(loadPlan("test").payments[0].status, "uncertain");
   assert.equal(loadPlan("test").payments[1].status, "planned");
 });
+test("HTLC sender captured before submission verifies independently of stable wallet identity", () => {
+  const htlc = payment.recipient;
+  const attempted = { ...payment, expectedSender: htlc };
+  assert.equal(
+    verifyReceipt({ ...tx, from: htlc }, attempted, sender, "mainnet").status,
+    "confirmed",
+  );
+  assert.equal(
+    verifyReceipt(tx, attempted, sender, "mainnet").status,
+    "mismatch",
+  );
+  assert.equal(
+    verifyReceipt({ ...tx, from: htlc, value: 1 }, attempted, sender, "mainnet")
+      .status,
+    "mismatch",
+  );
+});

@@ -3651,3 +3651,116 @@ html[data-theme="dark"] .method-grid article:nth-child(2) {
 html[data-theme="dark"] .method-grid article:nth-child(3) {
   background: #3c321c;
 }
+
+/* Compact controls live with navigation rather than in a separate page strip. */
+.brand-group,
+.preference-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.preference-controls {
+  gap: 3px;
+  flex-shrink: 0;
+}
+.language-menu {
+  position: relative;
+}
+.language-menu > summary {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  list-style: none;
+  border-radius: 50%;
+  border: 1px solid transparent;
+}
+.language-menu > summary::-webkit-details-marker {
+  display: none;
+}
+.language-menu > summary:focus-visible,
+.theme-toggle:focus-visible {
+  outline: 2px solid #7653d5;
+  outline-offset: 3px;
+}
+.language-options {
+  position: absolute;
+  right: 0;
+  top: 48px;
+  z-index: 120;
+  width: 210px;
+  padding: 16px;
+  background: var(--paper, #fff9e9);
+  color: var(--ink, #201d32);
+  border: 1px solid #8d899d;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px #0002;
+}
+.language-options label {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 12px;
+  font-size: 13px;
+}
+.language-options select {
+  width: 100%;
+  min-height: 40px;
+  border: 1px solid #aaa;
+  border-radius: 8px;
+  background: transparent;
+  color: inherit;
+}
+.theme-toggle svg {
+  animation: theme-turn 0.3s ease;
+}
+@keyframes theme-turn {
+  from {
+    transform: rotate(-70deg);
+    opacity: 0.4;
+  }
+  to {
+    transform: rotate(0);
+    opacity: 1;
+  }
+}
+.sidebar .brand-group {
+  flex-wrap: wrap;
+}
+.sidebar .preference-controls,
+footer .preference-controls {
+  display: none;
+}
+[data-theme="dark"] .language-options {
+  background: #242333;
+  color: #faf5e8;
+}
+@media (max-width: 600px) {
+  .brand-group {
+    gap: 5px;
+  }
+  .site-header {
+    flex-wrap: wrap;
+  }
+  .preference-controls .icon-button {
+    display: grid !important;
+    width: 36px;
+    height: 36px;
+  }
+  .language-menu > summary {
+    width: 36px;
+    height: 36px;
+  }
+  .app-header .header-actions {
+    gap: 4px;
+    flex-wrap: wrap;
+  }
+  .app-header {
+    gap: 6px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .theme-toggle svg {
+    animation: none;
+  }
+}

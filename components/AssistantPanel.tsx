@@ -1,4 +1,7 @@
 "use client";
+import Localized from "@/components/Localized";
+
+import { useLanguage } from "./Preferences";
 import { useState } from "react";
 import { assistantContext, type Context } from "@/lib/assistant";
 import type { Plan } from "@/lib/finance";
@@ -17,6 +20,7 @@ export default function AssistantPanel({
   suggestedQuestions?: string[];
   promptLabels?: string[];
 }) {
+  const { language, tr } = useLanguage();
   const [open, setOpen] = useState(initialOpen),
     [question, setQuestion] = useState(""),
     [share, setShare] = useState(false),
@@ -31,15 +35,19 @@ export default function AssistantPanel({
       {!compact && (
         <div className="section-heading">
           <div>
-            <span className="eyebrow">QUORAIL AI / POWERED BY ANTHROPIC</span>
-            <h2>Ask about your next move.</h2>
+            <span className="eyebrow">
+              <Localized text={"QUORAIL AI / POWERED BY ANTHROPIC"} />
+            </span>
+            <h2>
+              <Localized text={"Ask about your next move."} />
+            </h2>
           </div>
           <button
             className="button outline"
             aria-expanded={open}
             onClick={() => setOpen(!open)}
           >
-            {open ? "Close assistant" : "Ask Quorail AI"}
+            <Localized text={open ? "Close assistant" : "Ask Quorail AI"} />
           </button>
         </div>
       )}
@@ -57,6 +65,7 @@ export default function AssistantPanel({
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                   question,
+                  language,
                   context: share ? context : undefined,
                 }),
                 signal: AbortSignal.timeout(30000),
@@ -75,8 +84,12 @@ export default function AssistantPanel({
           }}
         >
           <p>
-            Ask about payment planning, reserve targets or using Quorail. AI can
-            explain; it cannot approve payments or change your plan.
+            {" "}
+            <Localized
+              text={
+                "Ask about payment planning, reserve targets or using Quorail. AI can explain; it cannot approve payments or change your plan."
+              }
+            />{" "}
           </p>
           <div className="prompt-chips">
             {(
@@ -86,20 +99,23 @@ export default function AssistantPanel({
                 "What does a pending receipt mean?",
               ]
             ).map((q, i) => (
-              <button type="button" key={q} onClick={() => setQuestion(q)}>
-                {promptLabels?.[i] || q}
+              <button type="button" key={q} onClick={() => setQuestion(tr(q))}>
+                {tr(promptLabels?.[i] || q)}
               </button>
             ))}
           </div>
           <label>
-            Your question
+            {" "}
+            <Localized text={"Your question"} />{" "}
             <textarea
               required
               maxLength={1200}
               rows={3}
               value={question}
               onChange={(e) => setQuestion(e.target.value)}
-              placeholder="What should I check before making this payment?"
+              placeholder={tr(
+                "What should I check before making this payment?",
+              )}
             />
           </label>
           <label className="checkbox">
@@ -108,13 +124,18 @@ export default function AssistantPanel({
               disabled={!context}
               checked={share}
               onChange={(e) => setShare(e.target.checked)}
-            />
-            Include my balance, reserve and 30/60/90-day totals. No addresses,
-            titles or transaction hashes are included automatically.
+            />{" "}
+            <Localized
+              text={
+                "Include my balance, reserve and 30/60/90-day totals. No addresses, titles or transaction hashes are included automatically."
+              }
+            />{" "}
           </label>
           {share && context && (
             <details>
-              <summary>Preview the exact summary being shared</summary>
+              <summary>
+                <Localized text={"Preview the exact summary being shared"} />
+              </summary>
               <pre>{JSON.stringify(context, null, 2)}</pre>
             </details>
           )}
@@ -123,26 +144,34 @@ export default function AssistantPanel({
               type="checkbox"
               checked={consent}
               onChange={(e) => setConsent(e.target.checked)}
-            />
-            I agree to send my question and any selected summary to Anthropic
-            through Quorail. I will not include recovery words, keys or
-            passwords.
+            />{" "}
+            <Localized
+              text={
+                "I agree to send my question and any selected summary to Anthropic through Quorail. I will not include recovery words, keys or passwords."
+              }
+            />{" "}
           </label>
           <button className="button dark" disabled={busy || !consent}>
-            {busy ? "Thinking…" : "Ask Quorail AI ↗"}
+            <Localized text={busy ? "Thinking…" : "Ask Quorail AI ↗"} />
           </button>
           {error && (
             <p className="form-message" role="alert">
-              {error}
+              <Localized text={error} />
             </p>
           )}
           {answer && (
             <div className="ai-answer" role="status">
-              <b>Quorail AI</b>
+              <b>
+                <Localized text={"Quorail AI"} />
+              </b>
               <p>{answer}</p>
               <small>
-                AI can make mistakes. Check the plan figures and wallet details
-                before approving.
+                {" "}
+                <Localized
+                  text={
+                    "AI can make mistakes. Check the plan figures and wallet details before approving."
+                  }
+                />{" "}
               </small>
             </div>
           )}

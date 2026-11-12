@@ -1,4 +1,6 @@
 "use client";
+import Localized from "@/components/Localized";
+
 import { useState } from "react";
 import { delayImpact } from "@/lib/decision";
 import { forecast, nim, type Plan, type Payment } from "@/lib/finance";
@@ -27,23 +29,39 @@ export default function DecisionAid({
         aria-expanded={show}
         onClick={() => setShow(!show)}
       >
-        {show ? "Close timing comparison" : "What if I delay this by 2 weeks?"}
+        <Localized
+          text={
+            show
+              ? "Close timing comparison"
+              : "What if I delay this by 2 weeks?"
+          }
+        />
       </button>
       {show && (
         <div className="timing-comparison">
           <div>
-            <small>Current plan buffer</small>
-            <b>{nim(shift.current)} NIM</b>
+            <small>
+              <Localized text={"Current plan buffer"} />
+            </small>
+            <b>
+              {nim(shift.current)} <Localized text={"NIM"} />
+            </b>
           </div>
           <div>
-            <small>If moved to {shift.due}</small>
-            <b>{nim(shift.delayed)} NIM</b>
+            <small>
+              <Localized text={"If moved to"} /> {shift.due}
+            </small>
+            <b>
+              {nim(shift.delayed)} <Localized text={"NIM"} />
+            </b>
           </div>
           <p className="helper">
-            Illustration only. No dates changed. A recurring series shifts with
-            this occurrence. Moving a bill beyond the planning window changes
-            timing, not what you owe. Check any late fees and agreement with the
-            recipient.
+            {" "}
+            <Localized
+              text={
+                "Illustration only. No dates changed. A recurring series shifts with this occurrence. Moving a bill beyond the planning window changes timing, not what you owe. Check any late fees and agreement with the recipient."
+              }
+            />{" "}
           </p>
         </div>
       )}

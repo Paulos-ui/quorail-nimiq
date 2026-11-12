@@ -27,7 +27,8 @@ export function verifyReceipt(
     return { status: "mismatch" };
   const sender = typeof t.from === "string" ? t.from : "";
   if (
-    normalAddress(sender) !== normalAddress(address) ||
+    normalAddress(sender) !==
+      normalAddress(payment.expectedSender || address) ||
     typeof t.to !== "string" ||
     normalAddress(t.to) !== normalAddress(payment.recipient) ||
     t.value !== payment.amount

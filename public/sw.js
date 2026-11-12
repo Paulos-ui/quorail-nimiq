@@ -1,5 +1,5 @@
 // Cache only the read-only fallback. Never cache wallet, RPC, API or financial app code.
-const CACHE = 'quorail-offline-v4';
+const CACHE = 'quorail-offline-v43';
 const FILES = ['/offline.html', '/offline.js'];
 self.addEventListener('install', event => event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(FILES))));
 self.addEventListener('activate', event => event.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(key => key.startsWith('quorail-') && key !== CACHE).map(key => caches.delete(key))))));

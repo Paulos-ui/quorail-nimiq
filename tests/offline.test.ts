@@ -38,7 +38,11 @@ function harness(raw: string) {
   runInNewContext(
     readFileSync(new URL("../public/offline.js", import.meta.url), "utf8"),
     {
+      NodeFilter: { SHOW_TEXT: 4 },
       document: {
+        documentElement: { lang: "en", dataset: {} },
+        querySelector: () => ({}),
+        createTreeWalker: () => ({ nextNode: () => false }),
         getElementById: (id: string) => ids[id],
         createElement: () => new Element(),
       },

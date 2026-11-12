@@ -1,4 +1,6 @@
 "use client";
+import Localized from "@/components/Localized";
+
 import { useEffect, useState } from "react";
 import { encryptBackup } from "@/lib/secure-backup";
 import type { Plan } from "@/lib/finance";
@@ -26,15 +28,25 @@ export default function BackupCard({
   }, [key]);
   return (
     <section className="backup-card">
-      <b>Keep a copy of your plan.</b>
+      <b>
+        <Localized text={"Keep a copy of your plan."} />
+      </b>
       <p>
-        Plans stay in this browser. Export before clearing browser data or
-        moving devices. A CSV receipt list does not restore your full plan.
+        {" "}
+        <Localized
+          text={
+            "Plans stay in this browser. Export before clearing browser data or moving devices. A CSV receipt list does not restore your full plan."
+          }
+        />{" "}
       </p>
       <small>
-        {last
-          ? `Last export requested: ${new Date(last).toLocaleString()}. Check that the file was saved.`
-          : "No backup export recorded on this device."}
+        <Localized
+          text={
+            last
+              ? `Last export requested: ${new Date(last).toLocaleString()}. Check that the file was saved.`
+              : "No backup export recorded on this device."
+          }
+        />
       </small>
       <br />
       <button
@@ -48,17 +60,24 @@ export default function BackupCard({
           } catch {}
         }}
       >
-        Export full JSON backup
+        {" "}
+        <Localized text={"Export full JSON backup"} />{" "}
       </button>
       <details className="secure-backup">
-        <summary>Password-protected backup</summary>
+        <summary>
+          <Localized text={"Password-protected backup"} />
+        </summary>
         <p>
-          Encrypt your downloaded file with a separate password. This does not
-          encrypt browser storage. Keep the password safely: Quorail cannot
-          recover it.
+          {" "}
+          <Localized
+            text={
+              "Encrypt your downloaded file with a separate password. This does not encrypt browser storage. Keep the password safely: Quorail cannot recover it."
+            }
+          />{" "}
         </p>
         <label>
-          Backup password (12 characters minimum)
+          {" "}
+          <Localized text={"Backup password (12 characters minimum)"} />{" "}
           <input
             type="password"
             autoComplete="new-password"
@@ -103,14 +122,19 @@ export default function BackupCard({
             }
           }}
         >
-          {busy ? "Encrypting…" : "Download encrypted backup"}
+          <Localized
+            text={busy ? "Encrypting…" : "Download encrypted backup"}
+          />
         </button>
         <p role="status">{notice}</p>
       </details>
       <p className="helper">
-        Restore through Planning settings using the same account and network.
-        Import preserves existing records and rechecks imported payment
-        attempts.
+        {" "}
+        <Localized
+          text={
+            "Restore through Planning settings using the same account and network. Import preserves existing records and rechecks imported payment attempts."
+          }
+        />{" "}
       </p>
     </section>
   );

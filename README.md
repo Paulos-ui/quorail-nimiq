@@ -4,20 +4,22 @@
 
 Quorail helps independent workers and small teams plan NIM commitments, understand the remaining buffer, approve payments in Nimiq Pay and keep matching receipts. Built by Jayking: [GitHub](https://github.com/paulos-ui) · [X](https://x.com/__official__1).
 
-## Version 4.2: language, appearance and wallet setup
+## Version 4.3: native payment balance and broader localization
 
-Includes the complete V4.1 release and its mobile balance/payment fixes.
+This is a complete source release, including the previous QR setup, recurring plans, shared boards, AI, games and backups.
 
-- English, Spanish, German and French for primary navigation, payment form labels, reserve status headings and wallet installation. Longer explanations, errors, docs and some content remain English; the language selector explicitly states this scope. This is not a complete localization.
-- Light, dark and system appearance with saved preferences and keyboard-accessible controls.
-- Outside Nimiq Pay, Connect opens a setup dialog with locally bundled QR codes and direct official Android/iPhone store links. Nothing is sent to a QR generation service.
-- Already-installed users can copy the Quorail URL and open it from Nimiq Pay's Mini Apps. Shared board invites preserve their fragment when copied. Store QR codes contain only store URLs, never account data or invite secrets.
-- The website cannot reliably detect a native installation. It detects only whether the wallet provider is currently injected. A browser with the app installed still gets setup instructions. Inside Nimiq Pay, Connect uses the original native wallet flow.
+- Read the current Nimiq Pay HTLC balance from the second shared address, instead of the usually empty stable wallet address. Keep plans under the stable wallet identity. Native balance reads no longer depend on a separate public RPC consensus check.
+- Re-read addresses around balance queries and retry contract rotation. Listen for `accountsChanged` and refresh when the app returns to the foreground. Never sum pending incoming funds into the spendable balance.
+- Persist the expected payment contract sender before opening wallet approval. Check that sender, recipient, amount, execution and network when verifying the receipt. A transaction hash alone is not confirmation.
+- Compact navigation controls with an animated sun/moon button, a language menu, and system-theme support. Official store QR setup remains included.
+- Spanish, German and French catalogs now cover page copy, guide, dialogs, known errors, status labels and the offline companion. AI receives a validated response language. Addresses, hashes, user-authored content and unknown external diagnostic messages are preserved. Native wallet/browser dialogs are controlled by their own language settings.
+
+See [V4.3 release and live acceptance checks](docs/V4_3_RELEASE.md). Tests use simulated provider responses; no real wallet transfer was performed during packaging.
 
 ## Previous Version 4.1 mobile payment fixes
 
-- Network consensus is checked before displaying any native balance. Lookup errors and timeouts show unavailable rather than zero. A successful zero response remains zero.
-- Retry balance, selected account/network and last successful check are visible. Quorail shows one account, not the wallet's combined holdings.
+- Historical V4.1 behavior, superseded in V4.3: network consensus was checked before displaying a native balance. Lookup errors and timeouts show unavailable rather than zero. A successful zero response remains zero.
+- Retry balance, selected account/network and last successful check are visible. V4.3 reads the wallet payment contract, preserving the stable account for saved plans.
 - Validation errors appear immediately above the add-payment button on mobile. Ambiguous fees such as 05 are rejected with explicit examples instead of silently interpreted.
 - Payment previews explain disabled states, including missing acknowledgement, unavailable balance, reserve breach and unresolved prior payment.
 - Read-only calls have bounded waits. Transaction submission is never automatically retried or unlocked on a timeout.

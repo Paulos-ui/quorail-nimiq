@@ -1,11 +1,13 @@
 "use client";
+import Localized from "@/components/Localized";
+
 import { useLanguage } from "./Preferences";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import ReserveIndicator from "./ReserveIndicator";
 import ConnectionNotice from "./ConnectionNotice";
 import { sharedCandidate, nextPendingReceipt } from "@/lib/release-tools";
-import { readWalletBalance } from "@/lib/balance";
+import { readWalletBalance, readWalletSnapshot } from "@/lib/balance";
 import Brand from "./Brand";
 import { type Board, type BoardRow, boardMemo } from "@/lib/boards";
 import {
@@ -177,7 +179,8 @@ export default function SharedBoard() {
           const payment = sharedCandidate(latest, board, row);
           if (normalAddress(address) === normalAddress(row.recipient))
             throw new Error("Choose an account other than the recipient.");
-          const balance = await readWalletBalance(provider, address);
+          const snapshot = await readWalletSnapshot(provider, address);
+          const balance = snapshot.balance;
           if (
             !Number.isSafeInteger(balance) ||
             balance < 0 ||
@@ -205,7 +208,11 @@ export default function SharedBoard() {
             ...latest,
             payments: [
               ...latest.payments.filter((p) => p.id !== payment.id),
-              { ...payment, status: "submitting" as const },
+              {
+                ...payment,
+                status: "submitting" as const,
+                expectedSender: snapshot.source,
+              },
             ],
           };
           try {
@@ -296,23 +303,30 @@ export default function SharedBoard() {
       <header className="site-header">
         <Brand />
         <Link href="/console/" className="button small dark">
-          Private planner ↗
+          {" "}
+          <Localized text={"Private planner ↗"} />{" "}
         </Link>
       </header>
       <main className="shared-page">
         <ConnectionNotice />
-        <span className="eyebrow">QUORAIL / SHARED PAYMENT BOARD</span>
+        <span className="eyebrow">
+          <Localized text={"QUORAIL / SHARED PAYMENT BOARD"} />
+        </span>
         <h1>{board?.title || "A plan you can share."}</h1>
         {error && (
           <p role="status" className="form-message">
-            {error}
+            <Localized text={error} />
           </p>
         )}
         {!secret && (
           <>
             <p>
-              Open an invite link, or create a board from your payment planner.
-              Links saved on this device:
+              {" "}
+              <Localized
+                text={
+                  "Open an invite link, or create a board from your payment planner. Links saved on this device:"
+                }
+              />{" "}
             </p>
             {saved.map((s) => (
               <p key={s.url}>
@@ -326,35 +340,58 @@ export default function SharedBoard() {
         {board && (
           <>
             <p>
-              {board.kind === "collection"
-                ? "Collect contributions into the requester’s wallet. This does not pay the original outgoing bill."
-                : "A shared snapshot with live payment receipts. Each payer approves their own transaction."}
+              <Localized
+                text={
+                  board.kind === "collection"
+                    ? "Collect contributions into the requester’s wallet. This does not pay the original outgoing bill."
+                    : "A shared snapshot with live payment receipts. Each payer approves their own transaction."
+                }
+              />
             </p>
             <div className="forecast-metrics">
               <div>
-                <span>Total requested</span>
-                <strong>{nim(total)} NIM</strong>
+                <span>
+                  <Localized text={"Total requested"} />
+                </span>
+                <strong>
+                  {nim(total)} <Localized text={"NIM"} />
+                </strong>
               </div>
               <div>
-                <span>Verified paid</span>
-                <strong>{nim(paid)} NIM</strong>
+                <span>
+                  <Localized text={"Verified paid"} />
+                </span>
+                <strong>
+                  {nim(paid)} <Localized text={"NIM"} />
+                </strong>
               </div>
               <div>
-                <span>Still outstanding</span>
-                <strong>{nim(total - paid)} NIM</strong>
+                <span>
+                  <Localized text={"Still outstanding"} />
+                </span>
+                <strong>
+                  {nim(total - paid)} <Localized text={"NIM"} />
+                </strong>
               </div>
             </div>
             <p className="helper">
-              {board.network.toUpperCase()} ·{" "}
-              {paid === total
-                ? "Fully paid"
-                : paid > 0
-                  ? "Partially paid"
-                  : "Awaiting payments"}{" "}
-              · Link expires {new Date(board.expires).toLocaleDateString()}.
-              Anyone with this link can view and initiate payments. Names are
-              labels, not verified identities. Payment references are public
-              on-chain.
+              {board.network.toUpperCase()} ·<Localized text={" "} />
+              <Localized
+                text={
+                  paid === total
+                    ? "Fully paid"
+                    : paid > 0
+                      ? "Partially paid"
+                      : "Awaiting payments"
+                }
+              />
+              <Localized text={" "} /> <Localized text={"· Link expires"} />{" "}
+              {new Date(board.expires).toLocaleDateString()}
+              <Localized
+                text={
+                  ". Anyone with this link can view and initiate payments. Names are labels, not verified identities. Payment references are public on-chain."
+                }
+              />{" "}
             </p>
             {!address ? (
               <button className="button dark" disabled={busy} onClick={connect}>
@@ -386,20 +423,33 @@ export default function SharedBoard() {
                   <div className="section-heading">
                     <h2>{row.title}</h2>
                     <span className={`badge ${row.state}`}>
-                      {row.state === "confirmed"
-                        ? "Paid · confirmed"
-                        : row.state}
+                      <Localized
+                        text={
+                          row.state === "confirmed"
+                            ? "Paid · confirmed"
+                            : row.state
+                        }
+                      />
                     </span>
                   </div>
                   <p>
-                    {row.responsible} · Due {row.due}
+                    {row.responsible} <Localized text={"· Due"} /> {row.due}
                   </p>
-                  <strong>{nim(row.amount)} NIM</strong>
-                  <p className="recipient">Recipient: {row.recipient}</p>
+                  <strong>
+                    {nim(row.amount)} <Localized text={"NIM"} />
+                  </strong>
+                  <p className="recipient">
+                    <Localized text={"Recipient:"} /> {row.recipient}
+                  </p>
                   {row.sender && (
-                    <p className="recipient">Verified sender: {row.sender}</p>
+                    <p className="recipient">
+                      <Localized text={"Verified sender:"} /> {row.sender}
+                    </p>
                   )}
-                  <small>Reference: {boardMemo(board.id, row.id)}</small>
+                  <small>
+                    <Localized text={"Reference:"} />{" "}
+                    {boardMemo(board.id, row.id)}
+                  </small>
                   {row.state === "open" && (
                     <>
                       <button
@@ -407,7 +457,8 @@ export default function SharedBoard() {
                         disabled={busy || !address}
                         onClick={() => review(row)}
                       >
-                        Preview this share
+                        {" "}
+                        <Localized text={"Preview this share"} />{" "}
                       </button>
                       {preview?.row === row.id && (
                         <div className="share-preview">
@@ -417,32 +468,67 @@ export default function SharedBoard() {
                             known={true}
                           />
                           <dl>
-                            <dt>Current balance</dt>
-                            <dd>{nim(preview.balance)} NIM</dd>
-                            <dt>Payment + planned fee</dt>
-                            <dd>{nim(preview.impact.cost)} NIM</dd>
-                            <dt>Balance after payment</dt>
-                            <dd>{nim(preview.impact.after)} NIM</dd>
-                            <dt>Other recorded commitments</dt>
-                            <dd>{nim(preview.impact.obligations)} NIM</dd>
-                            <dt>Reserve target</dt>
-                            <dd>{nim(preview.reserve)} NIM</dd>
-                            <dt>Remaining buffer</dt>
-                            <dd>{nim(preview.impact.available)} NIM</dd>
+                            <dt>
+                              <Localized text={"Current balance"} />
+                            </dt>
+                            <dd>
+                              {nim(preview.balance)} <Localized text={"NIM"} />
+                            </dd>
+                            <dt>
+                              <Localized text={"Payment + planned fee"} />
+                            </dt>
+                            <dd>
+                              {nim(preview.impact.cost)}{" "}
+                              <Localized text={"NIM"} />
+                            </dd>
+                            <dt>
+                              <Localized text={"Balance after payment"} />
+                            </dt>
+                            <dd>
+                              {nim(preview.impact.after)}{" "}
+                              <Localized text={"NIM"} />
+                            </dd>
+                            <dt>
+                              <Localized text={"Other recorded commitments"} />
+                            </dt>
+                            <dd>
+                              {nim(preview.impact.obligations)}{" "}
+                              <Localized text={"NIM"} />
+                            </dd>
+                            <dt>
+                              <Localized text={"Reserve target"} />
+                            </dt>
+                            <dd>
+                              {nim(preview.reserve)} <Localized text={"NIM"} />
+                            </dd>
+                            <dt>
+                              <Localized text={"Remaining buffer"} />
+                            </dt>
+                            <dd>
+                              {nim(preview.impact.available)}{" "}
+                              <Localized text={"NIM"} />
+                            </dd>
                           </dl>
                           <p className="helper">
-                            Your reserve target is not spent or locked. Balance
-                            and plan are checked again before the wallet prompt.
-                          </p>{" "}
+                            {" "}
+                            <Localized
+                              text={
+                                "Your reserve target is not spent or locked. Balance and plan are checked again before the wallet prompt."
+                              }
+                            />{" "}
+                          </p>
+                          <Localized text={" "} />
                           <label className="checkbox">
                             <input
                               type="checkbox"
                               checked={ack}
                               onChange={(e) => setAck(e.target.checked)}
-                            />
-                            I will verify the recipient, amount and sending
-                            account in Nimiq Pay. The wallet chooses the actual
-                            signer.
+                            />{" "}
+                            <Localized
+                              text={
+                                "I will verify the recipient, amount and sending account in Nimiq Pay. The wallet chooses the actual signer."
+                              }
+                            />{" "}
                           </label>
                         </div>
                       )}
@@ -457,7 +543,8 @@ export default function SharedBoard() {
                         }
                         onClick={() => pay(row)}
                       >
-                        Pay this share in Nimiq Pay
+                        {" "}
+                        <Localized text={"Pay this share in Nimiq Pay"} />{" "}
                       </button>
                     </>
                   )}
@@ -468,19 +555,26 @@ export default function SharedBoard() {
                       rel="noreferrer"
                       href={explorerUrl(board.network, row.hash)}
                     >
-                      View receipt ↗
+                      {" "}
+                      <Localized text={"View receipt ↗"} />{" "}
                     </a>
                   )}
                   {row.state !== "confirmed" && (
                     <details>
-                      <summary>Check or recover receipt</summary>
+                      <summary>
+                        <Localized text={"Check or recover receipt"} />
+                      </summary>
                       <p>
-                        A pending attempt is locked to prevent duplicates. If
-                        approval was interrupted, inspect wallet history. Do not
-                        resend.
+                        {" "}
+                        <Localized
+                          text={
+                            "A pending attempt is locked to prevent duplicates. If approval was interrupted, inspect wallet history. Do not resend."
+                          }
+                        />{" "}
                       </p>
                       <label>
-                        Transaction hash
+                        {" "}
+                        <Localized text={"Transaction hash"} />{" "}
                         <input
                           value={hashes[row.id] || row.hash || ""}
                           maxLength={64}
@@ -497,7 +591,8 @@ export default function SharedBoard() {
                         disabled={busy}
                         onClick={() => verify(row)}
                       >
-                        Verify receipt
+                        {" "}
+                        <Localized text={"Verify receipt"} />{" "}
                       </button>
                     </details>
                   )}
@@ -505,9 +600,12 @@ export default function SharedBoard() {
               ))}
             </div>
             <p className="helper">
-              This board is not escrow. Quorail never holds funds. Check the
-              recipient with the requester before paying. Return to your private
-              plan to reconcile its stored receipt.
+              {" "}
+              <Localized
+                text={
+                  "This board is not escrow. Quorail never holds funds. Check the recipient with the requester before paying. Return to your private plan to reconcile its stored receipt."
+                }
+              />{" "}
             </p>
           </>
         )}

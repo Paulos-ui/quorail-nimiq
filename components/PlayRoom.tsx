@@ -1,4 +1,7 @@
 "use client";
+import { useLanguage as useUILanguage } from "./Preferences";
+import Localized from "@/components/Localized";
+
 import { useLanguage } from "./Preferences";
 import { useEffect, useState } from "react";
 import { chessBotMove } from "@/lib/chess-bot";
@@ -23,6 +26,8 @@ const glyphs: Record<string, string> = {
   bp: "♟",
 };
 export default function PlayRoom() {
+  const { tr: ui } = useUILanguage();
+
   const { tr } = useLanguage();
   const [mode, setMode] = useState("tic"),
     [board, setBoard] = useState<Mark[]>(Array(9).fill(null));
@@ -70,22 +75,32 @@ export default function PlayRoom() {
           <Link href="/docs/">{tr("Guide")}</Link>
         </nav>
         <Link className="button small dark" href="/console/">
-          Payment planner ↗
+          {" "}
+          <Localized text={"Payment planner ↗"} />{" "}
         </Link>
       </header>
       <main className="play-page">
         <div className="play-heading">
-          <span className="eyebrow">THE QUORAIL PLAY ROOM</span>
+          <span className="eyebrow">
+            <Localized text={"THE QUORAIL PLAY ROOM"} />
+          </span>
           <h1>
-            A little play.
-            <br />
-            <em>A sharper next move.</em>
+            {" "}
+            <Localized text={"A little play."} /> <br />
+            <em>
+              <Localized text={"A sharper next move."} />
+            </em>
           </h1>
           <p>
-            Think ahead. Find your move. Take that mindset back to your money.
+            {" "}
+            <Localized
+              text={
+                "Think ahead. Find your move. Take that mindset back to your money."
+              }
+            />{" "}
           </p>
         </div>
-        <div className="play-tabs" role="group" aria-label="Choose game">
+        <div className="play-tabs" role="group" aria-label={ui("Choose game")}>
           {[
             ["tic", "01 / Tic-tac-toe"],
             ["chess", "02 / Chess"],
@@ -97,7 +112,7 @@ export default function PlayRoom() {
               className={mode === id ? "active" : ""}
               onClick={() => setMode(id)}
             >
-              {label}
+              <Localized text={label} />
             </button>
           ))}
         </div>
@@ -108,10 +123,20 @@ export default function PlayRoom() {
             ) : mode === "tic" ? (
               <>
                 <div className="game-title">
-                  <h2>Three in a row.</h2>
-                  <span className="small-tag">YOU × / BOT ○</span>
+                  <h2>
+                    <Localized text={"Three in a row."} />
+                  </h2>
+                  <span className="small-tag">
+                    <Localized text={"YOU × / BOT ○"} />
+                  </span>
                 </div>
-                <p>Play against a perfect-move bot. A draw is a good result.</p>
+                <p>
+                  <Localized
+                    text={
+                      "Play against a perfect-move bot. A draw is a good result."
+                    }
+                  />
+                </p>
                 <div className="tic-board">
                   {board.map((v, i) => (
                     <button
@@ -128,42 +153,63 @@ export default function PlayRoom() {
                         setBoard(b);
                       }}
                     >
-                      {v === "X" ? "×" : v === "O" ? "○" : ""}
+                      <Localized
+                        text={v === "X" ? "×" : v === "O" ? "○" : ""}
+                      />
                     </button>
                   ))}
                 </div>
                 <p className="game-status" role="status">
-                  {win
-                    ? `${win === "X" ? "You win" : "Bot wins"}. Try another round.`
-                    : over
-                      ? "A well-played draw."
-                      : "Your move. You play ×."}
+                  <Localized
+                    text={
+                      win
+                        ? `${win === "X" ? "You win" : "Bot wins"}. Try another round.`
+                        : over
+                          ? "A well-played draw."
+                          : "Your move. You play ×."
+                    }
+                  />
                 </p>
                 <button
                   className="button dark"
                   onClick={() => setBoard(Array(9).fill(null))}
                 >
-                  New round ↗
+                  {" "}
+                  <Localized text={"New round ↗"} />{" "}
                 </button>
               </>
             ) : mode === "chess" ? (
               <>
                 <div className="game-title">
-                  <h2>Think a move ahead.</h2>
+                  <h2>
+                    <Localized text={"Think a move ahead."} />
+                  </h2>
                   <span className="small-tag">
-                    {opponent === "bot"
-                      ? "YOU / QUORAIL BOT"
-                      : "LOCAL TWO PLAYER"}
+                    <Localized
+                      text={
+                        opponent === "bot"
+                          ? "YOU / QUORAIL BOT"
+                          : "LOCAL TWO PLAYER"
+                      }
+                    />
                   </span>
                 </div>
                 <p>
-                  {opponent === "bot"
-                    ? "You play White. The practice bot plays Black and looks two plies ahead."
-                    : "Pass the device between turns."}{" "}
-                  Tap a piece, then a highlighted square.
+                  <Localized
+                    text={
+                      opponent === "bot"
+                        ? "You play White. The practice bot plays Black and looks two plies ahead."
+                        : "Pass the device between turns."
+                    }
+                  />
+                  <Localized text={" "} />{" "}
+                  <Localized
+                    text={"Tap a piece, then a highlighted square."}
+                  />{" "}
                 </p>
                 <label className="opponent-select">
-                  Opponent
+                  {" "}
+                  <Localized text={"Opponent"} />{" "}
                   <select
                     value={opponent}
                     onChange={(e) => {
@@ -172,8 +218,12 @@ export default function PlayRoom() {
                       setFrom(null);
                     }}
                   >
-                    <option value="bot">Quorail bot</option>
-                    <option value="local">Friend on this device</option>
+                    <option value="bot">
+                      <Localized text={"Quorail bot"} />
+                    </option>
+                    <option value="local">
+                      <Localized text={"Friend on this device"} />
+                    </option>
                   </select>
                 </label>
                 <div className="chess-board">
@@ -191,7 +241,11 @@ export default function PlayRoom() {
                           onClick={() => move(square)}
                         >
                           <span>
-                            {piece ? glyphs[piece.color + piece.type] : ""}
+                            <Localized
+                              text={
+                                piece ? glyphs[piece.color + piece.type] : ""
+                              }
+                            />
                           </span>
                           <small>{square}</small>
                         </button>
@@ -199,13 +253,17 @@ export default function PlayRoom() {
                     })}
                 </div>
                 <p className="game-status" role="status">
-                  {thinking
-                    ? "Quorail bot is thinking…"
-                    : chess.isCheckmate()
-                      ? `Checkmate. ${chess.turn() === "w" ? "Black" : "White"} wins.`
-                      : chess.isDraw()
-                        ? "Draw."
-                        : `${chess.turn() === "w" ? "White" : "Black"} to move${chess.isCheck() ? " • Check" : ""}.`}
+                  <Localized
+                    text={
+                      thinking
+                        ? "Quorail bot is thinking…"
+                        : chess.isCheckmate()
+                          ? `Checkmate. ${chess.turn() === "w" ? "Black" : "White"} wins.`
+                          : chess.isDraw()
+                            ? "Draw."
+                            : `${chess.turn() === "w" ? "White" : "Black"} to move${chess.isCheck() ? " • Check" : ""}.`
+                    }
+                  />
                 </p>
                 <div className="game-actions">
                   <button
@@ -224,7 +282,8 @@ export default function PlayRoom() {
                       setFrom(null);
                     }}
                   >
-                    Undo
+                    {" "}
+                    <Localized text={"Undo"} />{" "}
                   </button>
                   <button
                     className="button dark"
@@ -233,18 +292,29 @@ export default function PlayRoom() {
                       setFrom(null);
                     }}
                   >
-                    New game
+                    {" "}
+                    <Localized text={"New game"} />{" "}
                   </button>
                   <label>
-                    Promote to{" "}
+                    {" "}
+                    <Localized text={"Promote to"} />
+                    <Localized text={" "} />
                     <select
                       value={promotion}
                       onChange={(e) => setPromotion(e.target.value)}
                     >
-                      <option value="q">Queen</option>
-                      <option value="r">Rook</option>
-                      <option value="b">Bishop</option>
-                      <option value="n">Knight</option>
+                      <option value="q">
+                        <Localized text={"Queen"} />
+                      </option>
+                      <option value="r">
+                        <Localized text={"Rook"} />
+                      </option>
+                      <option value="b">
+                        <Localized text={"Bishop"} />
+                      </option>
+                      <option value="n">
+                        <Localized text={"Knight"} />
+                      </option>
                     </select>
                   </label>
                 </div>
@@ -255,27 +325,50 @@ export default function PlayRoom() {
               </>
             ) : (
               <>
-                <span className="eyebrow">A REAL-WORLD THINKING EXERCISE</span>
-                <h2>Can the equipment wait?</h2>
+                <span className="eyebrow">
+                  <Localized text={"A REAL-WORLD THINKING EXERCISE"} />
+                </span>
+                <h2>
+                  <Localized text={"Can the equipment wait?"} />
+                </h2>
                 <p>
-                  Your wallet holds 1,000 NIM. Rent is 420, a collaborator is
-                  owed 230, and your reserve target is 200. Assume zero fees for
-                  this exercise.
+                  {" "}
+                  <Localized
+                    text={
+                      "Your wallet holds 1,000 NIM. Rent is 420, a collaborator is owed 230, and your reserve target is 200. Assume zero fees for this exercise."
+                    }
+                  />{" "}
                 </p>
                 <div className="budget-slip">
                   <span>
-                    Wallet <b>1,000 NIM</b>
+                    {" "}
+                    <Localized text={"Wallet"} />{" "}
+                    <b>
+                      <Localized text={"1,000 NIM"} />
+                    </b>
                   </span>
                   <span>
-                    Committed <b>650 NIM</b>
+                    {" "}
+                    <Localized text={"Committed"} />{" "}
+                    <b>
+                      <Localized text={"650 NIM"} />
+                    </b>
                   </span>
                   <span>
-                    Reserve target <b>200 NIM</b>
+                    {" "}
+                    <Localized text={"Reserve target"} />{" "}
+                    <b>
+                      <Localized text={"200 NIM"} />
+                    </b>
                   </span>
                 </div>
                 <h3>
-                  What is the most you can spend on equipment while keeping your
-                  reserve?
+                  {" "}
+                  <Localized
+                    text={
+                      "What is the most you can spend on equipment while keeping your reserve?"
+                    }
+                  />{" "}
                 </h3>
                 <div className="answer-grid">
                   {[150, 250, 350].map((n) => (
@@ -284,50 +377,72 @@ export default function PlayRoom() {
                       key={n}
                       onClick={() => setSolved(n)}
                     >
-                      {n} NIM
+                      {n} <Localized text={"NIM"} />{" "}
                     </button>
                   ))}
                 </div>
                 {solved !== null && (
                   <p role="status" className="game-status">
-                    {solved === 150
-                      ? "Exactly. 1,000 − 650 − 200 = 150 NIM. Fees would reduce this room."
-                      : "Try again. Subtract commitments and your reserve from the wallet balance."}
+                    <Localized
+                      text={
+                        solved === 150
+                          ? "Exactly. 1,000 − 650 − 200 = 150 NIM. Fees would reduce this room."
+                          : "Try again. Subtract commitments and your reserve from the wallet balance."
+                      }
+                    />
                   </p>
                 )}
                 <Link className="button dark" href="/console/?demo=1">
-                  Try this in the planner ↗
+                  {" "}
+                  <Localized text={"Try this in the planner ↗"} />{" "}
                 </Link>
               </>
             )}
           </section>
           <aside className="play-aside">
             <div className="play-note">
-              <span className="eyebrow">PLAY WITH PURPOSE</span>
+              <span className="eyebrow">
+                <Localized text={"PLAY WITH PURPOSE"} />
+              </span>
               <h3>
-                Good decisions
-                <br />
-                start with practice.
+                {" "}
+                <Localized text={"Good decisions"} /> <br />{" "}
+                <Localized text={"start with practice."} />{" "}
               </h3>
               <p>
-                Tic-tac-toe trains anticipation. Chess rewards patience. Money
-                moves connects both to your next payment.
+                {" "}
+                <Localized
+                  text={
+                    "Tic-tac-toe trains anticipation. Chess rewards patience. Money moves connects both to your next payment."
+                  }
+                />{" "}
               </p>
               <div className="reward-status">
-                <b>No stakes. No NIM payouts.</b>
+                <b>
+                  <Localized text={"No stakes. No NIM payouts."} />
+                </b>
                 <p>
-                  This is free practice. Games do not generate tokens, rewards
-                  or claims on your wallet.
+                  {" "}
+                  <Localized
+                    text={
+                      "This is free practice. Games do not generate tokens, rewards or claims on your wallet."
+                    }
+                  />{" "}
                 </p>
               </div>
               <p className="muted">
-                A future sponsored competition would need a funded prize pool
-                and verified results before rewards could go live.
+                {" "}
+                <Localized
+                  text={
+                    "A future sponsored competition would need a funded prize pool and verified results before rewards could go live."
+                  }
+                />{" "}
               </p>
             </div>
             <InstallApp />
             <Link className="text-link" href="/console/">
-              Back to your payment plan ↗
+              {" "}
+              <Localized text={"Back to your payment plan ↗"} />{" "}
             </Link>
           </aside>
         </div>

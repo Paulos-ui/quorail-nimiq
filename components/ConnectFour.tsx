@@ -1,4 +1,6 @@
 "use client";
+import Localized from "@/components/Localized";
+
 import { useEffect, useState } from "react";
 import { drop, fourBot, fourWinner, newGrid } from "@/lib/connect-four";
 export default function ConnectFour() {
@@ -20,13 +22,20 @@ export default function ConnectFour() {
   return (
     <>
       <div className="game-title">
-        <h2>Connect your next four.</h2>
-        <span className="small-tag">YOU / QUORAIL BOT</span>
+        <h2>
+          <Localized text={"Connect your next four."} />
+        </h2>
+        <span className="small-tag">
+          <Localized text={"YOU / QUORAIL BOT"} />
+        </span>
       </div>
       <p>
-        You play purple. Drop a disc into a column. Connect four horizontally,
-        vertically or diagonally. The practice bot can win and block immediate
-        threats.
+        {" "}
+        <Localized
+          text={
+            "You play purple. Drop a disc into a column. Connect four horizontally, vertically or diagonally. The practice bot can win and block immediate threats."
+          }
+        />{" "}
       </p>
       <div className="four-controls">
         {grid[0].map((_, c) => (
@@ -60,20 +69,24 @@ export default function ConnectFour() {
       >
         {grid.flat().map((disc, i) => (
           <span key={i} className={`disc disc-${disc}`}>
-            {disc === 1 ? "●" : disc === 2 ? "×" : ""}
+            <Localized text={disc === 1 ? "●" : disc === 2 ? "×" : ""} />
           </span>
         ))}
       </div>
       <p role="status" className="game-status">
-        {winner === 1
-          ? "You connected four. Well played!"
-          : winner === 2
-            ? "The bot connected four. Try a new approach."
-            : drawn
-              ? "A full board. It is a draw."
-              : thinking
-                ? "Quorail bot is thinking…"
-                : "Your move. Choose a column."}
+        <Localized
+          text={
+            winner === 1
+              ? "You connected four. Well played!"
+              : winner === 2
+                ? "The bot connected four. Try a new approach."
+                : drawn
+                  ? "A full board. It is a draw."
+                  : thinking
+                    ? "Quorail bot is thinking…"
+                    : "Your move. Choose a column."
+          }
+        />
       </p>
       <button
         className="button dark"
@@ -82,7 +95,8 @@ export default function ConnectFour() {
           setGrid(newGrid());
         }}
       >
-        New round
+        {" "}
+        <Localized text={"New round"} />{" "}
       </button>
     </>
   );

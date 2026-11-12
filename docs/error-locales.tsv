@@ -1,0 +1,80 @@
+0	Los datos guardados cambiaron o no se pueden leer. Exporta antes de reconectar.	Gespeicherte Daten wurden geändert oder sind unlesbar. Exportiere vor dem erneuten Verbinden.	Les données ont changé ou sont illisibles. Exportez avant de reconnecter.
+1	Conecta primero tu cartera.	Verbinde zuerst deine Wallet.	Connectez d’abord votre portefeuille.
+2	Espacio de ejemplo con importes ilustrativos. No puede enviar pagos.	Beispielbereich mit Beispielbeträgen. Keine Zahlungen möglich.	Espace d’exemple avec montants illustratifs. Aucun paiement possible.
+3	El almacenamiento local falla o el plan está dañado. No pagues desde este navegador hasta resolverlo.	Lokaler Speicher fehlt oder der Plan ist beschädigt. Zahle hier erst nach Behebung.	Le stockage local est indisponible ou le plan est endommagé. Ne payez pas ici avant résolution.
+4	Cuenta conectada. Consultando saldo…	Konto verbunden. Guthaben wird geprüft…	Compte connecté. Vérification du solde…
+5	Cuenta conectada. Verifica destinatario e importe en la cartera.	Konto verbunden. Prüfe Empfänger und Betrag in der Wallet.	Compte connecté. Vérifiez destinataire et montant dans le portefeuille.
+6	Desconectado. Tu plan queda en este dispositivo.	Getrennt. Dein Plan bleibt auf diesem Gerät.	Déconnecté. Votre plan reste sur cet appareil.
+7	Saldo de ejemplo. Conecta tu cartera para datos reales.	Beispielguthaben. Verbinde deine Wallet für echte Daten.	Solde d’exemple. Connectez le portefeuille pour des données réelles.
+8	Saldo actualizado desde Nimiq Pay.	Guthaben von Nimiq Pay aktualisiert.	Solde actualisé depuis Nimiq Pay.
+9	Reconecta antes de pagar.	Vor dem Zahlen erneut verbinden.	Reconnectez-vous avant de payer.
+10	Actualiza WebView de la cartera. El bloqueo seguro de pagos no está disponible.	Aktualisiere die Wallet-WebView. Sichere Zahlungssperren sind nicht verfügbar.	Mettez à jour la WebView du portefeuille. Le verrouillage sécurisé est indisponible.
+11	Otra ventana Quorail procesa esta cartera.	Ein anderes Quorail-Fenster verarbeitet diese Wallet.	Une autre fenêtre Quorail traite ce portefeuille.
+12	Este pago ya se intentó. Consulta Actividad.	Diese Zahlung wurde bereits versucht. Prüfe Aktivität.	Ce paiement a déjà été tenté. Consultez Activité.
+13	Resuelve el pago existente en Actividad antes de enviar otro.	Kläre die bestehende Zahlung unter Aktivität vor einer weiteren.	Résolvez le paiement existant dans Activité avant un autre envoi.
+14	NIM insuficientes para el pago y la comisión.	Nicht genug NIM für Zahlung und Gebühr.	NIM insuffisants pour le paiement et les frais.
+15	Este pago cruza tu reserva. Ajusta primero el pago o el plan.	Diese Zahlung unterschreitet die Reserve. Passe zuerst Zahlung oder Plan an.	Ce paiement franchit la réserve. Ajustez d’abord le paiement ou le plan.
+16	La cartera devolvió un resultado inesperado. Consulta el historial antes de actuar.	Unerwartetes Wallet-Ergebnis. Prüfe zuerst den Verlauf.	Résultat inattendu du portefeuille. Consultez d’abord l’historique.
+17	Pago pendiente. Quorail verifica cada 12 segundos mientras esta página es visible. Aprobar no confirma el pago.	Zahlung ausstehend. Quorail prüft alle 12 Sekunden, solange die Seite sichtbar ist. Freigabe allein bestätigt keine Zahlung.	Paiement en attente. Quorail vérifie toutes les 12 secondes tant que cette page est visible. L’approbation seule ne confirme pas le paiement.
+18	Introduce el hash de 64 caracteres del historial de tu cartera.	Gib den 64-stelligen Hash aus dem Wallet-Verlauf ein.	Saisissez le hash de 64 caractères de l’historique du portefeuille.
+19	Importe: usa 5000 o 0.5, sin ceros iniciales y con hasta 5 decimales.	Betrag: etwa 5000 oder 0.5, ohne führende Nullen und mit höchstens 5 Dezimalstellen.	Montant : utilisez 5000 ou 0.5, sans zéro initial et avec 5 décimales maximum.
+20	Comisión: usa 0, 0.5 o 5, no 05. Está en NIM. Quorail no adivina el importe.	Gebühr: 0, 0.5 oder 5, nicht 05. Einheit NIM. Quorail errät den Betrag nicht.	Frais : 0, 0.5 ou 5, pas 05. En NIM. Quorail ne devine pas le montant.
+21	Introduce una dirección Nimiq válida con suma de comprobación.	Gib eine gültige Nimiq-Adresse samt Prüfsumme ein.	Saisissez une adresse Nimiq valide avec somme de contrôle.
+22	El importe debe ser mayor que cero.	Der Betrag muss größer als null sein.	Le montant doit être supérieur à zéro.
+23	Usa un destinatario distinto de tu cuenta del plan.	Verwende einen anderen Empfänger als dein Planungskonto.	Utilisez un destinataire différent du compte du plan.
+24	Preferencias guardadas.	Einstellungen gespeichert.	Préférences enregistrées.
+25	Los intentos de pago se conservan para conciliarlos.	Zahlungsversuche bleiben zum Abgleich gespeichert.	Les tentatives sont conservées pour rapprochement.
+26	Pago planificado eliminado.	Geplante Zahlung entfernt.	Paiement prévu supprimé.
+27	El archivo del plan es demasiado grande.	Die Plandatei ist zu groß.	Le fichier du plan est trop volumineux.
+28	Introduce la contraseña en Ajustes y selecciona otra vez el archivo.	Gib das Passwort in den Einstellungen ein und wähle die Datei erneut.	Saisissez le mot de passe dans les paramètres puis sélectionnez de nouveau le fichier.
+29	Esta copia pertenece a otra cartera o red.	Diese Sicherung gehört zu einer anderen Wallet oder einem anderen Netzwerk.	Cette sauvegarde appartient à un autre portefeuille ou réseau.
+30	Registros nuevos importados; existentes conservados. Los intentos importados requieren verificar recibos.	Neue Einträge importiert, bestehende behalten. Importierte Versuche benötigen eine Belegprüfung.	Nouveaux enregistrements importés, anciens conservés. Les tentatives importées exigent une vérification des reçus.
+31	Introduce una reserva no negativa con hasta 5 decimales.	Gib eine nicht negative Reserve mit höchstens 5 Dezimalstellen ein.	Saisissez une réserve non négative avec 5 décimales maximum.
+32	Selecciona y copia el enlace de invitación.	Wähle und kopiere den Einladungslink.	Sélectionnez et copiez le lien d’invitation.
+33	Reconecta antes de revisar un pago.	Verbinde dich erneut, bevor du eine Zahlung prüfst.	Reconnectez-vous avant de vérifier un paiement.
+34	Saldo no disponible.	Wallet-Guthaben nicht verfügbar.	Solde du portefeuille indisponible.
+35	Actualiza Nimiq Pay para el bloqueo seguro de pagos.	Aktualisiere Nimiq Pay für sichere Zahlungssperren.	Mettez à jour Nimiq Pay pour le verrouillage sécurisé.
+36	Se está procesando otro pago.	Eine andere Zahlung wird verarbeitet.	Un autre paiement est en cours.
+37	Resuelve primero los pagos pendientes del plan privado.	Kläre zuerst ausstehende Zahlungen im privaten Plan.	Résolvez d’abord les paiements en attente du plan privé.
+38	Elige una cuenta distinta del destinatario.	Wähle ein anderes Konto als den Empfänger.	Choisissez un compte différent du destinataire.
+39	Este pago supera compromisos o reserva. Revisa primero el plan privado.	Diese Zahlung überschreitet Verpflichtungen oder Reserve. Prüfe zuerst den privaten Plan.	Ce paiement dépasse engagements ou réserve. Vérifiez d’abord le plan privé.
+40	Cambió tu saldo o plan. Previsualiza esta parte de nuevo.	Guthaben oder Plan geändert. Prüfe diesen Anteil erneut.	Le solde ou le plan a changé. Prévisualisez cette part de nouveau.
+41	Falló la copia local. No se envió ningún pago.	Lokale Sicherung fehlgeschlagen. Keine Zahlung gesendet.	Sauvegarde locale échouée. Aucun paiement envoyé.
+42	Resultado incierto. Recupera el hash del historial; no reenvíes.	Ergebnis unklar. Finde den Hash im Verlauf; nicht erneut senden.	Résultat incertain. Retrouvez le hash dans l’historique ; ne renvoyez pas.
+43	Pago pendiente. El tablero verifica mientras está abierto. El plan privado también conserva el pago.	Zahlung ausstehend. Die offene Übersicht prüft den Beleg. Der private Plan speichert die Zahlung ebenfalls.	Paiement en attente. Le tableau vérifie tant qu’il est ouvert. Le plan privé conserve également le paiement.
+44	Solicitud no válida.	Ungültige Anfrage.	Demande non valide.
+45	Escribe una pregunta de 1 a 1.200 caracteres.	Stelle eine Frage mit 1 bis 1.200 Zeichen.	Posez une question de 1 à 1 200 caractères.
+46	Contexto del plan no válido.	Ungültiger Planungskontext.	Contexte de plan non valide.
+47	Proyección no válida.	Ungültige Prognose.	Projection non valide.
+48	Idioma no válido.	Ungültige Sprache.	Langue non valide.
+49	Cambió la cuenta de la cartera. Desconecta y reconecta antes de pagar.	Das Wallet-Konto hat sich geändert. Trenne und verbinde vor dem Zahlen erneut.	Le compte du portefeuille a changé. Déconnectez puis reconnectez avant de payer.
+50	Nimiq Pay devolvió un saldo no válido. Actualiza la cartera e inténtalo otra vez.	Nimiq Pay meldete ein ungültiges Guthaben. Aktualisiere die Wallet und versuche es erneut.	Nimiq Pay a renvoyé un solde non valide. Mettez à jour le portefeuille et réessayez.
+51	Nimiq Pay cambia su cuenta de pago. Actualiza en un momento. No se envió ningún pago.	Nimiq Pay wechselt sein Zahlungskonto. Aktualisiere gleich erneut. Keine Zahlung gesendet.	Nimiq Pay remplace son compte de paiement. Actualisez dans un instant. Aucun paiement envoyé.
+52	Tablero no válido	Ungültige Übersicht	Tableau non valide
+53	Usa un título y de 1 a 20 compromisos.	Verwende einen Titel und 1 bis 20 Verpflichtungen.	Utilisez un titre et 1 à 20 engagements.
+54	Compromiso no válido	Ungültige Verpflichtung	Engagement non valide
+55	Todavía no hay transacción incluida con éxito.	Noch keine erfolgreich aufgenommene Transaktion.	Aucune transaction incluse avec succès pour le moment.
+56	El recibo no coincide en destinatario, importe, red o referencia única.	Der Beleg stimmt bei Empfänger, Betrag, Netzwerk oder Referenz nicht überein.	Le reçu ne correspond pas au destinataire, montant, réseau ou référence unique.
+57	El recibo ya fue usado.	Beleg bereits verwendet.	Reçu déjà utilisé.
+58	Usa un importe NIM positivo con hasta 5 decimales.	Verwende einen positiven NIM-Betrag mit bis zu 5 Dezimalstellen.	Utilisez un montant NIM positif avec 5 décimales maximum.
+59	Importe demasiado grande.	Betrag zu groß.	Montant trop élevé.
+60	Archivo de plan no válido.	Ungültige Plandatei.	Fichier de plan non valide.
+61	Ajustes del plan no válidos.	Ungültige Planeinstellungen.	Paramètres du plan non valides.
+62	Pago no válido en el plan.	Ungültige Zahlung im Plan.	Paiement non valide dans le plan.
+63	Los totales exceden el rango de cálculo permitido.	Plansummen überschreiten den unterstützten Rechenbereich.	Les totaux dépassent la plage de calcul autorisée.
+64	Este compromiso compartido difiere del privado o ya fue pagado allí.	Diese gemeinsame Verpflichtung weicht vom privaten Plan ab oder wurde dort bezahlt.	Cet engagement partagé diffère du plan privé ou y a déjà été payé.
+65	El servicio de recibos no está disponible temporalmente. No se reenviará el pago.	Der Belegdienst ist vorübergehend nicht verfügbar. Die Zahlung wird nicht erneut gesendet.	Le service de reçus est temporairement indisponible. Le paiement ne sera pas renvoyé.
+66	Usa una contraseña de al menos 12 caracteres.	Verwende ein Passwort mit mindestens 12 Zeichen.	Utilisez un mot de passe d’au moins 12 caractères.
+67	Copia demasiado grande.	Sicherung zu groß.	Sauvegarde trop volumineuse.
+68	Copia cifrada no compatible.	Nicht unterstützte verschlüsselte Sicherung.	Sauvegarde chiffrée non prise en charge.
+69	No se pudo descifrar. Comprueba contraseña y archivo.	Entsperren fehlgeschlagen. Prüfe Passwort und Datei.	Déchiffrement impossible. Vérifiez le mot de passe et le fichier.
+70	Los tableros requieren configurar Redis. Los planes privados siguen funcionando.	Gemeinsame Übersichten benötigen Redis-Konfiguration. Private Pläne funktionieren weiterhin.	Les tableaux nécessitent une configuration Redis. Les plans privés fonctionnent toujours.
+71	Almacenamiento compartido no disponible.	Gemeinsamer Speicher nicht verfügbar.	Stockage partagé indisponible.
+72	Enlace de invitación no válido.	Ungültiger Einladungslink.	Lien d’invitation non valide.
+73	Falta el contenido	Inhalt fehlt	Contenu manquant
+74	Solicitud demasiado grande	Anfrage zu groß	Demande trop volumineuse
+75	Abre Nimiq Pay en el móvil, ve a Mini Apps, elige Custom URL y pega esta dirección. Un navegador normal no conecta la cartera nativa.	Öffne Nimiq Pay auf dem Handy, gehe zu Mini Apps, wähle Custom URL und füge diese Adresse ein. Ein normaler Browser verbindet die native Wallet nicht.	Ouvrez Nimiq Pay sur le téléphone, allez dans Mini Apps, choisissez Custom URL et collez cette adresse. Un navigateur ordinaire ne connecte pas le portefeuille natif.
+76	Actualiza Nimiq Pay. Esta versión no informa de la red y no permite preparar pagos con seguridad.	Aktualisiere Nimiq Pay. Diese Version meldet kein Netzwerk; sichere Zahlungsvorbereitung ist nicht möglich.	Mettez à jour Nimiq Pay. Cette version ne précise pas son réseau ; préparer des paiements en sécurité est impossible.
+77	Actualiza Nimiq Pay para consultar el saldo.	Aktualisiere Nimiq Pay für den Guthabenzugriff.	Mettez à jour Nimiq Pay pour consulter le solde.
+78	No se compartió ninguna cuenta Nimiq.	Keine Nimiq-Konten freigegeben.	Aucun compte Nimiq partagé.
+79	Cambió la red. Desconecta y reconecta antes de continuar.	Das Netzwerk hat sich geändert. Trenne und verbinde erneut.	Le réseau a changé. Déconnectez puis reconnectez avant de continuer.

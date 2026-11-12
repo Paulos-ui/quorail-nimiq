@@ -1,7 +1,12 @@
 "use client";
+import { useLanguage as useUILanguage } from "./Preferences";
+import Localized from "@/components/Localized";
+
 import { useEffect, useRef, useState } from "react";
 import { useLanguage } from "./Preferences";
 export default function WalletSetup() {
+  const { tr: ui } = useUILanguage();
+
   const { tr } = useLanguage();
   const [open, setOpen] = useState(false),
     [store, setStore] = useState<"android" | "ios">("android"),
@@ -87,13 +92,15 @@ export default function WalletSetup() {
             aria-pressed={store === "android"}
             onClick={() => setStore("android")}
           >
-            Google Play
+            {" "}
+            <Localized text={"Google Play"} />{" "}
           </button>
           <button
             aria-pressed={store === "ios"}
             onClick={() => setStore("ios")}
           >
-            App Store
+            {" "}
+            <Localized text={"App Store"} />{" "}
           </button>
         </div>
         <img
@@ -122,7 +129,7 @@ export default function WalletSetup() {
             "Open Nimiq Pay, go to Mini Apps and add this website using Custom URL.",
           )}
         </p>
-        <input aria-label="Quorail URL" readOnly value={url} />
+        <input aria-label={ui("Quorail URL")} readOnly value={url} />
         <button
           className="button outline"
           onClick={async () => {

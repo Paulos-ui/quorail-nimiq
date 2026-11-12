@@ -1,4 +1,6 @@
 "use client";
+import Localized from "@/components/Localized";
+
 import { firstReserveRisk } from "@/lib/release-tools";
 import { nim, type Plan } from "@/lib/finance";
 import AssistantPanel from "./AssistantPanel";
@@ -16,38 +18,61 @@ export default function RiskReview({
     : "My recorded 90-day plan stays above reserve. Explain what unrecorded spending and missing income assumptions I should check before paying.";
   return (
     <section className="risk-review">
-      <span className="eyebrow">COMMITMENTS TO REVIEW</span>
+      <span className="eyebrow">
+        <Localized text={"COMMITMENTS TO REVIEW"} />
+      </span>
       <h2>
-        {risk
-          ? "Where the buffer first runs short."
-          : "The next 90 days remain covered."}
+        <Localized
+          text={
+            risk
+              ? "Where the buffer first runs short."
+              : "The next 90 days remain covered."
+          }
+        />
       </h2>
       {risk ? (
         <>
           <p>
-            {risk.alreadyBelow
-              ? "Your starting balance is already below reserve. "
-              : ""}
-            {risk.due}: <b>{nim(risk.shortfall)} NIM below target</b> after this
-            due-date group.
+            <Localized
+              text={
+                risk.alreadyBelow
+                  ? "Your starting balance is already below reserve. "
+                  : ""
+              }
+            />
+            {risk.due}:{" "}
+            <b>
+              {nim(risk.shortfall)} <Localized text={"NIM below target"} />
+            </b>{" "}
+            <Localized text={"after this due-date group."} />{" "}
           </p>
           <ul>
             {risk.payments.map((p) => (
               <li key={p.id}>
                 <span>{p.title}</span>
-                <b>{nim(p.amount + p.fee)} NIM</b>
+                <b>
+                  {nim(p.amount + p.fee)} <Localized text={"NIM"} />
+                </b>
               </li>
             ))}
           </ul>
           <p className="helper">
-            Ordered by due date, not a recommendation to skip a bill.
-            Commitments on the same date are grouped. Includes recurring
-            occurrences and fees, with no new income assumed.
+            {" "}
+            <Localized
+              text={
+                "Ordered by due date, not a recommendation to skip a bill. Commitments on the same date are grouped. Includes recurring occurrences and fees, with no new income assumed."
+              }
+            />{" "}
           </p>
         </>
       ) : (
         <p className="helper">
-          Based only on recorded costs, your current balance and reserve target.
+          {" "}
+          <Localized
+            text={
+              "Based only on recorded costs, your current balance and reserve target."
+            }
+          />{" "}
         </p>
       )}
       <AssistantPanel

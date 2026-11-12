@@ -1,0 +1,154 @@
+Language	Idioma	Sprache	Langue
+Appearance	Apariencia	Darstellung	Apparence
+Close assistant	Cerrar asistente	Assistent schließen	Fermer l’assistant
+Ask Quorail AI	Preguntar a Quorail IA	Quorail KI fragen	Demander à Quorail IA
+Ask Quorail AI ↗	Preguntar a Quorail IA ↗	Quorail KI fragen ↗	Demander à Quorail IA ↗
+Thinking…	Pensando…	Denkt nach…	Réflexion…
+No backup export recorded on this device.	No hay exportaciones registradas en este dispositivo.	Kein Sicherungsexport auf diesem Gerät erfasst.	Aucun export de sauvegarde enregistré sur cet appareil.
+Encrypting…	Cifrando…	Verschlüsseln…	Chiffrement…
+Download encrypted backup	Descargar copia cifrada	Verschlüsselte Sicherung herunterladen	Télécharger la sauvegarde chiffrée
+You connected four. Well played!	¡Conectaste cuatro! ¡Bien jugado!	Vier verbunden. Gut gespielt!	Quatre alignés. Bien joué !
+The bot connected four. Try a new approach.	El bot conectó cuatro. Prueba otra estrategia.	Der Bot hat vier verbunden. Versuche eine neue Strategie.	Le robot en a aligné quatre. Essayez une autre stratégie.
+A full board. It is a draw.	Tablero lleno. Es un empate.	Das Brett ist voll. Unentschieden.	Plateau plein. Match nul.
+Quorail bot is thinking…	El bot Quorail está pensando…	Der Quorail-Bot denkt nach…	Le robot Quorail réfléchit…
+Your move. Choose a column.	Tu turno. Elige una columna.	Du bist dran. Wähle eine Spalte.	À vous. Choisissez une colonne.
+Connecting…	Conectando…	Verbinden…	Connexion…
+Connect wallet	Conectar cartera	Wallet verbinden	Connecter le portefeuille
+YOUR MONEY, WITH CONTEXT	TU DINERO, CON CONTEXTO	DEIN GELD IM KONTEXT	VOTRE ARGENT, AVEC DU CONTEXTE
+EVERY COMMITMENT IN VIEW	TODOS LOS COMPROMISOS A LA VISTA	ALLE VERPFLICHTUNGEN IM BLICK	TOUS LES ENGAGEMENTS EN VUE
+FOLLOW THE EVIDENCE	SIGUE LAS PRUEBAS	FOLGE DEN BELEGEN	SUIVEZ LES PREUVES
+A clearer next move.	Un próximo paso más claro.	Ein klarerer nächster Schritt.	Une prochaine étape plus claire.
+The plan ahead.	El plan que viene.	Der kommende Plan.	Le plan à venir.
+Every move, recorded.	Cada paso, registrado.	Jeder Schritt, erfasst.	Chaque étape, enregistrée.
+See what is yours to use, and what already has a purpose.	Mira qué puedes usar y qué ya tiene un propósito.	Sieh, was du nutzen kannst und was schon verplant ist.	Voyez ce que vous pouvez utiliser et ce qui a déjà un but.
+Give each payment a place. Preview its impact before sending.	Dale un lugar a cada pago. Revisa su impacto antes de enviarlo.	Gib jeder Zahlung einen Platz. Prüfe ihre Wirkung vor dem Senden.	Donnez une place à chaque paiement. Vérifiez son impact avant l’envoi.
+Submitted is not the same as confirmed. Check the chain.	Enviado no significa confirmado. Comprueba la cadena.	Eingereicht heißt nicht bestätigt. Prüfe die Blockchain.	Envoyé ne signifie pas confirmé. Vérifiez la chaîne.
+Testnet	Red de prueba	Testnetz	Réseau de test
+Mainnet	Red principal	Hauptnetz	Réseau principal
+Checking wallet…	Comprobando cartera…	Wallet wird geprüft…	Vérification du portefeuille…
+EXAMPLE WALLET BALANCE	SALDO DE EJEMPLO	BEISPIELGUTHABEN	SOLDE D’EXEMPLE
+NIMIQ PAY BALANCE	SALDO NIMIQ PAY	NIMIQ-PAY-GUTHABEN	SOLDE NIMIQ PAY
+Unavailable	No disponible	Nicht verfügbar	Indisponible
+Unknown	Desconocido	Unbekannt	Inconnu
+Your current plan exceeds the balance and reserve target. Adjust a commitment before paying.	Tu plan supera el saldo y la reserva. Ajusta un compromiso antes de pagar.	Dein Plan überschreitet Guthaben und Reserve. Passe vor dem Zahlen eine Verpflichtung an.	Votre plan dépasse le solde et la réserve. Ajustez un engagement avant de payer.
+The balance left after recorded payments and your reserve target.	El saldo tras los pagos registrados y la reserva.	Das Guthaben nach erfassten Zahlungen und Reserve.	Le solde après les paiements enregistrés et la réserve.
+Essential commitment	Compromiso esencial	Wichtige Verpflichtung	Engagement essentiel
+Planned payment	Pago planificado	Geplante Zahlung	Paiement prévu
+No matching payments	No hay pagos coincidentes	Keine passenden Zahlungen	Aucun paiement correspondant
+Make space for your first commitment.	Haz espacio para tu primer compromiso.	Schaffe Platz für deine erste Verpflichtung.	Faites une place à votre premier engagement.
+No transaction hash recorded. Check Nimiq Pay payment history.	No se registró un hash. Consulta el historial de Nimiq Pay.	Kein Transaktions-Hash erfasst. Prüfe den Nimiq-Pay-Verlauf.	Aucun hash enregistré. Consultez l’historique Nimiq Pay.
+Example mode never sends transactions or creates fake receipts.	El modo de ejemplo no envía transacciones ni crea recibos falsos.	Der Beispielmodus sendet keine Transaktionen und erstellt keine falschen Belege.	Le mode exemple n’envoie aucune transaction et ne crée aucun faux reçu.
+Your first wallet-approved payment will appear here.	Tu primer pago aprobado aparecerá aquí.	Deine erste freigegebene Zahlung erscheint hier.	Votre premier paiement approuvé apparaîtra ici.
+MAKE IT PART OF THE PLAN	HAZLO PARTE DEL PLAN	MACHE ES ZUM TEIL DES PLANS	INTÉGREZ-LE AU PLAN
+SET YOUR PERSPECTIVE	DEFINE TU PERSPECTIVA	LEGE DEINE PERSPEKTIVE FEST	DÉFINISSEZ VOTRE PERSPECTIVE
+Refine your commitment.	Ajusta tu compromiso.	Passe deine Verpflichtung an.	Ajustez votre engagement.
+A new commitment.	Un nuevo compromiso.	Eine neue Verpflichtung.	Un nouvel engagement.
+Your planning preferences.	Tus preferencias de planificación.	Deine Planungseinstellungen.	Vos préférences de planification.
+Example mode does not send funds.	El modo de ejemplo no envía fondos.	Der Beispielmodus sendet keine Gelder.	Le mode exemple n’envoie pas de fonds.
+A wallet request is in progress. Return to Quorail after approving or cancelling. Do not submit again while its result is unknown.	Hay una solicitud en curso. Vuelve a Quorail tras aprobar o cancelar. No reenvíes mientras el resultado sea desconocido.	Eine Wallet-Anfrage läuft. Kehre nach Freigabe oder Abbruch zu Quorail zurück. Sende nicht erneut, solange das Ergebnis unklar ist.	Une demande est en cours. Revenez dans Quorail après approbation ou annulation. Ne renvoyez rien tant que le résultat est inconnu.
+Payment paused: refresh your wallet balance first.	Pago pausado: actualiza primero el saldo.	Zahlung pausiert: aktualisiere zuerst das Guthaben.	Paiement suspendu : actualisez d’abord le solde.
+Payment paused: local storage needs recovery.	Pago pausado: hay que recuperar el almacenamiento local.	Zahlung pausiert: lokaler Speicher muss wiederhergestellt werden.	Paiement suspendu : le stockage local doit être restauré.
+Payment paused: resolve the earlier attempt in Activity first.	Pago pausado: resuelve el intento anterior en Actividad.	Zahlung pausiert: kläre zuerst den früheren Versuch unter Aktivität.	Paiement suspendu : résolvez d’abord la tentative précédente dans Activité.
+Payment paused: enter a valid reserve target.	Pago pausado: introduce una reserva válida.	Zahlung pausiert: gib ein gültiges Reserveziel ein.	Paiement suspendu : saisissez une réserve valide.
+Payment paused: this plan crosses your reserve target. Review the commitments or reserve.	Pago pausado: el plan cruza tu reserva. Revisa compromisos o reserva.	Zahlung pausiert: der Plan unterschreitet die Reserve. Prüfe Verpflichtungen oder Reserve.	Paiement suspendu : le plan franchit votre réserve. Vérifiez les engagements ou la réserve.
+Before paying, tick the account confirmation above.	Antes de pagar, marca la confirmación de cuenta.	Bestätige vor dem Zahlen das Konto oben.	Avant de payer, cochez la confirmation du compte.
+Ready for your approval in Nimiq Pay. Nothing is sent until you approve.	Listo para aprobar en Nimiq Pay. No se envía nada sin tu aprobación.	Bereit für deine Freigabe in Nimiq Pay. Vorher wird nichts gesendet.	Prêt pour votre approbation dans Nimiq Pay. Rien n’est envoyé avant votre accord.
+Example only. No funds move.	Solo un ejemplo. No se mueven fondos.	Nur ein Beispiel. Keine Gelder werden bewegt.	Exemple uniquement. Aucun fonds ne bouge.
+Waiting for wallet…	Esperando la cartera…	Warte auf Wallet…	En attente du portefeuille…
+Close timing comparison	Cerrar comparación de fechas	Terminvergleich schließen	Fermer la comparaison des dates
+What if I delay this by 2 weeks?	¿Qué pasa si lo retraso 2 semanas?	Was passiert bei 2 Wochen Verschiebung?	Que se passe-t-il si je reporte de 2 semaines ?
+Refresh your wallet balance	Actualiza el saldo de tu cartera	Aktualisiere dein Wallet-Guthaben	Actualisez le solde du portefeuille
+Recorded commitments remain covered	Los compromisos registrados siguen cubiertos	Erfasste Verpflichtungen bleiben gedeckt	Les engagements enregistrés restent couverts
+App installed	App instalada	App installiert	Application installée
+Add to your device	Añadir a tu dispositivo	Zum Gerät hinzufügen	Ajouter à votre appareil
+AFTER EQUIPMENT PAYMENT	DESPUÉS DEL PAGO DEL EQUIPO	NACH DER AUSRÜSTUNGSZAHLUNG	APRÈS LE PAIEMENT DU MATÉRIEL
+Equipment payment preview	Vista previa del pago del equipo	Vorschau der Ausrüstungszahlung	Aperçu du paiement du matériel
+What if I pay for equipment?	¿Y si pago el equipo?	Was passiert, wenn ich Ausrüstung bezahle?	Et si je paie le matériel ?
+100 NIM below your reserve target	100 NIM por debajo de tu reserva	100 NIM unter deinem Reserveziel	100 NIM sous votre réserve cible
+Preview a 250 NIM payment	Previsualizar un pago de 250 NIM	Eine Zahlung von 250 NIM prüfen	Prévisualiser un paiement de 250 NIM
+A little context changes the decision.	Un poco de contexto cambia la decisión.	Etwas Kontext verändert die Entscheidung.	Un peu de contexte change la décision.
+Every commitment has its place.	Cada compromiso tiene su lugar.	Jede Verpflichtung hat ihren Platz.	Chaque engagement a sa place.
+You win	Has ganado	Du gewinnst	Vous gagnez
+Bot wins	Gana el bot	Der Bot gewinnt	Le robot gagne
+A well-played draw.	Un empate bien jugado.	Ein gut gespieltes Unentschieden.	Un match nul bien joué.
+Your move. You play ×.	Tu turno. Juegas ×.	Du bist dran. Du spielst ×.	À vous. Vous jouez ×.
+LOCAL TWO PLAYER	DOS JUGADORES LOCALES	ZWEI SPIELER LOKAL	DEUX JOUEURS EN LOCAL
+You play White. The practice bot plays Black and looks two plies ahead.	Juegas con blancas. El bot juega con negras y anticipa dos medias jugadas.	Du spielst Weiß. Der Übungsbot spielt Schwarz und schaut zwei Halbzüge voraus.	Vous jouez les blancs. Le robot joue les noirs et anticipe deux demi-coups.
+Pass the device between turns.	Pasa el dispositivo entre turnos.	Gebt das Gerät nach jedem Zug weiter.	Passez l’appareil entre les tours.
+Black	Negras	Schwarz	Noirs
+White	Blancas	Weiß	Blancs
+Draw.	Empate.	Unentschieden.	Match nul.
+ • Check	 • Jaque	 • Schach	 • Échec
+Exactly. 1,000 − 650 − 200 = 150 NIM. Fees would reduce this room.	Exacto. 1.000 − 650 − 200 = 150 NIM. Las comisiones reducirían este margen.	Genau. 1.000 − 650 − 200 = 150 NIM. Gebühren würden den Spielraum verringern.	Exactement. 1 000 − 650 − 200 = 150 NIM. Les frais réduiraient cette marge.
+Try again. Subtract commitments and your reserve from the wallet balance.	Prueba otra vez. Resta los compromisos y la reserva al saldo.	Versuche es erneut. Ziehe Verpflichtungen und Reserve vom Guthaben ab.	Réessayez. Soustrayez les engagements et la réserve du solde.
+Refresh your balance before making a decision.	Actualiza el saldo antes de decidir.	Aktualisiere dein Guthaben vor einer Entscheidung.	Actualisez le solde avant de décider.
+Where the buffer first runs short.	Dónde se agota primero el margen.	Wo das Polster zuerst knapp wird.	Là où la marge devient insuffisante.
+The next 90 days remain covered.	Los próximos 90 días siguen cubiertos.	Die nächsten 90 Tage bleiben gedeckt.	Les 90 prochains jours restent couverts.
+Your starting balance is already below reserve.	Tu saldo inicial ya está por debajo de la reserva.	Dein Anfangsguthaben liegt bereits unter der Reserve.	Votre solde initial est déjà sous la réserve.
+Request contributions / split this cost	Pedir contribuciones / dividir este coste	Beiträge anfordern / Kosten teilen	Demander des contributions / partager ce coût
+Create a shared team board	Crear un tablero compartido	Gemeinsame Teamübersicht erstellen	Créer un tableau d’équipe partagé
+Publish up to 20 currently planned commitments. Members view the same board and approve their own payments. Future recurring occurrences are not published.	Publica hasta 20 compromisos actuales. Los miembros ven el mismo tablero y aprueban sus pagos. No se publican las recurrencias futuras.	Veröffentliche bis zu 20 aktuelle Verpflichtungen. Mitglieder sehen dieselbe Übersicht und genehmigen eigene Zahlungen. Künftige Wiederholungen werden nicht veröffentlicht.	Publiez jusqu’à 20 engagements actuels. Les membres voient le même tableau et approuvent leurs paiements. Les récurrences futures ne sont pas publiées.
+Creating…	Creando…	Erstellen…	Création…
+Connect a wallet to share	Conecta una cartera para compartir	Zum Teilen Wallet verbinden	Connectez un portefeuille pour partager
+Create invite link	Crear enlace de invitación	Einladungslink erstellen	Créer le lien d’invitation
+Copy link	Copiar enlace	Link kopieren	Copier le lien
+Collect contributions into the requester’s wallet. This does not pay the original outgoing bill.	Recoge contribuciones en la cartera del solicitante. Esto no paga la factura original.	Sammle Beiträge in der Wallet des Anfordernden. Die ursprüngliche Rechnung wird damit nicht bezahlt.	Collectez les contributions dans le portefeuille du demandeur. Cela ne règle pas la facture initiale.
+A shared snapshot with live payment receipts. Each payer approves their own transaction.	Una copia compartida con recibos actualizados. Cada persona aprueba su transacción.	Eine gemeinsame Kopie mit aktuellen Belegen. Jeder Zahlende genehmigt seine Transaktion selbst.	Une copie partagée avec reçus actualisés. Chaque payeur approuve sa transaction.
+Fully paid	Pagado por completo	Vollständig bezahlt	Entièrement payé
+Partially paid	Pagado parcialmente	Teilweise bezahlt	Partiellement payé
+Awaiting payments	Esperando pagos	Warte auf Zahlungen	En attente de paiements
+Paid · confirmed	Pagado · confirmado	Bezahlt · bestätigt	Payé · confirmé
+planned	planificado	geplant	prévu
+pending	pendiente	ausstehend	en attente
+confirmed	confirmado	bestätigt	confirmé
+failed	fallido	fehlgeschlagen	échoué
+uncertain	incierto	unklar	incertain
+mismatch	no coincide	abweichend	non concordant
+submitting	enviando	wird eingereicht	envoi en cours
+weekly	semanal	wöchentlich	hebdomadaire
+monthly	mensual	monatlich	mensuel
+Explain my 30-day buffer.	Explica mi margen de 30 días.	Erkläre mein 30-Tage-Polster.	Explique ma marge sur 30 jours.
+How do recurring commitments affect my plan?	¿Cómo afectan los compromisos recurrentes a mi plan?	Wie beeinflussen wiederkehrende Verpflichtungen meinen Plan?	Comment les engagements récurrents affectent-ils mon plan ?
+What does a pending receipt mean?	¿Qué significa un recibo pendiente?	Was bedeutet ein ausstehender Beleg?	Que signifie un reçu en attente ?
+What should I check before making this payment?	¿Qué debo comprobar antes de pagar?	Was sollte ich vor dieser Zahlung prüfen?	Que dois-je vérifier avant ce paiement ?
+Quorail home	Inicio de Quorail	Quorail-Startseite	Accueil Quorail
+Planning settings	Ajustes de planificación	Planungseinstellungen	Paramètres de planification
+Dismiss notice	Cerrar aviso	Hinweis schließen	Fermer l’avis
+Change planning window	Cambiar período	Planungszeitraum ändern	Changer la période
+Search payments	Buscar pagos	Zahlungen suchen	Rechercher des paiements
+Find a payment…	Buscar un pago…	Zahlung finden…	Trouver un paiement…
+Close dialog	Cerrar diálogo	Dialog schließen	Fermer la fenêtre
+Close payment	Cerrar pago	Zahlung schließen	Fermer le paiement
+Payment impact	Impacto del pago	Auswirkung der Zahlung	Impact du paiement
+e.g. Studio rent	p. ej. Alquiler del estudio	z. B. Studiomiete	p. ex. Loyer du studio
+64-character transaction hash	Hash de transacción de 64 caracteres	64-stelliger Transaktions-Hash	Hash de transaction de 64 caractères
+Quorail AI assistant	Asistente Quorail IA	Quorail-KI-Assistent	Assistant Quorail IA
+Close Quorail AI	Cerrar Quorail IA	Quorail KI schließen	Fermer Quorail IA
+Choose game	Elegir juego	Spiel wählen	Choisir un jeu
+Jayking, Designer, Developer	Jayking, diseñador y desarrollador	Jayking, Designer und Entwickler	Jayking, designer et développeur
+Quorail URL	URL de Quorail	Quorail-URL	URL de Quorail
+Request cancelled. No new payment was approved.	Solicitud cancelada. No se aprobó ningún pago nuevo.	Anfrage abgebrochen. Keine neue Zahlung genehmigt.	Demande annulée. Aucun nouveau paiement approuvé.
+The wallet could not complete this request.	La cartera no pudo completar la solicitud.	Die Wallet konnte die Anfrage nicht abschließen.	Le portefeuille n’a pas pu terminer cette demande.
+Payment updated.	Pago actualizado.	Zahlung aktualisiert.	Paiement mis à jour.
+Payment added to your plan.	Pago añadido al plan.	Zahlung zum Plan hinzugefügt.	Paiement ajouté au plan.
+Payment confirmed on chain. Recipient, amount, network and sender match.	Pago confirmado en cadena. Coinciden destinatario, importe, red y remitente.	Zahlung auf der Blockchain bestätigt. Empfänger, Betrag, Netzwerk und Absender stimmen überein.	Paiement confirmé sur la chaîne. Destinataire, montant, réseau et expéditeur correspondent.
+Balance unavailable. Use Refresh to retry.	Saldo no disponible. Pulsa Actualizar para reintentar.	Guthaben nicht verfügbar. Versuche Aktualisieren.	Solde indisponible. Appuyez sur Actualiser pour réessayer.
+Assistant unavailable.	Asistente no disponible.	Assistent nicht verfügbar.	Assistant indisponible.
+Can I afford this payment?	¿Puedo permitirme este pago?	Kann ich mir diese Zahlung leisten?	Puis-je me permettre ce paiement ?
+Explain a 2-week delay	Explica un retraso de 2 semanas	Erkläre eine Verschiebung um 2 Wochen	Explique un report de 2 semaines
+Which commitment is most at risk?	¿Qué compromiso corre más riesgo?	Welche Verpflichtung ist am stärksten gefährdet?	Quel engagement est le plus à risque ?
+Freelancer studio	Estudio independiente	Freelancer-Studio	Studio indépendant
+Small team	Equipo pequeño	Kleines Team	Petite équipe
+Rent + buffer	Alquiler + margen	Miete + Polster	Loyer + marge
+Shared workspace	Espacio compartido	Gemeinsamer Arbeitsraum	Espace partagé
+Weekly collaborator	Colaborador semanal	Wöchentlicher Mitarbeiter	Collaborateur hebdomadaire
+Software tools	Herramientas de software	Softwarewerkzeuge	Outils logiciels
+Monthly rent	Alquiler mensual	Monatliche Miete	Loyer mensuel
+Groceries	Alimentos	Lebensmittel	Courses
+Tic-tac-toe	Tres en raya	Tic-Tac-Toe	Morpion
+Chess	Ajedrez	Schach	Échecs
+Connect four	Conecta cuatro	Vier gewinnt	Puissance quatre
+Money moves	Decisiones financieras	Geldentscheidungen	Décisions financières
+A team budget with weekly collaborator costs. Shared boards use a separate explicit publishing step.	Presupuesto de equipo con costes semanales. Los tableros se publican en un paso separado.	Teambudget mit wöchentlichen Kosten. Gemeinsame Übersichten werden separat veröffentlicht.	Budget d’équipe avec coûts hebdomadaires. Les tableaux sont publiés dans une étape distincte.
+Rent and weekly groceries with a personal reserve. No future income is assumed.	Alquiler y alimentos semanales con reserva personal. No se suponen ingresos futuros.	Miete und wöchentliche Lebensmittel mit persönlicher Reserve. Ohne angenommene zukünftige Einnahmen.	Loyer et courses hebdomadaires avec réserve personnelle. Aucun revenu futur supposé.
+Studio costs and collaborator payments. Unreceived client invoices are not counted as spendable balance.	Costes del estudio y colaboradores. Las facturas no cobradas no cuentan como saldo disponible.	Studio- und Mitarbeiterkosten. Noch nicht bezahlte Kundenrechnungen zählen nicht als verfügbares Guthaben.	Frais du studio et collaborateurs. Les factures non encaissées ne comptent pas comme solde disponible.

@@ -1,5 +1,8 @@
 "use client";
-import { useLanguage } from "./Preferences";
+import { useLanguage as useUILanguage } from "./Preferences";
+import Localized from "@/components/Localized";
+
+import { useLanguage, PreferenceControls } from "./Preferences";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import Link from "next/link";
 import {
@@ -22,7 +25,7 @@ import {
   Trash2,
   SlidersHorizontal,
 } from "lucide-react";
-import { readWalletBalance } from "@/lib/balance";
+import { readWalletBalance, readWalletSnapshot } from "@/lib/balance";
 import Brand from "./Brand";
 import ForecastPanel from "./ForecastPanel";
 import { decryptBackup } from "@/lib/secure-backup";
@@ -75,6 +78,8 @@ const icons = {
 const short = (a: string) =>
   a.length > 20 ? `${a.slice(0, 9)}…${a.slice(-4)}` : a;
 export default function Console() {
+  const { tr: ui } = useUILanguage();
+
   const { tr } = useLanguage();
   const [importPassword, setImportPassword] = useState("");
   const [tab, setTab] = useState<Tab>("Overview");
@@ -244,6 +249,22 @@ export default function Console() {
       setBusy(false);
     }
   }
+  useEffect(() => {
+    const host = provider.current;
+    if (!host || !address || demo || busy) return;
+    const changed = () => {
+      void refresh();
+    };
+    host.on("accountsChanged", changed);
+    const visible = () => {
+      if (document.visibilityState === "visible") changed();
+    };
+    document.addEventListener("visibilitychange", visible);
+    return () => {
+      host.removeListener("accountsChanged", changed);
+      document.removeEventListener("visibilitychange", visible);
+    };
+  }, [address, demo, busy, network]);
   async function chooseAccount(a: string, n = network, p = provider.current) {
     if (!p) return;
     const k = storageKey(n, a);
@@ -368,8 +389,11 @@ export default function Console() {
               "Resolve the existing payment in Activity before sending another.",
             );
           let b: number;
+          let expectedSender: string;
           try {
-            b = await readWalletBalance(host, address);
+            const snapshot = await readWalletSnapshot(host, address);
+            b = snapshot.balance;
+            expectedSender = snapshot.source;
           } catch (e) {
             setBalance(null);
             setBalanceError(errorMessage(e));
@@ -388,7 +412,9 @@ export default function Console() {
           const claimed = {
             ...latest,
             payments: latest.payments.map((x) =>
-              x.id === p.id ? { ...x, status: "submitting" as const } : x,
+              x.id === p.id
+                ? { ...x, status: "submitting" as const, expectedSender }
+                : x,
             ),
           };
           update(claimed, true);
@@ -663,7 +689,9 @@ export default function Console() {
     <div className="app-shell">
       <aside className="sidebar">
         <Brand />
-        <div className="sidebar-label">YOUR PAYMENT PERSPECTIVE</div>
+        <div className="sidebar-label">
+          <Localized text={"YOUR PAYMENT PERSPECTIVE"} />
+        </div>
         <nav>
           {(["Overview", "Payments", "Activity"] as Tab[]).map((t) => {
             const Icon = icons[t];
@@ -688,47 +716,58 @@ export default function Console() {
           })}
         </nav>
         <Link href="/play/" className="button outline">
-          Play room ↗
+          {" "}
+          <Localized text={"Play room ↗"} />{" "}
         </Link>
         <Link className="button outline" href="/shared/">
-          Shared boards ↗
+          {" "}
+          <Localized text={"Shared boards ↗"} />{" "}
         </Link>
         <div className="sidebar-bottom">
           <div className="sidebar-note">
             <span className="small-star">✳</span>
             <p>
-              A little clarity.
-              <br />A better next move.
+              {" "}
+              <Localized text={"A little clarity."} /> <br />
+              <Localized text={"A better next move."} />{" "}
             </p>
           </div>
           <Link href="/docs/">
             {tr("Field guide")} <ArrowUpRight size={15} />
           </Link>
           <span className="powered">
-            <i /> BUILT FOR NIMIQ PAY
+            <i /> <Localized text={"BUILT FOR NIMIQ PAY"} />{" "}
           </span>
         </div>
       </aside>
       <div className="app-main">
         <header className="app-header">
           <div>
-            <span className="breadcrumb">Workspace /</span> {tab}
+            <span className="breadcrumb">
+              <Localized text={"Workspace /"} />
+            </span>{" "}
+            <Localized text={tab} />
           </div>
           <div className="header-actions">
+            <PreferenceControls />
             {demo ? (
-              <span className="pill demo-pill">Example mode</span>
+              <span className="pill demo-pill">
+                <Localized text={"Example mode"} />
+              </span>
             ) : address ? (
               <span className="pill">
                 <i />
                 {network}
               </span>
             ) : (
-              <span className="pill">Wallet not connected</span>
+              <span className="pill">
+                <Localized text={"Wallet not connected"} />
+              </span>
             )}
             {ready && (
               <button
                 className="icon-button"
-                aria-label="Planning settings"
+                aria-label={ui("Planning settings")}
                 onClick={() => setModal("settings")}
               >
                 <Settings2 size={19} />
@@ -741,7 +780,9 @@ export default function Console() {
                 onClick={disconnect}
               >
                 <LogOut size={15} />
-                <span>Disconnect</span>
+                <span>
+                  <Localized text={"Disconnect"} />
+                </span>
               </button>
             ) : (
               <button
@@ -750,7 +791,7 @@ export default function Console() {
                 onClick={connect}
               >
                 <Wallet size={16} />
-                {busy ? "Connecting…" : "Connect wallet"}
+                <Localized text={busy ? "Connecting…" : "Connect wallet"} />
               </button>
             )}
           </div>
@@ -759,25 +800,37 @@ export default function Console() {
           <div className="workspace-title">
             <div>
               <span className="eyebrow">
-                {tab === "Overview"
-                  ? "YOUR MONEY, WITH CONTEXT"
-                  : tab === "Payments"
-                    ? "EVERY COMMITMENT IN VIEW"
-                    : "FOLLOW THE EVIDENCE"}
+                <Localized
+                  text={
+                    tab === "Overview"
+                      ? "YOUR MONEY, WITH CONTEXT"
+                      : tab === "Payments"
+                        ? "EVERY COMMITMENT IN VIEW"
+                        : "FOLLOW THE EVIDENCE"
+                  }
+                />
               </span>
               <h1>
-                {tab === "Overview"
-                  ? "A clearer next move."
-                  : tab === "Payments"
-                    ? "The plan ahead."
-                    : "Every move, recorded."}
+                <Localized
+                  text={
+                    tab === "Overview"
+                      ? "A clearer next move."
+                      : tab === "Payments"
+                        ? "The plan ahead."
+                        : "Every move, recorded."
+                  }
+                />
               </h1>
               <p>
-                {tab === "Overview"
-                  ? "See what is yours to use, and what already has a purpose."
-                  : tab === "Payments"
-                    ? "Give each payment a place. Preview its impact before sending."
-                    : "Submitted is not the same as confirmed. Check the chain."}
+                <Localized
+                  text={
+                    tab === "Overview"
+                      ? "See what is yours to use, and what already has a purpose."
+                      : tab === "Payments"
+                        ? "Give each payment a place. Preview its impact before sending."
+                        : "Submitted is not the same as confirmed. Check the chain."
+                  }
+                />
               </p>
             </div>
             {ready && (
@@ -789,16 +842,17 @@ export default function Console() {
                 }}
                 disabled={busy || storageError}
               >
-                <Plus size={18} />
-                Add payment
+                <Plus size={18} /> <Localized text={"Add payment"} />{" "}
               </button>
             )}
           </div>
           {message && (
             <div className="notice" role="status">
-              <span>{message}</span>
+              <span>
+                <Localized text={message} />
+              </span>
               <button
-                aria-label="Dismiss notice"
+                aria-label={ui("Dismiss notice")}
                 onClick={() => setMessage("")}
               >
                 <X size={16} />
@@ -808,20 +862,29 @@ export default function Console() {
           {!ready ? (
             <section className="connect-panel">
               <div className="connect-art">
-                <span className="large-glyph">Q</span>
+                <span className="large-glyph">
+                  <Localized text={"Q"} />
+                </span>
                 <span className="orbit-ring" />
               </div>
               <div>
-                <span className="eyebrow">START WITH YOUR WALLET</span>
+                <span className="eyebrow">
+                  <Localized text={"START WITH YOUR WALLET"} />
+                </span>
                 <h2>
-                  Know what comes
-                  <br />
-                  <em>after the payment.</em>
+                  {" "}
+                  <Localized text={"Know what comes"} /> <br />
+                  <em>
+                    <Localized text={"after the payment."} />
+                  </em>
                 </h2>
                 <p>
-                  Connect inside Nimiq Pay to read your balance and start a
-                  private plan on this device. You approve every payment in your
-                  wallet.
+                  {" "}
+                  <Localized
+                    text={
+                      "Connect inside Nimiq Pay to read your balance and start a private plan on this device. You approve every payment in your wallet."
+                    }
+                  />{" "}
                 </p>
                 <div className="row wrap">
                   <button
@@ -849,9 +912,17 @@ export default function Console() {
                   {tr("Get Nimiq Pay")} <ArrowUpRight size={15} />
                 </button>
                 <small>
-                  Plans are stored locally, unencrypted. Export a backup before
-                  clearing browser data. Read the{" "}
-                  <Link href="/docs/#privacy">privacy guide</Link>.
+                  {" "}
+                  <Localized
+                    text={
+                      "Plans are stored locally, unencrypted. Export a backup before clearing browser data. Read the"
+                    }
+                  />
+                  <Localized text={" "} />
+                  <Link href="/docs/#privacy">
+                    <Localized text={"privacy guide"} />
+                  </Link>
+                  .
                 </small>
               </div>
             </section>
@@ -868,38 +939,69 @@ export default function Console() {
               {demo && (
                 <section className="scenario-picker">
                   <label>
-                    Explore an example
+                    {" "}
+                    <Localized text={"Explore an example"} />{" "}
                     <select
                       value={scenario}
                       onChange={(e) => startDemo(e.target.value as Scenario)}
                     >
                       {Object.entries(scenarioLabels).map(([value, label]) => (
                         <option key={value} value={value}>
-                          {label}
+                          <Localized text={label} />
                         </option>
                       ))}
                     </select>
                   </label>
                   <p className="helper">
-                    {exampleScenario(scenario).note} Switching examples resets
-                    example edits only. No funds move.
+                    {exampleScenario(scenario).note}{" "}
+                    <Localized
+                      text={
+                        "Switching examples resets example edits only. No funds move."
+                      }
+                    />{" "}
                   </p>
                 </section>
               )}
               <details className="quick-path">
-                <summary>Your first real payment: four steps</summary>
+                <summary>
+                  <Localized text={"Your first real payment: four steps"} />
+                </summary>
                 <ol>
-                  <li>Add a commitment with a recipient you have checked.</li>
-                  <li>Preview the buffer and set your reserve.</li>
-                  <li>Approve personally in Nimiq Pay, checking the sender.</li>
                   <li>
-                    Keep the workspace open for receipt verification. Open
-                    Activity to export records.
+                    <Localized
+                      text={
+                        "Add a commitment with a recipient you have checked."
+                      }
+                    />
+                  </li>
+                  <li>
+                    <Localized
+                      text={"Preview the buffer and set your reserve."}
+                    />
+                  </li>
+                  <li>
+                    <Localized
+                      text={
+                        "Approve personally in Nimiq Pay, checking the sender."
+                      }
+                    />
+                  </li>
+                  <li>
+                    {" "}
+                    <Localized
+                      text={
+                        "Keep the workspace open for receipt verification. Open Activity to export records."
+                      }
+                    />{" "}
                   </li>
                 </ol>
                 <p className="helper">
-                  A returned hash is pending until verified. Network timing
-                  varies.
+                  {" "}
+                  <Localized
+                    text={
+                      "A returned hash is pending until verified. Network timing varies."
+                    }
+                  />{" "}
                 </p>
               </details>
               {address && (
@@ -908,7 +1010,7 @@ export default function Console() {
                     <Wallet size={14} /> {tr("Planning account")}
                   </span>
                   <select
-                    aria-label="Planning account"
+                    aria-label={ui("Planning account")}
                     value={address}
                     disabled={busy}
                     onChange={async (e) => {
@@ -924,7 +1026,7 @@ export default function Console() {
                       }
                     }}
                   >
-                    {accounts.map((a) => (
+                    {accounts.slice(0, 1).map((a) => (
                       <option key={a} value={a}>
                         {a}
                       </option>
@@ -944,14 +1046,19 @@ export default function Console() {
                 <div className="notice warning">
                   <AlertTriangle size={18} />
                   <span>
-                    A payment needs reconciliation. New sends are paused until
-                    its outcome is verified.
+                    {" "}
+                    <Localized
+                      text={
+                        "A payment needs reconciliation. New sends are paused until its outcome is verified."
+                      }
+                    />{" "}
                   </span>
                   <button
                     className="text-link"
                     onClick={() => setTab("Activity")}
                   >
-                    View activity
+                    {" "}
+                    <Localized text={"View activity"} />{" "}
                   </button>
                 </div>
               )}
@@ -960,20 +1067,27 @@ export default function Console() {
                   {!demo && (
                     <div className="balance-health" role="status">
                       <b>
-                        {network === "testnet" ? "Testnet" : "Mainnet"} ·
-                        Selected account balance
+                        <Localized
+                          text={network === "testnet" ? "Testnet" : "Mainnet"}
+                        />{" "}
+                        <Localized text={"· Nimiq Pay balance"} />{" "}
                       </b>
                       <p>
-                        {balanceError ||
-                          (balance === null
-                            ? "Balance unavailable. Use Refresh to retry."
-                            : `Last checked ${balanceChecked || "this session"}. This is one account, not the wallet's combined total.`)}
+                        {tr(
+                          balanceError ||
+                            (balance === null
+                              ? "Balance unavailable. Use Refresh to retry."
+                              : `Last checked ${balanceChecked || "this session"}. Read from Nimiq Pay’s current payment account. Incoming top-ups may still be pending.`),
+                        )}
                       </p>
                       {balance === 0 && (
                         <p>
-                          If Nimiq Pay shows funds elsewhere, select the funded
-                          account above. A valid zero response is not replaced
-                          with an assumed wallet total.
+                          {" "}
+                          <Localized
+                            text={
+                              "If Nimiq Pay shows funds elsewhere, select the funded account above. A valid zero response is not replaced with an assumed wallet total."
+                            }
+                          />{" "}
                         </p>
                       )}
                       {balance === null && (
@@ -982,7 +1096,9 @@ export default function Console() {
                           disabled={busy}
                           onClick={refresh}
                         >
-                          {busy ? "Checking wallet…" : "Retry balance"}
+                          <Localized
+                            text={busy ? "Checking wallet…" : "Retry balance"}
+                          />
                         </button>
                       )}
                     </div>
@@ -991,15 +1107,25 @@ export default function Console() {
                     <section className="balance-card">
                       <div className="card-label">
                         <span>
-                          {demo
-                            ? "EXAMPLE WALLET BALANCE"
-                            : "ON-CHAIN ACCOUNT BALANCE"}
+                          <Localized
+                            text={
+                              demo
+                                ? "EXAMPLE WALLET BALANCE"
+                                : "NIMIQ PAY BALANCE"
+                            }
+                          />
                         </span>
-                        <span className="nim-symbol">⬡ NIM</span>
+                        <span className="nim-symbol">
+                          <Localized text={"⬡ NIM"} />
+                        </span>
                       </div>
                       <div className="big-number">
-                        {balance === null ? "Unavailable" : nim(balance)}
-                        <span>{balance === null ? "" : "NIM"}</span>
+                        <Localized
+                          text={balance === null ? "Unavailable" : nim(balance)}
+                        />
+                        <span>
+                          <Localized text={balance === null ? "" : "NIM"} />
+                        </span>
                       </div>
                       <div className="allocation-bar">
                         <i
@@ -1016,27 +1142,35 @@ export default function Console() {
                       <div className="balance-breakdown">
                         <div>
                           <span>
-                            <i className="dot gold-dot" />
-                            Committed
+                            <i className="dot gold-dot" />{" "}
+                            <Localized text={"Committed"} />{" "}
                           </span>
                           <b>
-                            {nim(total.obligations)} <small>NIM</small>
+                            {nim(total.obligations)}{" "}
+                            <small>
+                              <Localized text={"NIM"} />
+                            </small>
                           </b>
                         </div>
                         <div>
                           <span>
-                            <i className="dot pale-dot" />
-                            Reserve target
+                            <i className="dot pale-dot" />{" "}
+                            <Localized text={"Reserve target"} />{" "}
                           </span>
                           <b>
-                            {nim(plan.reserve)} <small>NIM</small>
+                            {nim(plan.reserve)}{" "}
+                            <small>
+                              <Localized text={"NIM"} />
+                            </small>
                           </b>
                         </div>
                       </div>
                       <div className="balance-foot">
-                        {plan.horizon}-day planning window{" "}
+                        {plan.horizon}
+                        <Localized text={"-day planning window"} />
+                        <Localized text={" "} />
                         <button
-                          aria-label="Change planning window"
+                          aria-label={ui("Change planning window")}
                           onClick={() => setModal("settings")}
                         >
                           <SlidersHorizontal size={16} />
@@ -1045,27 +1179,43 @@ export default function Console() {
                     </section>
                     <section className="available-card">
                       <div className="card-label">
-                        <span>AFTER RECORDED COMMITMENTS</span>
+                        <span>
+                          <Localized text={"AFTER RECORDED COMMITMENTS"} />
+                        </span>
                         <ArrowUpRight size={20} />
                       </div>
-                      <span className="available-title">Room to move</span>
+                      <span className="available-title">
+                        <Localized text={"Room to move"} />
+                      </span>
                       <div
                         className={
                           "available-number " +
                           (total.available < 0 ? "danger-text" : "")
                         }
                       >
-                        {balance === null ? "Unknown" : nim(total.available)}
-                        <small>{balance === null ? "" : "NIM"}</small>
+                        <Localized
+                          text={
+                            balance === null ? "Unknown" : nim(total.available)
+                          }
+                        />
+                        <small>
+                          <Localized text={balance === null ? "" : "NIM"} />
+                        </small>
                       </div>
                       <p>
-                        {total.available < 0
-                          ? "Your current plan exceeds the balance and reserve target. Adjust a commitment before paying."
-                          : "The balance left after recorded payments and your reserve target."}
+                        <Localized
+                          text={
+                            total.available < 0
+                              ? "Your current plan exceeds the balance and reserve target. Adjust a commitment before paying."
+                              : "The balance left after recorded payments and your reserve target."
+                          }
+                        />
                       </p>
                       <div className="available-footer">
-                        <ShieldCheck size={16} />A planning guide. Funds are not
-                        locked.
+                        <ShieldCheck size={16} />
+                        <Localized
+                          text={"A planning guide. Funds are not locked."}
+                        />{" "}
                       </div>
                     </section>
                   </div>
@@ -1079,14 +1229,20 @@ export default function Console() {
                   />
                   <section className="section-heading">
                     <div>
-                      <span className="eyebrow">UP NEXT</span>
-                      <h2>Your money has a plan.</h2>
+                      <span className="eyebrow">
+                        <Localized text={"UP NEXT"} />
+                      </span>
+                      <h2>
+                        <Localized text={"Your money has a plan."} />
+                      </h2>
                     </div>
                     <button
                       className="text-link"
                       onClick={() => setTab("Payments")}
                     >
-                      All payments <ArrowRight size={16} />
+                      {" "}
+                      <Localized text={"All payments"} />{" "}
+                      <ArrowRight size={16} />
                     </button>
                   </section>
                 </>
@@ -1096,12 +1252,14 @@ export default function Console() {
                   {tab === "Payments" && (
                     <div className="list-toolbar">
                       <input
-                        aria-label="Search payments"
-                        placeholder="Find a payment…"
+                        aria-label={ui("Search payments")}
+                        placeholder={ui("Find a payment…")}
                         value={filter}
                         onChange={(e) => setFilter(e.target.value)}
                       />
-                      <span>{plan.payments.length} recorded</span>
+                      <span>
+                        {plan.payments.length} <Localized text={"recorded"} />
+                      </span>
                     </div>
                   )}
                   {plan.payments
@@ -1127,19 +1285,26 @@ export default function Console() {
                           <ArrowUpRight size={20} />
                         </span>
                         <span className="payment-name">
-                          <b>{p.title}</b>
+                          <b>{demo ? tr(p.title) : p.title}</b>
                           <small>
-                            {p.priority === "essential"
-                              ? "Essential commitment"
-                              : "Planned payment"}{" "}
-                            · {p.due}
+                            <Localized
+                              text={
+                                p.priority === "essential"
+                                  ? "Essential commitment"
+                                  : "Planned payment"
+                              }
+                            />
+                            <Localized text={" "} />· {p.due}
                           </small>
                         </span>
                         <span className={"payment-status " + p.status}>
-                          {p.status}
+                          <Localized text={p.status} />
                         </span>
                         <span className="payment-amount">
-                          {nim(p.amount)} <small>NIM</small>
+                          {nim(p.amount)}{" "}
+                          <small>
+                            <Localized text={"NIM"} />
+                          </small>
                         </span>
                         <ArrowRight size={17} />
                       </button>
@@ -1152,13 +1317,21 @@ export default function Console() {
                     <div className="empty-state">
                       <ListChecks size={28} />
                       <h3>
-                        {filter
-                          ? "No matching payments"
-                          : "Make space for your first commitment."}
+                        <Localized
+                          text={
+                            filter
+                              ? "No matching payments"
+                              : "Make space for your first commitment."
+                          }
+                        />
                       </h3>
                       <p>
-                        Add a recipient, an amount and a due date to see the
-                        bigger picture.
+                        {" "}
+                        <Localized
+                          text={
+                            "Add a recipient, an amount and a due date to see the bigger picture."
+                          }
+                        />{" "}
                       </p>
                       <button
                         className="text-link"
@@ -1167,7 +1340,8 @@ export default function Console() {
                           setModal("add");
                         }}
                       >
-                        Add a payment <Plus size={16} />
+                        {" "}
+                        <Localized text={"Add a payment"} /> <Plus size={16} />
                       </button>
                     </div>
                   )}
@@ -1180,7 +1354,9 @@ export default function Console() {
                     address={address || "example"}
                   />
                   <div className="list-toolbar">
-                    <span>PAYMENT RECORDS</span>
+                    <span>
+                      <Localized text={"PAYMENT RECORDS"} />
+                    </span>
                     <button
                       className="text-link"
                       disabled={
@@ -1201,7 +1377,8 @@ export default function Console() {
                         setTimeout(() => URL.revokeObjectURL(url), 1000);
                       }}
                     >
-                      Export verified CSV
+                      {" "}
+                      <Localized text={"Export verified CSV"} />{" "}
                     </button>
                     <button
                       className="text-link"
@@ -1209,8 +1386,8 @@ export default function Console() {
                         downloadPlan(plan, network, address || "example")
                       }
                     >
-                      <Download size={16} />
-                      Export records
+                      <Download size={16} />{" "}
+                      <Localized text={"Export records"} />{" "}
                     </button>
                   </div>
                   {plan.payments
@@ -1226,17 +1403,23 @@ export default function Console() {
                             )}
                           </span>
                           <div className="grow">
-                            <h3>{p.title}</h3>
+                            <h3>{demo ? tr(p.title) : p.title}</h3>
                             <span className={"payment-status " + p.status}>
-                              {p.status}
+                              <Localized text={p.status} />
                             </span>
                           </div>
-                          <b>{nim(p.amount)} NIM</b>
+                          <b>
+                            {nim(p.amount)} <Localized text={"NIM"} />
+                          </b>
                         </div>
                         <p>
-                          {p.hash
-                            ? short(p.hash)
-                            : "No transaction hash recorded. Check Nimiq Pay payment history."}
+                          <Localized
+                            text={
+                              p.hash
+                                ? short(p.hash)
+                                : "No transaction hash recorded. Check Nimiq Pay payment history."
+                            }
+                          />
                         </p>
                         <div className="row wrap">
                           {p.hash && (
@@ -1247,14 +1430,17 @@ export default function Console() {
                                 target="_blank"
                                 rel="noreferrer"
                               >
-                                View transaction <ArrowUpRight size={15} />
+                                {" "}
+                                <Localized text={"View transaction"} />{" "}
+                                <ArrowUpRight size={15} />
                               </a>
                               <button
                                 className="button small outline"
                                 disabled={busy}
                                 onClick={() => checkReceipt(p)}
                               >
-                                Check receipt
+                                {" "}
+                                <Localized text={"Check receipt"} />{" "}
                               </button>
                             </>
                           )}
@@ -1262,7 +1448,9 @@ export default function Console() {
                             className="text-link"
                             onClick={() => setSelected(p.id)}
                           >
-                            Details <ArrowRight size={15} />
+                            {" "}
+                            <Localized text={"Details"} />{" "}
+                            <ArrowRight size={15} />
                           </button>
                         </div>
                       </article>
@@ -1270,11 +1458,17 @@ export default function Console() {
                   {!plan.payments.some((p) => p.status !== "planned") && (
                     <div className="empty-state">
                       <History size={30} />
-                      <h3>No payment attempts yet.</h3>
+                      <h3>
+                        <Localized text={"No payment attempts yet."} />
+                      </h3>
                       <p>
-                        {demo
-                          ? "Example mode never sends transactions or creates fake receipts."
-                          : "Your first wallet-approved payment will appear here."}
+                        <Localized
+                          text={
+                            demo
+                              ? "Example mode never sends transactions or creates fake receipts."
+                              : "Your first wallet-approved payment will appear here."
+                          }
+                        />
                       </p>
                     </div>
                   )}
@@ -1284,24 +1478,44 @@ export default function Console() {
                 <div className="insight-strip">
                   <span className="small-star">✳</span>
                   <div>
-                    <b>A balance is a number. A plan is perspective.</b>
+                    <b>
+                      <Localized
+                        text={"A balance is a number. A plan is perspective."}
+                      />
+                    </b>
                     <p>
-                      Your forecast includes recorded commitments within{" "}
-                      {plan.horizon} days. Unrecorded spending changes the
-                      picture.
+                      {" "}
+                      <Localized
+                        text={
+                          "Your forecast includes recorded commitments within"
+                        }
+                      />
+                      <Localized text={" "} />
+                      {plan.horizon}{" "}
+                      <Localized
+                        text={"days. Unrecorded spending changes the picture."}
+                      />{" "}
                     </p>
                   </div>
                   <Link href="/docs/" className="text-link">
-                    How it works <ArrowUpRight size={16} />
+                    {" "}
+                    <Localized text={"How it works"} />{" "}
+                    <ArrowUpRight size={16} />
                   </Link>
                 </div>
               )}
             </>
           )}
           <div className="workspace-footer">
-            <span>QUORAIL / A CONSIDERED WAY TO PAY</span>
-            <Link href="/shared/">Shared boards</Link>
-            <Link href="/docs/#privacy">Local plans. Clear boundaries.</Link>
+            <span>
+              <Localized text={"QUORAIL / A CONSIDERED WAY TO PAY"} />
+            </span>
+            <Link href="/shared/">
+              <Localized text={"Shared boards"} />
+            </Link>
+            <Link href="/docs/#privacy">
+              <Localized text={"Local plans. Clear boundaries."} />
+            </Link>
           </div>
         </main>
       </div>
@@ -1321,28 +1535,36 @@ export default function Console() {
           >
             <div className="modal-head">
               <span className="eyebrow">
-                {modal === "add"
-                  ? "MAKE IT PART OF THE PLAN"
-                  : "SET YOUR PERSPECTIVE"}
+                <Localized
+                  text={
+                    modal === "add"
+                      ? "MAKE IT PART OF THE PLAN"
+                      : "SET YOUR PERSPECTIVE"
+                  }
+                />
               </span>
               <button
                 className="icon-button"
-                aria-label="Close dialog"
+                aria-label={ui("Close dialog")}
                 onClick={() => setModal(null)}
               >
                 <X />
               </button>
             </div>
             <h2>
-              {modal === "add"
-                ? editing
-                  ? "Refine your commitment."
-                  : "A new commitment."
-                : "Your planning preferences."}
+              <Localized
+                text={
+                  modal === "add"
+                    ? editing
+                      ? "Refine your commitment."
+                      : "A new commitment."
+                    : "Your planning preferences."
+                }
+              />
             </h2>
             {message && (
               <p role="status" className="form-message">
-                {message}
+                <Localized text={message} />
               </p>
             )}
             {modal === "add" ? (
@@ -1363,7 +1585,7 @@ export default function Console() {
                     defaultValue={edited?.title}
                     required
                     maxLength={80}
-                    placeholder="e.g. Studio rent"
+                    placeholder={ui("e.g. Studio rent")}
                     autoFocus
                   />
                 </label>
@@ -1373,7 +1595,7 @@ export default function Console() {
                     name="recipient"
                     defaultValue={edited?.recipient}
                     required
-                    placeholder="NQ…"
+                    placeholder={ui("NQ…")}
                     autoComplete="off"
                   />
                 </label>
@@ -1387,7 +1609,7 @@ export default function Console() {
                       }
                       inputMode="decimal"
                       required
-                      placeholder="0.00"
+                      placeholder={ui("0.00")}
                     />
                   </label>
                   <label>
@@ -1433,22 +1655,31 @@ export default function Console() {
                   </select>
                 </label>
                 <p className="helper">
-                  Each occurrence requires your approval. After confirmation,
-                  the next occurrence is added automatically. Edit or remove
-                  that next occurrence to change or stop the series.
+                  {" "}
+                  <Localized
+                    text={
+                      "Each occurrence requires your approval. After confirmation, the next occurrence is added automatically. Edit or remove that next occurrence to change or stop the series."
+                    }
+                  />{" "}
                 </p>
                 <p className="helper">
-                  The explicit fee is included in your forecast and sent to the
-                  wallet. Nimiq supports zero-fee payments when the network
-                  permits. Adding a payment does not send funds.
+                  {" "}
+                  <Localized
+                    text={
+                      "The explicit fee is included in your forecast and sent to the wallet. Nimiq supports zero-fee payments when the network permits. Adding a payment does not send funds."
+                    }
+                  />{" "}
                 </p>
                 {formError && (
                   <p className="form-message mobile-form-error" role="alert">
-                    {formError}
+                    <Localized text={formError} />
                   </p>
                 )}
                 <button className="button dark full" type="submit">
-                  {editing ? tr("Save payment") : tr("Add to my plan")}{" "}
+                  <Localized
+                    text={editing ? tr("Save payment") : tr("Add to my plan")}
+                  />
+                  <Localized text={" "} />
                   <Plus size={17} />
                 </button>
               </form>
@@ -1465,26 +1696,33 @@ export default function Console() {
                   />
                 </label>
                 <label>
-                  Planning window
+                  {" "}
+                  <Localized text={"Planning window"} />{" "}
                   <select name="horizon" defaultValue={plan.horizon}>
                     {[7, 14, 30, 60, 90, 365].map((n) => (
                       <option key={n} value={n}>
-                        {n} days
+                        {n} <Localized text={"days"} />{" "}
                       </option>
                     ))}
                   </select>
                 </label>
                 <p className="helper">
-                  A reserve is your planning preference. Quorail blocks payments
-                  through this app that cross it. You can still spend directly
-                  in your wallet.
+                  {" "}
+                  <Localized
+                    text={
+                      "A reserve is your planning preference. Quorail blocks payments through this app that cross it. You can still spend directly in your wallet."
+                    }
+                  />{" "}
                 </p>
                 <button className="button dark full">
                   {tr("Save preferences")} <Check size={17} />
                 </button>
                 {!demo && (
                   <label>
-                    Backup password (encrypted imports only)
+                    {" "}
+                    <Localized
+                      text={"Backup password (encrypted imports only)"}
+                    />{" "}
                     <input
                       type="password"
                       autoComplete="off"
@@ -1492,8 +1730,12 @@ export default function Console() {
                       onChange={(e) => setImportPassword(e.target.value)}
                     />
                     <small>
-                      Used on this device only. Leave blank for a plain JSON
-                      backup.
+                      {" "}
+                      <Localized
+                        text={
+                          "Used on this device only. Leave blank for a plain JSON backup."
+                        }
+                      />{" "}
                     </small>
                   </label>
                 )}
@@ -1510,7 +1752,10 @@ export default function Console() {
                   </button>
                   {!demo && (
                     <label className="text-link">
-                      Import JSON or encrypted backup
+                      {" "}
+                      <Localized
+                        text={"Import JSON or encrypted backup"}
+                      />{" "}
                       <input
                         type="file"
                         accept="application/json"
@@ -1539,15 +1784,17 @@ export default function Console() {
             className="modal payment-detail"
             role="dialog"
             aria-modal="true"
-            aria-label="Payment impact"
+            aria-label={ui("Payment impact")}
             onClick={(e) => e.stopPropagation()}
           >
             <div className="modal-head">
-              <span className="eyebrow">BEFORE YOUR NEXT MOVE</span>
+              <span className="eyebrow">
+                <Localized text={"BEFORE YOUR NEXT MOVE"} />
+              </span>
               <button
                 className="icon-button"
                 disabled={busy}
-                aria-label="Close payment"
+                aria-label={ui("Close payment")}
                 onClick={() => setSelected(null)}
               >
                 <X />
@@ -1556,13 +1803,21 @@ export default function Console() {
             <h2>{payment.title}</h2>
             {payment.recurrence && (
               <p className="helper">
-                Repeats {payment.recurrence}. Due {payment.due}. No automatic
-                wallet debit.
+                {" "}
+                <Localized text={"Repeats"} />{" "}
+                <Localized text={payment.recurrence} />
+                <Localized text={". Due"} /> {payment.due}
+                <Localized text={". No automatic wallet debit."} />{" "}
               </p>
             )}
-            <p className="recipient">To {payment.recipient}</p>
+            <p className="recipient">
+              <Localized text={"To"} /> {payment.recipient}
+            </p>
             <div className="impact-total">
-              {nim(payment.amount)} <small>NIM</small>
+              {nim(payment.amount)}{" "}
+              <small>
+                <Localized text={"NIM"} />
+              </small>
             </div>
             {payment.status === "planned" && (
               <>
@@ -1572,7 +1827,8 @@ export default function Console() {
                   known={balance !== null}
                 />
                 <label className="reserve-adjust">
-                  Adjust reserve target (NIM)
+                  {" "}
+                  <Localized text={"Adjust reserve target (NIM)"} />{" "}
                   <input
                     key={selected}
                     inputMode="decimal"
@@ -1593,8 +1849,17 @@ export default function Console() {
                   />
                 </label>
                 <p className="helper">
-                  Reserve changes save immediately. Your forecast includes{" "}
-                  {plan.horizon} days and future recurring occurrences.
+                  {" "}
+                  <Localized
+                    text={
+                      "Reserve changes save immediately. Your forecast includes"
+                    }
+                  />
+                  <Localized text={" "} />
+                  {plan.horizon}{" "}
+                  <Localized
+                    text={"days and future recurring occurrences."}
+                  />{" "}
                 </p>
               </>
             )}
@@ -1602,24 +1867,45 @@ export default function Console() {
               <div>
                 <span>{tr("Current account balance")}</span>
                 <b>
-                  {balance === null ? "Unavailable" : nim(balance) + " NIM"}
+                  <Localized
+                    text={
+                      balance === null ? "Unavailable" : nim(balance) + " NIM"
+                    }
+                  />
                 </b>
               </div>
               <div>
-                <span>This payment + fee</span>
-                <b>{nim(impact.cost)} NIM</b>
+                <span>
+                  <Localized text={"This payment + fee"} />
+                </span>
+                <b>
+                  {nim(impact.cost)} <Localized text={"NIM"} />
+                </b>
               </div>
               <div>
-                <span>Other commitments in {plan.horizon} days</span>
-                <b>{nim(impact.obligations)} NIM</b>
+                <span>
+                  <Localized text={"Other commitments in"} /> {plan.horizon}{" "}
+                  <Localized text={"days"} />
+                </span>
+                <b>
+                  {nim(impact.obligations)} <Localized text={"NIM"} />
+                </b>
               </div>
               <div>
-                <span>Balance after this payment</span>
-                <b>{nim(impact.after)} NIM</b>
+                <span>
+                  <Localized text={"Balance after this payment"} />
+                </span>
+                <b>
+                  {nim(impact.after)} <Localized text={"NIM"} />
+                </b>
               </div>
               <div>
-                <span>Reserve target</span>
-                <b>{nim(plan.reserve)} NIM</b>
+                <span>
+                  <Localized text={"Reserve target"} />
+                </span>
+                <b>
+                  {nim(plan.reserve)} <Localized text={"NIM"} />
+                </b>
               </div>
               <div
                 className={
@@ -1628,13 +1914,17 @@ export default function Console() {
                     : "impact-result"
                 }
               >
-                <span>Room left after this move</span>
-                <b>{nim(impact.available)} NIM</b>
+                <span>
+                  <Localized text={"Room left after this move"} />
+                </span>
+                <b>
+                  {nim(impact.available)} <Localized text={"NIM"} />
+                </b>
               </div>
             </div>
             {message && (
               <p className="form-message" role="status">
-                {message}
+                <Localized text={message} />
               </p>
             )}
             {payment.status === "planned" ? (
@@ -1643,15 +1933,23 @@ export default function Console() {
                   <div className="notice warning">
                     <AlertTriangle size={18} />
                     <span>
-                      This payment crosses your target by{" "}
-                      {nim(impact.shortfall)} NIM. Adjust your plan before
-                      sending.
+                      {" "}
+                      <Localized text={"This payment crosses your target by"} />
+                      <Localized text={" "} />
+                      {nim(impact.shortfall)}{" "}
+                      <Localized
+                        text={"NIM. Adjust your plan before sending."}
+                      />{" "}
                     </span>
                   </div>
                 ) : (
                   <p className="helper">
-                    Your recorded commitments and reserve target remain covered
-                    at this balance.
+                    {" "}
+                    <Localized
+                      text={
+                        "Your recorded commitments and reserve target remain covered at this balance."
+                      }
+                    />{" "}
                   </p>
                 )}
                 {!demo && (
@@ -1660,30 +1958,36 @@ export default function Console() {
                       type="checkbox"
                       checked={ack}
                       onChange={(e) => setAck(e.target.checked)}
-                    />
-                    I will verify that Nimiq Pay sends from {short(address)}.
-                    Selecting a planning account here does not select the wallet
-                    signer.
+                    />{" "}
+                    <Localized
+                      text={
+                        "I will verify the recipient, amount and sending account in Nimiq Pay. The wallet chooses the actual signer."
+                      }
+                    />{" "}
                   </label>
                 )}
                 <p className="payment-readiness" role="status">
-                  {demo
-                    ? "Example mode does not send funds."
-                    : busy
-                      ? "A wallet request is in progress. Return to Quorail after approving or cancelling. Do not submit again while its result is unknown."
-                      : balance === null
-                        ? "Payment paused: refresh your wallet balance first."
-                        : storageError
-                          ? "Payment paused: local storage needs recovery."
-                          : unresolved
-                            ? "Payment paused: resolve the earlier attempt in Activity first."
-                            : reserveInvalid
-                              ? "Payment paused: enter a valid reserve target."
-                              : impact.shortfall > 0
-                                ? "Payment paused: this plan crosses your reserve target. Review the commitments or reserve."
-                                : !ack
-                                  ? "Before paying, tick the account confirmation above."
-                                  : "Ready for your approval in Nimiq Pay. Nothing is sent until you approve."}
+                  <Localized
+                    text={
+                      demo
+                        ? "Example mode does not send funds."
+                        : busy
+                          ? "A wallet request is in progress. Return to Quorail after approving or cancelling. Do not submit again while its result is unknown."
+                          : balance === null
+                            ? "Payment paused: refresh your wallet balance first."
+                            : storageError
+                              ? "Payment paused: local storage needs recovery."
+                              : unresolved
+                                ? "Payment paused: resolve the earlier attempt in Activity first."
+                                : reserveInvalid
+                                  ? "Payment paused: enter a valid reserve target."
+                                  : impact.shortfall > 0
+                                    ? "Payment paused: this plan crosses your reserve target. Review the commitments or reserve."
+                                    : !ack
+                                      ? "Before paying, tick the account confirmation above."
+                                      : "Ready for your approval in Nimiq Pay. Nothing is sent until you approve."
+                    }
+                  />
                 </p>
                 {balance === null && !demo && (
                   <button
@@ -1708,11 +2012,15 @@ export default function Console() {
                     storageError
                   }
                 >
-                  {demo
-                    ? "Example only. No funds move."
-                    : busy
-                      ? "Waiting for wallet…"
-                      : tr("Pay with Nimiq Pay")}
+                  <Localized
+                    text={
+                      demo
+                        ? "Example only. No funds move."
+                        : busy
+                          ? "Waiting for wallet…"
+                          : tr("Pay with Nimiq Pay")
+                    }
+                  />
                   <ArrowUpRight size={17} />
                 </button>
                 <button
@@ -1731,15 +2039,21 @@ export default function Console() {
                   disabled={busy}
                   onClick={() => remove(payment)}
                 >
-                  <Trash2 size={14} />
-                  Remove planned payment
+                  <Trash2 size={14} />{" "}
+                  <Localized text={"Remove planned payment"} />{" "}
                 </button>
               </>
             ) : (
               <>
                 <p className="helper">
-                  Receipt status: {payment.status}. Attempted payments remain in
-                  your records. Do not resend an uncertain transaction.
+                  {" "}
+                  <Localized text={"Receipt status:"} />{" "}
+                  <Localized text={payment.status} />
+                  <Localized
+                    text={
+                      ". Attempted payments remain in your records. Do not resend an uncertain transaction."
+                    }
+                  />{" "}
                 </p>
                 {payment.hash ? (
                   <div className="row wrap">
@@ -1749,22 +2063,28 @@ export default function Console() {
                       rel="noreferrer"
                       href={explorerUrl(network, payment.hash)}
                     >
-                      Inspect on explorer <ArrowUpRight size={16} />
+                      {" "}
+                      <Localized text={"Inspect on explorer"} />{" "}
+                      <ArrowUpRight size={16} />
                     </a>
                     <button
                       className="button outline"
                       disabled={busy}
                       onClick={() => checkReceipt(payment)}
                     >
-                      Check receipt
+                      {" "}
+                      <Localized text={"Check receipt"} />{" "}
                     </button>
                   </div>
                 ) : (
                   <>
                     <label>
-                      Recover transaction from wallet history
+                      {" "}
+                      <Localized
+                        text={"Recover transaction from wallet history"}
+                      />{" "}
                       <input
-                        placeholder="64-character transaction hash"
+                        placeholder={ui("64-character transaction hash")}
                         value={recovery}
                         onChange={(e) => setRecovery(e.target.value.trim())}
                       />
@@ -1774,7 +2094,8 @@ export default function Console() {
                       disabled={busy || recovery.length !== 64}
                       onClick={() => checkReceipt(payment, recovery)}
                     >
-                      Verify recovered transaction
+                      {" "}
+                      <Localized text={"Verify recovered transaction"} />{" "}
                     </button>
                   </>
                 )}

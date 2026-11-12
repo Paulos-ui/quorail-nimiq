@@ -18,3 +18,23 @@ test("unknown technical messages and user-entered values are never silently rewr
   assert.equal(translate("fr", "Payments"), "Paiements");
   assert.equal(translate("en", "Payments"), "Payments");
 });
+test("extended interface dictionaries remain aligned across supported languages", async () => {
+  const { default: catalog } = await import("../lib/ui-translations.json");
+  assert.deepEqual(
+    Object.keys(catalog.es).sort(),
+    Object.keys(catalog.de).sort(),
+  );
+  assert.deepEqual(
+    Object.keys(catalog.es).sort(),
+    Object.keys(catalog.fr).sort(),
+  );
+  assert.ok(Object.keys(catalog.es).length > 450);
+  assert.equal(
+    translate("es", "2 NIM short after recorded commitments and reserve."),
+    "Faltan 2 NIM tras compromisos y reserva.",
+  );
+  assert.equal(
+    translate("fr", "Reserve first at risk: 2026-12-01"),
+    "Première date de risque pour la réserve : 2026-12-01",
+  );
+});

@@ -1,0 +1,306 @@
+0	QUORAIL IA / CON ANTHROPIC	QUORAIL KI / MIT ANTHROPIC	QUORAIL IA / AVEC ANTHROPIC
+1	Pregunta sobre tu próximo paso.	Frage nach deinem nächsten Schritt.	Posez une question sur votre prochaine étape.
+2	Pregunta sobre pagos, reservas o Quorail. La IA explica, pero no aprueba pagos ni modifica tu plan.	Frage nach Zahlungen, Reserven oder Quorail. Die KI erklärt, genehmigt aber keine Zahlungen und ändert deinen Plan nicht.	Posez vos questions sur les paiements, les réserves ou Quorail. L’IA explique, mais ne peut ni approuver un paiement ni modifier votre plan.
+3	Tu pregunta	Deine Frage	Votre question
+4	Incluir mi saldo, reserva y totales de 30/60/90 días. No se incluyen automáticamente direcciones, títulos ni hashes de transacciones.	Guthaben, Reserve und Summen für 30/60/90 Tage einschließen. Adressen, Titel und Transaktions-Hashes werden nicht automatisch übermittelt.	Inclure mon solde, ma réserve et mes totaux sur 30/60/90 jours. Aucune adresse, aucun titre ni hash de transaction n’est inclus automatiquement.
+5	Ver el resumen exacto que se compartirá	Genau übermittelte Zusammenfassung anzeigen	Voir le résumé exact qui sera partagé
+6	Acepto enviar mi pregunta y el resumen seleccionado a Anthropic mediante Quorail. No incluiré palabras de recuperación, claves ni contraseñas.	Ich stimme zu, meine Frage und die ausgewählte Zusammenfassung über Quorail an Anthropic zu senden. Ich gebe keine Wiederherstellungswörter, Schlüssel oder Passwörter ein.	J’accepte d’envoyer ma question et le résumé sélectionné à Anthropic via Quorail. Je n’inclurai ni mots de récupération, ni clés, ni mots de passe.
+7	Quorail IA	Quorail KI	Quorail IA
+8	La IA puede equivocarse. Comprueba las cifras y los datos de la cartera antes de aprobar.	KI kann Fehler machen. Prüfe Zahlen und Wallet-Daten vor der Freigabe.	L’IA peut se tromper. Vérifiez les chiffres et les détails du portefeuille avant d’approuver.
+9	Guarda una copia de tu plan.	Bewahre eine Kopie deines Plans auf.	Conservez une copie de votre plan.
+10	Los planes quedan en este navegador. Exporta antes de borrar datos o cambiar de dispositivo. Un CSV de recibos no restaura el plan completo.	Pläne bleiben in diesem Browser. Exportiere sie vor dem Löschen von Browserdaten oder einem Gerätewechsel. Eine CSV-Belegliste stellt nicht den vollständigen Plan wieder her.	Les plans restent dans ce navigateur. Exportez avant d’effacer les données ou de changer d’appareil. Un CSV de reçus ne restaure pas le plan complet.
+11	Exportar copia JSON completa	Vollständige JSON-Sicherung exportieren	Exporter la sauvegarde JSON complète
+12	Copia protegida por contraseña	Passwortgeschützte Sicherung	Sauvegarde protégée par mot de passe
+13	Cifra el archivo descargado con otra contraseña. Esto no cifra el almacenamiento del navegador. Guarda la contraseña: Quorail no puede recuperarla.	Verschlüssele die Datei mit einem separaten Passwort. Der Browserspeicher wird dadurch nicht verschlüsselt. Bewahre das Passwort sicher auf: Quorail kann es nicht wiederherstellen.	Chiffrez le fichier téléchargé avec un mot de passe distinct. Le stockage du navigateur reste non chiffré. Conservez ce mot de passe : Quorail ne peut pas le récupérer.
+14	Contraseña de la copia (mínimo 12 caracteres)	Sicherungspasswort (mindestens 12 Zeichen)	Mot de passe de sauvegarde (12 caractères minimum)
+15	Restaura desde los ajustes con la misma cuenta y red. La importación conserva registros existentes y vuelve a comprobar los intentos de pago importados.	Stelle die Sicherung in den Planungseinstellungen mit demselben Konto und Netzwerk wieder her. Bestehende Einträge bleiben erhalten; importierte Zahlungsversuche werden erneut geprüft.	Restaurez dans les paramètres avec le même compte et réseau. L’import conserve les enregistrements existants et revérifie les tentatives de paiement importées.
+17	PARA NIMIQ PAY	FÜR NIMIQ PAY	POUR NIMIQ PAY
+18	Conecta tus próximas cuatro.	Verbinde deine nächsten vier.	Alignez vos quatre prochains jetons.
+19	TÚ / BOT QUORAIL	DU / QUORAIL-BOT	VOUS / ROBOT QUORAIL
+20	Juegas con morado. Deja caer una ficha en una columna. Conecta cuatro en horizontal, vertical o diagonal. El bot puede ganar y bloquear amenazas inmediatas.	Du spielst Lila. Wirf einen Stein in eine Spalte. Verbinde vier waagerecht, senkrecht oder diagonal. Der Übungsbot erkennt Gewinnzüge und direkte Bedrohungen.	Vous jouez en violet. Déposez un jeton dans une colonne. Alignez-en quatre horizontalement, verticalement ou en diagonale. Le robot peut gagner et bloquer les menaces immédiates.
+21	Nueva ronda	Neue Runde	Nouvelle manche
+22	Estás sin conexión. Los saldos y recibos pueden estar desactualizados. Conéctate antes de pagar o usar IA. Tu plan local permanece en este dispositivo.	Du bist offline. Guthaben und Belege können veraltet sein. Verbinde dich vor Zahlungen oder KI-Anfragen. Dein lokaler Plan bleibt auf diesem Gerät.	Vous êtes hors ligne. Soldes et reçus peuvent être périmés. Reconnectez-vous avant de payer ou d’utiliser l’IA. Votre plan local reste sur cet appareil.
+23	TU PERSPECTIVA DE PAGO	DEINE ZAHLUNGSÜBERSICHT	VOTRE PERSPECTIVE DE PAIEMENT
+24	Sala de juegos ↗	Spielraum ↗	Salle de jeux ↗
+25	Tableros compartidos ↗	Gemeinsame Übersichten ↗	Tableaux partagés ↗
+26	Un poco de claridad.	Ein wenig Klarheit.	Un peu de clarté.
+27	Un mejor próximo paso.	Ein besserer nächster Schritt.	Une meilleure prochaine étape.
+28	CREADO PARA NIMIQ PAY	FÜR NIMIQ PAY ENTWICKELT	CONÇU POUR NIMIQ PAY
+29	Espacio de trabajo /	Arbeitsbereich /	Espace de travail /
+30	Modo de ejemplo	Beispielmodus	Mode exemple
+31	Cartera no conectada	Wallet nicht verbunden	Portefeuille non connecté
+32	Desconectar	Trennen	Déconnecter
+33	Añadir pago	Zahlung hinzufügen	Ajouter un paiement
+35	EMPIEZA CON TU CARTERA	BEGINNE MIT DEINER WALLET	COMMENCEZ AVEC VOTRE PORTEFEUILLE
+36	Sabe qué viene	Wisse, was kommt	Sachez ce qui vient
+37	después del pago.	nach der Zahlung.	après le paiement.
+38	Conecta dentro de Nimiq Pay para consultar tu saldo y crear un plan privado en este dispositivo. Apruebas cada pago en tu cartera.	Verbinde dich in Nimiq Pay, um dein Guthaben zu lesen und einen privaten Plan auf diesem Gerät anzulegen. Jede Zahlung genehmigst du in deiner Wallet.	Connectez-vous dans Nimiq Pay pour consulter votre solde et créer un plan privé sur cet appareil. Vous approuvez chaque paiement dans votre portefeuille.
+39	Los planes se guardan localmente sin cifrar. Exporta una copia antes de borrar datos del navegador. Lee la	Pläne werden lokal unverschlüsselt gespeichert. Exportiere vor dem Löschen der Browserdaten eine Sicherung. Lies die	Les plans sont stockés localement sans chiffrement. Exportez une sauvegarde avant d’effacer les données. Consultez le
+40	guía de privacidad	Datenschutzanleitung	guide de confidentialité
+41	Explorar un ejemplo	Ein Beispiel ansehen	Explorer un exemple
+42	Cambiar de ejemplo solo reinicia los cambios del ejemplo. No se mueven fondos.	Ein Beispielwechsel setzt nur Beispieländerungen zurück. Es werden keine Gelder bewegt.	Changer d’exemple réinitialise uniquement les modifications de l’exemple. Aucun fonds ne bouge.
+43	Tu primer pago real: cuatro pasos	Deine erste echte Zahlung: vier Schritte	Votre premier paiement réel : quatre étapes
+44	Añade un compromiso con un destinatario comprobado.	Füge eine Verpflichtung mit geprüftem Empfänger hinzu.	Ajoutez un engagement avec un destinataire vérifié.
+45	Revisa el margen y fija tu reserva.	Prüfe das Polster und lege deine Reserve fest.	Vérifiez la marge et définissez votre réserve.
+46	Aprueba personalmente en Nimiq Pay y comprueba el remitente.	Genehmige selbst in Nimiq Pay und prüfe den Absender.	Approuvez personnellement dans Nimiq Pay en vérifiant l’expéditeur.
+47	Mantén abierto el espacio de trabajo para verificar el recibo. Exporta registros desde Actividad.	Lasse den Arbeitsbereich zur Belegprüfung offen. Exportiere Einträge unter Aktivität.	Gardez l’espace ouvert pour vérifier le reçu. Exportez les enregistrements dans Activité.
+48	El hash queda pendiente hasta su verificación. Los tiempos de red varían.	Ein Hash bleibt bis zur Prüfung ausstehend. Netzwerkzeiten variieren.	Le hash reste en attente jusqu’à sa vérification. Les délais réseau varient.
+49	Hay un pago por conciliar. Se pausan los nuevos envíos hasta verificar su resultado.	Eine Zahlung muss abgeglichen werden. Neue Zahlungen warten auf die Prüfung ihres Ergebnisses.	Un paiement doit être rapproché. Les nouveaux envois sont suspendus jusqu’à vérification du résultat.
+50	Ver actividad	Aktivität ansehen	Voir l’activité
+51	· Saldo de Nimiq Pay	· Nimiq-Pay-Guthaben	· Solde Nimiq Pay
+52	Si Nimiq Pay muestra fondos, pulsa Actualizar. El contrato de pago puede estar cambiando; no se inventa un saldo.	Zeigt Nimiq Pay Guthaben, drücke Aktualisieren. Das Zahlungskonto kann gerade wechseln; ein Guthaben wird nicht geschätzt.	Si Nimiq Pay affiche des fonds, appuyez sur Actualiser. Le contrat de paiement peut changer ; aucun solde n’est inventé.
+54	Comprometido	Vorgemerkt	Engagé
+56	Reserva objetivo	Reserveziel	Réserve cible
+57	 días de planificación	 Tage Planungszeitraum	 jours de planification
+58	TRAS LOS COMPROMISOS REGISTRADOS	NACH ERFASSTEN VERPFLICHTUNGEN	APRÈS LES ENGAGEMENTS ENREGISTRÉS
+59	Margen disponible	Spielraum	Marge disponible
+60	Una guía de planificación. Los fondos no están bloqueados.	Eine Planungshilfe. Gelder werden nicht gesperrt.	Une aide à la planification. Les fonds ne sont pas bloqués.
+61	A CONTINUACIÓN	ALS NÄCHSTES	À VENIR
+62	Tu dinero tiene un plan.	Dein Geld hat einen Plan.	Votre argent a un plan.
+63	Todos los pagos	Alle Zahlungen	Tous les paiements
+64	registrados	erfasst	enregistrés
+65	Añade un destinatario, un importe y una fecha para ver el conjunto.	Füge Empfänger, Betrag und Fälligkeit für die Gesamtübersicht hinzu.	Ajoutez un destinataire, un montant et une échéance pour voir l’ensemble.
+66	Añadir un pago	Eine Zahlung hinzufügen	Ajouter un paiement
+67	REGISTROS DE PAGOS	ZAHLUNGSAUFZEICHNUNGEN	HISTORIQUE DES PAIEMENTS
+68	Exportar CSV verificado	Geprüfte CSV exportieren	Exporter le CSV vérifié
+69	Exportar registros	Einträge exportieren	Exporter les enregistrements
+70	Ver transacción	Transaktion ansehen	Voir la transaction
+71	Comprobar recibo	Beleg prüfen	Vérifier le reçu
+72	Detalles	Details	Détails
+73	Aún no hay intentos de pago.	Noch keine Zahlungsversuche.	Aucune tentative de paiement.
+74	Un saldo es una cifra. Un plan da perspectiva.	Ein Guthaben ist eine Zahl. Ein Plan gibt Perspektive.	Un solde est un chiffre. Un plan donne du recul.
+75	Tu previsión incluye los compromisos registrados en	Deine Prognose umfasst erfasste Verpflichtungen innerhalb von	Votre prévision comprend les engagements enregistrés sur
+76	días. Los gastos no registrados cambian el resultado.	Tagen. Nicht erfasste Ausgaben ändern das Ergebnis.	jours. Les dépenses non enregistrées changent le résultat.
+77	Cómo funciona	So funktioniert es	Comment ça marche
+78	QUORAIL / UNA FORMA REFLEXIVA DE PAGAR	QUORAIL / BEWUSST ZAHLEN	QUORAIL / PAYER AVEC RÉFLEXION
+79	Tableros compartidos	Gemeinsame Übersichten	Tableaux partagés
+80	Planes locales. Límites claros.	Lokale Pläne. Klare Grenzen.	Plans locaux. Limites claires.
+81	Cada pago requiere tu aprobación. Tras confirmarse, se añade automáticamente la siguiente fecha. Edita o elimina esa próxima ocurrencia para cambiar o detener la serie.	Jede Zahlung erfordert deine Freigabe. Nach Bestätigung wird der nächste Termin angelegt. Bearbeite oder lösche diesen, um die Serie zu ändern oder zu stoppen.	Chaque échéance nécessite votre approbation. Après confirmation, la suivante est ajoutée automatiquement. Modifiez ou supprimez-la pour changer ou arrêter la série.
+82	La comisión indicada se incluye en la previsión y se envía a la cartera. Nimiq permite pagos sin comisión cuando la red lo admite. Añadir un pago no envía fondos.	Die angegebene Gebühr ist in der Prognose enthalten und wird an die Wallet übergeben. Nimiq erlaubt gebührenfreie Zahlungen, wenn das Netzwerk dies zulässt. Das Anlegen einer Zahlung sendet kein Geld.	Les frais indiqués sont inclus dans la prévision et transmis au portefeuille. Nimiq permet les paiements sans frais lorsque le réseau le permet. Ajouter un paiement n’envoie pas de fonds.
+83	Período de planificación	Planungszeitraum	Période de planification
+84	días	Tage	jours
+85	La reserva es una preferencia de planificación. Quorail bloquea los pagos de esta app que la superan. Puedes seguir pagando directamente en tu cartera.	Die Reserve ist dein Planungsziel. Quorail blockiert Zahlungen in dieser App, die es unterschreiten. Direkte Wallet-Zahlungen bleiben möglich.	La réserve est votre objectif de planification. Quorail bloque les paiements de cette app qui la franchissent. Les paiements directs du portefeuille restent possibles.
+86	Contraseña de copia (solo importaciones cifradas)	Sicherungspasswort (nur verschlüsselte Importe)	Mot de passe de sauvegarde (imports chiffrés uniquement)
+87	Solo se usa en este dispositivo. Déjalo vacío para JSON sin cifrar.	Nur auf diesem Gerät verwendet. Für unverschlüsseltes JSON leer lassen.	Utilisé uniquement sur cet appareil. Laissez vide pour du JSON non chiffré.
+88	Importar JSON o copia cifrada	JSON oder verschlüsselte Sicherung importieren	Importer du JSON ou une sauvegarde chiffrée
+89	ANTES DE TU PRÓXIMO PASO	VOR DEINEM NÄCHSTEN SCHRITT	AVANT VOTRE PROCHAINE ÉTAPE
+90	Se repite	Wiederholt sich	Répétition
+91	. Vence	. Fällig	. Échéance
+92	. Sin cargo automático en la cartera.	. Keine automatische Wallet-Abbuchung.	. Aucun débit automatique du portefeuille.
+93	Para	An	À
+94	Ajustar reserva objetivo (NIM)	Reserveziel anpassen (NIM)	Ajuster la réserve cible (NIM)
+95	Los cambios de reserva se guardan al instante. La previsión incluye	Reserveänderungen werden sofort gespeichert. Die Prognose umfasst	Les changements de réserve sont enregistrés immédiatement. La prévision comprend
+96	días y futuras ocurrencias periódicas.	Tage und zukünftige wiederkehrende Termine.	jours et les prochaines échéances récurrentes.
+97	Este pago + comisión	Diese Zahlung + Gebühr	Ce paiement + frais
+98	Otros compromisos en	Weitere Verpflichtungen in	Autres engagements sur
+99	Saldo después de este pago	Guthaben nach dieser Zahlung	Solde après ce paiement
+100	Margen tras este paso	Spielraum danach	Marge après cette étape
+101	Este pago supera tu objetivo en	Diese Zahlung unterschreitet dein Ziel um	Ce paiement franchit votre objectif de
+102	NIM. Ajusta tu plan antes de enviar.	NIM. Passe deinen Plan vor dem Senden an.	NIM. Ajustez le plan avant d’envoyer.
+103	Este saldo cubre tus compromisos registrados y la reserva.	Dieses Guthaben deckt die erfassten Verpflichtungen und die Reserve.	Ce solde couvre vos engagements enregistrés et votre réserve.
+104	Comprobaré que Nimiq Pay envía desde	Ich prüfe, dass Nimiq Pay von folgendem Konto sendet:	Je vérifierai que Nimiq Pay envoie depuis
+105	. Nimiq Pay elige el contrato de pago y el firmante.	. Nimiq Pay wählt Zahlungskonto und Unterzeichner.	. Nimiq Pay choisit le contrat de paiement et le signataire.
+106	Eliminar pago planificado	Geplante Zahlung entfernen	Supprimer le paiement prévu
+107	Estado del recibo:	Belegstatus:	État du reçu :
+108	. Los intentos de pago permanecen registrados. No reenvíes una transacción incierta.	. Zahlungsversuche bleiben gespeichert. Sende eine unklare Transaktion nicht erneut.	. Les tentatives restent enregistrées. Ne renvoyez pas une transaction incertaine.
+109	Consultar explorador	Im Explorer prüfen	Consulter l’explorateur
+110	Recuperar transacción del historial de la cartera	Transaktion aus dem Wallet-Verlauf wiederfinden	Retrouver la transaction dans l’historique du portefeuille
+111	Verificar transacción recuperada	Wiedergefundene Transaktion prüfen	Vérifier la transaction retrouvée
+112	Margen actual del plan	Aktuelles Planungspolster	Marge actuelle du plan
+113	Si se traslada a	Bei Verschiebung auf	Si déplacé au
+114	Solo ilustrativo. No cambia fechas. La serie periódica se desplaza con esta ocurrencia. Mover una factura fuera del período cambia el momento, no la deuda. Comprueba recargos y el acuerdo con el destinatario.	Nur eine Illustration; keine Termine werden geändert. Eine Serie verschiebt sich mit diesem Termin. Eine Rechnung außerhalb des Zeitraums bleibt geschuldet. Prüfe Verspätungsgebühren und die Vereinbarung mit dem Empfänger.	Illustration uniquement. Aucune date ne change. La série suit cette échéance. Déplacer une facture hors de la période change le calendrier, pas la dette. Vérifiez les pénalités et l’accord du destinataire.
+115	Tu compañero de planificación	Dein Planungsbegleiter	Votre compagnon de planification
+116	Pregunta cómo funciona Quorail. Tu cartera y plan privado no se cargan en esta página.	Frage, wie Quorail funktioniert. Deine Wallet und dein privater Plan werden hier nicht geladen.	Demandez comment fonctionne Quorail. Votre portefeuille et votre plan privé ne sont pas chargés ici.
+117	EL CAMINO POR DELANTE	DER WEG VORAUS	LA SUITE DU PARCOURS
+118	Tus próximos	Deine nächsten	Vos prochains
+119	días.	Tage.	jours.
+120	Próximos compromisos + comisiones	Kommende Verpflichtungen + Gebühren	Engagements à venir + frais
+121	ocurrencias previstas	geplante Termine	échéances prévues
+122	Saldo previsto	Prognostiziertes Guthaben	Solde prévisionnel
+123	Sin nuevos ingresos ni gastos	Ohne neue Einnahmen oder Ausgaben	Sans nouveaux revenus ni dépenses
+124	Por encima de la reserva	Über dem Reserveziel	Au-dessus de la réserve cible
+125	Los importes y comisiones recurrentes son estimaciones. Las deudas vencidas cuentan ahora. La recurrencia nunca autoriza pagos automáticos. Las transferencias pendientes quedan reservadas hasta verificarse.	Wiederkehrende Beträge und Gebühren sind Schätzungen. Überfällige Verpflichtungen zählen sofort. Wiederholung erlaubt keine automatische Zahlung. Ausstehende Überweisungen bleiben bis zur Prüfung vorgemerkt.	Les montants et frais récurrents sont estimés. Les engagements impayés échus comptent maintenant. La récurrence n’autorise aucun paiement automatique. Les virements en attente restent réservés jusqu’à vérification.
+126	Ten Quorail a un toque.	Quorail, nur einen Fingertipp entfernt.	Gardez Quorail à portée de main.
+127	Chrome o Edge: menú del navegador, Instalar app. iPhone o iPad: abre Safari, Compartir, Añadir a pantalla de inicio. En Safari para Mac: Archivo, Añadir al Dock.	Chrome oder Edge: Browsermenü, App installieren. iPhone oder iPad: in Safari öffnen, Teilen, Zum Home-Bildschirm. Safari auf Mac: Ablage, Zum Dock hinzufügen.	Chrome ou Edge : menu du navigateur, Installer l’application. iPhone ou iPad : Safari, Partager, Sur l’écran d’accueil. Safari sur Mac : Fichier, Ajouter au Dock.
+128	¿Estás en Nimiq Pay? Abre esta web en tu navegador habitual para instalarla. Los pagos siguen requiriendo Nimiq Pay e internet.	In Nimiq Pay? Öffne diese Website zum Installieren im normalen Browser. Zahlungen benötigen weiterhin Nimiq Pay und Internet.	Dans Nimiq Pay ? Ouvrez ce site dans votre navigateur habituel pour l’installer. Les paiements nécessitent toujours Nimiq Pay et internet.
+129	Más claridad antes de tu próximo pago.	Mehr Klarheit vor deiner nächsten Zahlung.	Plus de clarté avant votre prochain paiement.
+130	Prueba el ejemplo de 60 segundos ↗	Das 60-Sekunden-Beispiel ausprobieren ↗	Essayez l’exemple de 60 secondes ↗
+131	UNA FORMA MÁS REFLEXIVA DE PAGAR	BEWUSSTER ZAHLEN	UNE FAÇON PLUS RÉFLÉCHIE DE PAYER
+132	Haz que tu	Lass deinen	Donnez à votre
+133	próximo paso	nächsten Schritt	prochaine étape
+134	tenga sentido.	Sinn ergeben.	tout son sens.
+135	Alquiler. Tu equipo. Lo que estás construyendo.	Miete. Dein Team. Was du aufbaust.	Le loyer. Votre équipe. Ce que vous construisez.
+136	Mira qué cambia un pago antes de enviarlo.	Sieh vor dem Senden, was eine Zahlung verändert.	Voyez ce qu’un paiement change avant de l’envoyer.
+137	Planifica tu próximo pago	Plane deine nächste Zahlung	Planifiez votre prochain paiement
+138	Tu cartera. Tu aprobación. Siempre.	Deine Wallet. Deine Freigabe. Immer.	Votre portefeuille. Votre accord. Toujours.
+139	LA PERSPECTIVA DEL PAGO	DIE ZAHLUNGSPERSPEKTIVE	LA PERSPECTIVE DU PAIEMENT
+140	PLAN ILUSTRATIVO	BEISPIELPLAN	PLAN ILLUSTRATIF
+141	SALDO DE LA CARTERA	WALLET-GUTHABEN	SOLDE DU PORTEFEUILLE
+142	Alquiler del estudio	Studiomiete	Loyer du studio
+145	Colaborador	Mitarbeiter	Collaborateur
+147	PARA INDEPENDIENTES Y EQUIPOS PEQUEÑOS	FÜR SELBSTSTÄNDIGE UND KLEINE TEAMS	POUR LES INDÉPENDANTS ET PETITES ÉQUIPES
+148	El saldo es solo el comienzo	Das Guthaben ist erst der Anfang	Le solde n’est que le début
+149	01 / LA REFLEXIÓN	01 / DER GEDANKE	01 / LA RÉFLEXION
+150	Suficiente para enviar.	Genug zum Senden.	Assez pour envoyer.
+151	¿Pero suficiente para lo que viene?	Aber genug für das, was kommt?	Mais assez pour la suite ?
+152	La cartera muestra lo que tienes. Quorail añade lo que has prometido: alquiler, colaboradores y plazos. Juntos cuentan una historia más útil.	Die Wallet zeigt, was du hast. Quorail ergänzt, was du zugesagt hast: Miete, Mitarbeiter und Fristen. Zusammen ergibt das ein hilfreicheres Bild.	Le portefeuille montre ce que vous avez. Quorail ajoute vos engagements : loyer, collaborateurs et échéances. Ensemble, ils donnent une vision plus utile.
+153	Dale contexto a tu dinero.	Gib deinem Geld Kontext.	Donnez du contexte à votre argent.
+154	Registra próximos pagos. Fija una reserva y elige el horizonte.	Erfasse kommende Zahlungen. Lege eine Reserve und den Zeitraum fest.	Enregistrez les paiements à venir. Fixez une réserve et choisissez l’horizon.
+155	UN PLAN QUE EMPIEZA CONTIGO	EIN PLAN, DER MIT DIR BEGINNT	UN PLAN QUI COMMENCE AVEC VOUS
+156	Mira el después, antes.	Sieh das Danach schon vorher.	Voyez l’après, avant.
+157	Revisa el saldo, los compromisos y el margen antes de aprobar un pago.	Prüfe Guthaben, Verpflichtungen und Polster vor der Freigabe.	Vérifiez solde, engagements et marge avant d’approuver un paiement.
+158	CADA DECISIÓN EN PERSPECTIVA	JEDE ENTSCHEIDUNG IM KONTEXT	CHAQUE DÉCISION EN PERSPECTIVE
+159	Paga con tu propia aprobación.	Zahle mit deiner eigenen Freigabe.	Payez avec votre propre accord.
+160	Aprueba en Nimiq Pay. Sigue la transacción y guarda el recibo con tu plan.	Genehmige in Nimiq Pay. Verfolge die Transaktion und bewahre den Beleg beim Plan auf.	Approuvez dans Nimiq Pay. Suivez la transaction et conservez le reçu avec votre plan.
+161	PAGOS NIM. APROBACIÓN NATIVA.	NIM-ZAHLUNGEN. NATIVE FREIGABE.	PAIEMENTS NIM. APPROBATION NATIVE.
+162	MÁS CLARIDAD. UN MEJOR PRÓXIMO PASO.	MEHR KLARHEIT. EIN BESSERER NÄCHSTER SCHRITT.	PLUS DE CLARTÉ. UNE MEILLEURE PROCHAINE ÉTAPE.
+163	Pausa. Juega.	Pause. Spielen.	Une pause. Un jeu.
+164	Piensa en el futuro.	Denke voraus.	Anticipez.
+165	Una pequeña sala de juegos entre decisiones. Desafía al bot, comparte un tablero de ajedrez o ejercita tu intuición sobre pagos.	Ein kleiner Spielraum zwischen Entscheidungen. Fordere den Bot heraus, teile ein Schachbrett oder übe deine Zahlungsentscheidungen.	Une petite salle de jeux entre deux décisions. Défiez le robot, partagez un échiquier ou exercez vos réflexes de paiement.
+166	Entra en la sala de juegos ↗	Zum Spielraum ↗	Entrez dans la salle de jeux ↗
+167	Práctica gratuita. Sin apuestas ni premios NIM.	Kostenlos üben. Keine Einsätze oder NIM-Prämien.	Entraînement gratuit. Aucune mise ni récompense NIM.
+168	TU COMPAÑERO DIARIO	DEIN ALLTAGSBEGLEITER	VOTRE COMPAGNON AU QUOTIDIEN
+169	Un lugar en tu pantalla de inicio.	Ein Platz auf deinem Startbildschirm.	Une place sur votre écran d’accueil.
+170	Abre planes y juegos desde el móvil o el ordenador. Aprueba pagos de forma segura dentro de Nimiq Pay.	Öffne Planer und Spiele auf Handy oder Computer. Genehmige Zahlungen sicher in Nimiq Pay.	Ouvrez vos plans et jeux sur mobile ou ordinateur. Approuvez les paiements en sécurité dans Nimiq Pay.
+171	UN POCO DE CLARIDAD AYUDA MUCHO	EIN WENIG KLARHEIT BEWIRKT VIEL	UN PEU DE CLARTÉ CHANGE BEAUCOUP
+172	Haz espacio	Schaffe Platz	Faites de la place
+173	para	für	pour
+174	lo que importa.	das Wesentliche.	ce qui compte.
+175	Creado para compromisos reales.	Für echte Verpflichtungen entwickelt.	Conçu pour des engagements réels.
+176	Diseñado para un momento de claridad.	Für einen Moment der Klarheit gestaltet.	Pensé pour un instant de clarté.
+177	Encuentra tu perspectiva	Finde deine Perspektive	Trouvez votre perspective
+178	Los planes quedan en este dispositivo. Las reservas no bloquean fondos.	Pläne bleiben auf diesem Gerät. Reserven sperren keine Gelder.	Les plans restent sur cet appareil. Les réserves ne bloquent aucun fonds.
+179	DEL SALDO A LA DECISIÓN	VOM GUTHABEN ZUR ENTSCHEIDUNG	DU SOLDE À LA DÉCISION
+180	Tu cartera muestra lo que tienes.	Deine Wallet zeigt, was du hast.	Votre portefeuille montre ce que vous avez.
+181	Quorail muestra lo que ya está comprometido.	Quorail zeigt, was bereits verplant ist.	Quorail montre ce qui est déjà engagé.
+182	Saldo de la cartera	Wallet-Guthaben	Solde du portefeuille
+184	La cifra inicial.	Die Ausgangszahl.	Le chiffre de départ.
+185	Plan ilustrativo Quorail	Quorail-Beispielplan	Exemple de plan Quorail
+186	Margen de 100 NIM	100 NIM Polster	Marge de 100 NIM
+187	1.000 de saldo menos 700 comprometidos y 200 de reserva.	1.000 Guthaben minus 700 Verpflichtungen und 200 Reserve.	1 000 de solde moins 700 d’engagements et 200 de réserve.
+188	Explora primero un plan realista y conecta en Nimiq Pay para un pago real.	Erkunde zuerst einen realistischen Plan und verbinde dich dann in Nimiq Pay für eine echte Zahlung.	Explorez d’abord un plan réaliste, puis connectez-vous dans Nimiq Pay pour payer réellement.
+189	Estudio independiente ↗	Freelancer-Studio ↗	Studio indépendant ↗
+190	Equipo pequeño ↗	Kleines Team ↗	Petite équipe ↗
+191	Alquiler + margen ↗	Miete + Polster ↗	Loyer + marge ↗
+192	01 / Planifica	01 / Planen	01 / Planifier
+193	Añade importe, destinatario y fecha.	Betrag, Empfänger und Fälligkeit hinzufügen.	Ajoutez montant, destinataire et échéance.
+194	02 / Decide	02 / Entscheiden	02 / Décider
+195	Comprueba los compromisos y el margen restante.	Verpflichtungen und verbleibendes Polster prüfen.	Vérifiez les engagements et la marge restante.
+196	03 / Aprueba	03 / Freigeben	03 / Approuver
+197	Revisa y aprueba en tu propia cartera Nimiq Pay.	In deiner eigenen Nimiq-Pay-Wallet prüfen und freigeben.	Vérifiez et approuvez dans votre propre portefeuille Nimiq Pay.
+198	04 / Registra	04 / Erfassen	04 / Enregistrer
+199	Guarda el hash y verifica el recibo correspondiente.	Hash speichern und passenden Beleg prüfen.	Conservez le hash et vérifiez le reçu correspondant.
+200	Importes de ejemplo. Los tiempos de aprobación y confirmación varían.	Beispielbeträge. Freigabe- und Bestätigungszeiten variieren.	Montants d’exemple. Les délais d’approbation et de confirmation varient.
+201	Un pago es parte de un conjunto.	Eine Zahlung gehört zum Gesamtbild.	Un paiement fait partie d’un ensemble.
+202	Acerca de y privacidad	Über uns und Datenschutz	À propos et confidentialité
+203	Planificador de pagos ↗	Zahlungsplaner ↗	Planificateur de paiements ↗
+204	LA SALA DE JUEGOS QUORAIL	DER QUORAIL-SPIELRAUM	LA SALLE DE JEUX QUORAIL
+205	Un poco de juego.	Ein wenig Spiel.	Un peu de jeu.
+206	Un próximo paso más inteligente.	Ein klügerer nächster Schritt.	Une prochaine étape plus avisée.
+207	Anticipa. Encuentra tu jugada. Aplica esa mentalidad a tu dinero.	Denke voraus. Finde deinen Zug. Übertrage das auf dein Geld.	Anticipez. Trouvez votre coup. Appliquez cet état d’esprit à votre argent.
+208	Tres en raya.	Drei in einer Reihe.	Trois à la suite.
+209	TÚ × / BOT ○	DU × / BOT ○	VOUS × / ROBOT ○
+210	Juega contra un bot perfecto. Empatar es un buen resultado.	Spiele gegen einen perfekt spielenden Bot. Ein Unentschieden ist gut.	Jouez contre un robot sans erreur. Un match nul est un bon résultat.
+211	Nueva ronda ↗	Neue Runde ↗	Nouvelle manche ↗
+212	Piensa una jugada por delante.	Denke einen Zug voraus.	Pensez un coup à l’avance.
+213	Toca una pieza y luego una casilla resaltada.	Tippe auf eine Figur und dann auf ein markiertes Feld.	Touchez une pièce, puis une case en surbrillance.
+214	Oponente	Gegner	Adversaire
+215	Bot de Quorail	Quorail-Bot	Robot Quorail
+216	Amigo en este dispositivo	Freund auf diesem Gerät	Ami sur cet appareil
+217	Deshacer	Rückgängig	Annuler
+218	Nueva partida	Neues Spiel	Nouvelle partie
+219	Promocionar a	Umwandeln in	Promouvoir en
+220	Dama	Dame	Dame
+221	Torre	Turm	Tour
+222	Alfil	Läufer	Fou
+223	Caballo	Springer	Cavalier
+224	UN EJERCICIO DE REFLEXIÓN REAL	EINE ÜBUNG AUS DEM ALLTAG	UN EXERCICE CONCRET DE RÉFLEXION
+225	¿Puede esperar el equipo?	Kann die Ausrüstung warten?	Le matériel peut-il attendre ?
+226	Tienes 1.000 NIM. Alquiler: 420; colaborador: 230; reserva: 200. Supón que no hay comisiones en este ejercicio.	Du hast 1.000 NIM. Miete: 420; Mitarbeiter: 230; Reserve: 200. Für diese Übung gelten keine Gebühren.	Vous avez 1 000 NIM. Loyer : 420 ; collaborateur : 230 ; réserve : 200. Supposez des frais nuls pour cet exercice.
+227	Cartera	Wallet	Portefeuille
+229	¿Cuánto puedes gastar en equipo como máximo conservando tu reserva?	Wie viel kannst du höchstens für Ausrüstung ausgeben, ohne die Reserve anzutasten?	Quel montant maximal pouvez-vous consacrer au matériel en conservant votre réserve ?
+230	Pruébalo en el planificador ↗	Im Planer ausprobieren ↗	Essayez dans le planificateur ↗
+231	JUEGA CON PROPÓSITO	SPIELEN MIT SINN	JOUEZ AVEC UN OBJECTIF
+232	Las buenas decisiones	Gute Entscheidungen	Les bonnes décisions
+233	empiezan practicando.	beginnen mit Übung.	commencent par la pratique.
+234	Tres en raya entrena la anticipación. El ajedrez recompensa la paciencia. Los ejercicios financieros conectan ambos con tu próximo pago.	Tic-Tac-Toe trainiert Voraussicht. Schach belohnt Geduld. Zahlungsübungen verbinden beides mit deiner nächsten Zahlung.	Le morpion entraîne l’anticipation. Les échecs récompensent la patience. Les exercices financiers relient les deux à votre prochain paiement.
+235	Sin apuestas. Sin pagos NIM.	Keine Einsätze. Keine NIM-Auszahlungen.	Aucune mise. Aucun versement NIM.
+236	La práctica es gratuita. Los juegos no generan tokens, premios ni derechos sobre tu cartera.	Die Übung ist kostenlos. Spiele erzeugen keine Token, Prämien oder Ansprüche auf deine Wallet.	L’entraînement est gratuit. Les jeux ne génèrent ni jetons, ni récompenses, ni droits sur votre portefeuille.
+237	Un futuro concurso patrocinado necesitaría premios financiados y resultados verificados antes de activarlos.	Ein künftiger gesponserter Wettbewerb benötigt finanzierte Preise und geprüfte Ergebnisse vor der Auszahlung.	Un futur concours sponsorisé nécessiterait une dotation financée et des résultats vérifiés avant tout versement.
+238	Volver al plan de pagos ↗	Zurück zum Zahlungsplan ↗	Retour au plan de paiements ↗
+243	Orientación, no garantía. Margen ajustado significa estar a un 10% de la reserva o 1 NIM de ella, lo que sea mayor.	Planungshilfe, keine Garantie. Knapp bedeutet höchstens 10 % der Reserve oder 1 NIM darüber, je nachdem, was größer ist.	Indication, pas garantie. Une marge limitée correspond à 10 % de la réserve ou 1 NIM au-dessus, selon le plus élevé.
+244	COMPROMISOS POR REVISAR	VERPFLICHTUNGEN PRÜFEN	ENGAGEMENTS À EXAMINER
+245	NIM por debajo del objetivo	NIM unter dem Ziel	NIM sous l’objectif
+246	tras este grupo de vencimientos.	nach dieser Fälligkeitsgruppe.	après ce groupe d’échéances.
+247	Ordenados por fecha; no se recomienda omitir pagos. Se agrupan los de la misma fecha. Incluye recurrencias y comisiones, sin nuevos ingresos previstos.	Nach Fälligkeit geordnet; keine Empfehlung, Rechnungen auszulassen. Gleiche Termine werden gruppiert. Einschließlich Wiederholungen und Gebühren, ohne neue Einnahmen.	Classés par échéance, sans conseiller d’omettre une facture. Les mêmes dates sont regroupées. Récurrences et frais inclus, sans nouveaux revenus supposés.
+248	Solo según gastos registrados, saldo actual y reserva.	Nur auf Grundlage erfasster Kosten, des Guthabens und der Reserve.	Uniquement selon les coûts enregistrés, le solde actuel et la réserve.
+249	Número de partes	Anzahl der Anteile	Nombre de parts
+250	Responsables (separados por comas, opcional)	Verantwortliche (kommagetrennt, optional)	Responsables (séparés par des virgules, facultatif)
+251	Publica títulos, direcciones, importes, fechas y etiquetas en un tablero compartido durante 30 días. Cualquiera con el enlace puede verlo. Las etiquetas no son identidades verificadas.	Veröffentliche Titel, Adressen, Beträge, Termine und Bezeichnungen für 30 Tage. Jeder mit dem Link kann sie sehen. Bezeichnungen sind keine geprüften Identitäten.	Publiez titres, adresses, montants, dates et libellés dans un tableau partagé pendant 30 jours. Toute personne ayant le lien peut le consulter. Les libellés ne sont pas des identités vérifiées.
+252	Es una copia compartida separada con recibos actualizados. Los cambios y pagos no se sincronizan con tu plan privado. No pagues el mismo compromiso desde ambos sitios.	Dies ist eine separate gemeinsame Kopie mit aktuellem Belegstatus. Änderungen und Zahlungen werden nicht in den privaten Plan übernommen. Zahle dieselbe Verpflichtung nicht an beiden Stellen.	C’est une copie partagée distincte avec état des reçus actualisé. Modifications et paiements ne se synchronisent pas avec votre plan privé. Ne payez pas le même engagement aux deux endroits.
+253	Enlace de invitación	Einladungslink	Lien d’invitation
+254	Abrir tablero ↗	Übersicht öffnen ↗	Ouvrir le tableau ↗
+255	Planificador privado ↗	Privater Planer ↗	Planificateur privé ↗
+256	QUORAIL / TABLERO DE PAGOS COMPARTIDO	QUORAIL / GEMEINSAME ZAHLUNGSÜBERSICHT	QUORAIL / TABLEAU DE PAIEMENTS PARTAGÉ
+257	Abre una invitación o crea un tablero desde tu planificador. Enlaces guardados en este dispositivo:	Öffne eine Einladung oder erstelle eine Übersicht im Planer. Auf diesem Gerät gespeicherte Links:	Ouvrez une invitation ou créez un tableau depuis le planificateur. Liens enregistrés sur cet appareil :
+258	Total solicitado	Insgesamt angefordert	Total demandé
+259	Pago verificado	Geprüft bezahlt	Paiements vérifiés
+260	Pendiente	Noch offen	Reste à payer
+261	· El enlace caduca	· Link läuft ab	· Expiration du lien
+262	. Cualquiera con este enlace puede ver e iniciar pagos. Los nombres son etiquetas, no identidades verificadas. Las referencias son públicas en la cadena.	. Jeder mit dem Link kann Zahlungen ansehen und einleiten. Namen sind Bezeichnungen, keine geprüften Identitäten. Zahlungsreferenzen sind auf der Blockchain öffentlich.	. Toute personne ayant ce lien peut consulter et lancer des paiements. Les noms sont des libellés, pas des identités vérifiées. Les références sont publiques sur la chaîne.
+263	· Vence	· Fällig	· Échéance
+264	Destinatario:	Empfänger:	Destinataire :
+265	Remitente verificado:	Geprüfter Absender:	Expéditeur vérifié :
+266	Referencia:	Referenz:	Référence :
+267	Previsualizar esta parte	Diesen Anteil prüfen	Prévisualiser cette part
+268	Saldo actual	Aktuelles Guthaben	Solde actuel
+269	Pago + comisión prevista	Zahlung + geplante Gebühr	Paiement + frais prévus
+270	Saldo después del pago	Guthaben nach der Zahlung	Solde après paiement
+271	Otros compromisos registrados	Weitere erfasste Verpflichtungen	Autres engagements enregistrés
+272	Margen restante	Verbleibendes Polster	Marge restante
+273	La reserva no se gasta ni bloquea. Se comprueban otra vez el saldo y el plan antes de abrir la cartera.	Die Reserve wird weder ausgegeben noch gesperrt. Guthaben und Plan werden vor der Wallet-Abfrage erneut geprüft.	La réserve n’est ni dépensée ni bloquée. Le solde et le plan sont revérifiés avant l’invite du portefeuille.
+274	Comprobaré destinatario, importe y cuenta en Nimiq Pay. La cartera elige al firmante real.	Ich prüfe Empfänger, Betrag und Konto in Nimiq Pay. Die Wallet wählt den tatsächlichen Unterzeichner.	Je vérifierai destinataire, montant et compte dans Nimiq Pay. Le portefeuille choisit le signataire réel.
+275	Pagar esta parte en Nimiq Pay	Diesen Anteil in Nimiq Pay zahlen	Payer cette part dans Nimiq Pay
+276	Ver recibo ↗	Beleg ansehen ↗	Voir le reçu ↗
+277	Comprobar o recuperar recibo	Beleg prüfen oder wiederfinden	Vérifier ou retrouver le reçu
+278	Un intento pendiente queda bloqueado para evitar duplicados. Si se interrumpió la aprobación, revisa el historial. No reenvíes.	Ausstehende Versuche werden gegen Doppelzahlungen gesperrt. Prüfe bei unterbrochener Freigabe den Wallet-Verlauf. Nicht erneut senden.	Une tentative en attente est bloquée pour éviter les doublons. Si l’approbation a été interrompue, consultez l’historique. Ne renvoyez pas.
+279	Hash de transacción	Transaktions-Hash	Hash de transaction
+280	Verificar recibo	Beleg verifizieren	Vérifier le reçu
+281	Este tablero no es un depósito en garantía. Quorail nunca guarda fondos. Confirma el destinatario con el solicitante antes de pagar. Vuelve al plan privado para conciliar el recibo.	Diese Übersicht ist kein Treuhandkonto. Quorail hält nie Gelder. Prüfe den Empfänger beim Anfordernden. Gleiche danach den Beleg im privaten Plan ab.	Ce tableau n’est pas un séquestre. Quorail ne détient jamais de fonds. Confirmez le destinataire avec le demandeur. Revenez au plan privé pour rapprocher le reçu.
+284	Abrir Quorail	Quorail öffnen	Ouvrir Quorail
+285	LA GUÍA DE QUORAIL	DIE QUORAIL-ANLEITUNG	LE GUIDE QUORAIL
+286	Un pago tiene	Eine Zahlung hat	Un paiement a
+287	un contexto más amplio.	einen größeren Zusammenhang.	un contexte plus large.
+288	Quorail ayuda a independientes y equipos pequeños a planificar pagos NIM según sus compromisos existentes.	Quorail hilft Selbstständigen und kleinen Teams, NIM-Zahlungen anhand bestehender Verpflichtungen zu planen.	Quorail aide les indépendants et petites équipes à planifier leurs paiements NIM selon leurs engagements existants.
+289	01. Empieza por lo importante.	01. Beginne mit dem Wesentlichen.	01. Commencez par l’essentiel.
+290	Abre Quorail dentro de Nimiq Pay actualizado y conecta.	Öffne Quorail in einer aktuellen Nimiq-Pay-Wallet und verbinde dich.	Ouvrez Quorail dans une version à jour de Nimiq Pay et connectez-vous.
+291	El plan se vincula a tu dirección estable. El saldo procede del contrato de pago actual compartido por Nimiq Pay.	Der Plan gehört zu deiner dauerhaften Wallet-Adresse. Das Guthaben stammt aus dem aktuellen, von Nimiq Pay geteilten Zahlungskonto.	Le plan est lié à votre adresse stable. Le solde provient du contrat de paiement actuel partagé par Nimiq Pay.
+292	Añade próximos pagos con destinatario Nimiq, importe, comisión y fecha.	Füge kommende Zahlungen mit Nimiq-Empfänger, Betrag, Gebühr und Fälligkeit hinzu.	Ajoutez les paiements à venir avec destinataire Nimiq, montant, frais et échéance.
+293	Fija la reserva y el período de planificación en Ajustes.	Lege Reserve und Planungszeitraum in den Einstellungen fest.	Définissez la réserve et la période de planification dans les paramètres.
+294	Revisa el impacto. Si los compromisos siguen cubiertos, aprueba en Nimiq Pay.	Prüfe die Auswirkungen. Wenn die Verpflichtungen gedeckt bleiben, genehmige in Nimiq Pay.	Vérifiez l’impact. Si les engagements restent couverts, approuvez dans Nimiq Pay.
+295	Comprueba el recibo en Actividad. Quorail coteja remitente, destinatario, red e importe antes de confirmar el pago.	Prüfe den Beleg unter Aktivität. Quorail gleicht Absender, Empfänger, Netzwerk und Betrag vor der Bestätigung ab.	Vérifiez le reçu dans Activité. Quorail compare expéditeur, destinataire, réseau et montant avant de confirmer.
+296	02. Comprende el cálculo.	02. Verstehe die Berechnung.	02. Comprenez le calcul.
+297	El margen es el saldo menos los compromisos registrados en el período y la reserva. La vista previa resta el pago elegido, su comisión y los otros compromisos. Nunca resta dos veces el mismo pago.	Der Spielraum ist das Guthaben abzüglich erfasster Verpflichtungen im Zeitraum und der Reserve. Die Vorschau zieht die gewählte Zahlung, ihre Gebühr und andere Verpflichtungen ab. Dieselbe Zahlung wird nie doppelt abgezogen.	La marge est le solde moins les engagements enregistrés sur la période et la réserve. L’aperçu soustrait le paiement choisi, ses frais et les autres engagements. Un même paiement n’est jamais soustrait deux fois.
+298	Se incluyen deudas vencidas. Los pagos confirmados salen del plan pendiente. Los pendientes o inciertos siguen reservados hasta verificarse, lo que puede reducir temporalmente la previsión. No se predicen gastos no registrados, ingresos futuros ni tipos de cambio.	Überfällige Verpflichtungen bleiben enthalten. Bestätigte Zahlungen verlassen den offenen Plan. Ausstehende oder unklare Zahlungen bleiben bis zur Prüfung vorgemerkt, wodurch die Prognose vorübergehend vorsichtiger ausfällt. Nicht erfasste Ausgaben, künftige Einnahmen und Wechselkurse werden nicht vorhergesagt.	Les engagements échus restent inclus. Les paiements confirmés sortent des engagements ouverts. Ceux en attente ou incertains restent réservés jusqu’à vérification, ce qui peut rendre la prévision temporairement prudente. Dépenses non enregistrées, revenus futurs et taux de change ne sont pas prévus.
+299	Los cálculos usan Luna enteros. Un NIM equivale a 100.000 Luna. Se admiten cinco decimales. No hay valoración en dólares ni promesa de rendimiento.	Berechnungen verwenden ganze Luna. Ein NIM entspricht 100.000 Luna. Bis zu fünf Dezimalstellen sind möglich. Es gibt keine Dollarbewertung oder Renditezusage.	Les calculs utilisent des Luna entiers. Un NIM vaut 100 000 Luna. Jusqu’à cinq décimales sont acceptées. Aucune valorisation en dollars ni promesse de rendement.
+300	03. Tu cartera mantiene el control.	03. Deine Wallet behält die Kontrolle.	03. Votre portefeuille garde le contrôle.
+301	Quorail no tiene claves privadas, cuenta de custodia, firmante en segundo plano ni agente de pagos autónomo. La cartera pide aprobar cada pago. Comprueba siempre remitente, destinatario, importe, comisión y red.	Quorail besitzt keine privaten Schlüssel, kein Verwahrkonto, keinen Hintergrundunterzeichner und keinen autonomen Zahlungsagenten. Die Wallet verlangt für jede Zahlung deine Freigabe. Prüfe immer Absender, Empfänger, Betrag, Gebühr und Netzwerk.	Quorail ne possède ni clés privées, ni compte de garde, ni signataire en arrière-plan, ni agent de paiement autonome. Le portefeuille demande votre accord pour chaque paiement. Vérifiez toujours expéditeur, destinataire, montant, frais et réseau.
+302	La reserva es un objetivo, no una caja fuerte. Quorail bloquea sus pagos si cruzan ese objetivo; no limita gastos fuera de la app. El saldo se consulta en el contrato de pago de Nimiq Pay. La cartera y su cofirmante deben autorizar cada pago.	Die Reserve ist ein Ziel, kein Tresor. Quorail blockiert eigene Zahlungen, die dieses Ziel unterschreiten; Ausgaben außerhalb der App werden nicht beschränkt. Das Guthaben wird am Nimiq-Pay-Zahlungskonto gelesen. Wallet und Mitunterzeichner müssen jede Zahlung erlauben.	La réserve est un objectif, pas un coffre. Quorail bloque ses paiements qui le franchissent, sans limiter les dépenses hors de l’app. Le solde est lu dans le contrat de paiement Nimiq Pay. Le portefeuille et son cosignataire doivent autoriser chaque paiement.
+303	04. Sigue el recibo.	04. Verfolge den Beleg.	04. Suivez le reçu.
+304	El hash es un identificador de envío, no prueba de éxito. Actividad usa el RPC de la red para verificar inclusión y ejecución y distinguir recibos pendientes, confirmados, fallidos o no coincidentes.	Ein Hash ist eine Einreichungskennung, kein Erfolgsnachweis. Aktivität prüft Aufnahme und Ausführung über den Netzwerk-RPC und unterscheidet ausstehende, bestätigte, fehlgeschlagene und abweichende Belege.	Le hash identifie un envoi, sans prouver sa réussite. Activité utilise le RPC du réseau pour vérifier inclusion et exécution et distinguer reçus en attente, confirmés, échoués ou non concordants.
+305	Confirmado significa inclusión correcta según el RPC configurado, no una prueba criptográfica independiente de finalidad. Consulta el explorador. Si un error ocurre tras un posible envío, Quorail lo mantiene incierto y pausa nuevos pagos. Recupera el hash del historial de Nimiq Pay y compruébalo en los detalles. Nunca reintentes a ciegas.	Bestätigt bedeutet erfolgreiche Aufnahme laut konfiguriertem RPC, keinen unabhängigen kryptografischen Endgültigkeitsbeweis. Prüfe im Explorer nach. Bei Fehlern nach möglicher Einreichung bleibt der Status unklar und neue Zahlungen pausieren. Finde den Hash im Nimiq-Pay-Verlauf und prüfe ihn in den Details. Nie blind erneut senden.	Confirmé signifie inclusion réussie selon le RPC configuré, pas une preuve cryptographique indépendante de finalité. Consultez l’explorateur. En cas d’erreur après un possible envoi, Quorail garde le statut incertain et suspend les nouveaux paiements. Retrouvez le hash dans Nimiq Pay et vérifiez-le dans les détails. Ne réessayez jamais à l’aveugle.
+306	Si no encuentras el hash, conserva el registro e investiga el historial antes de actuar. La app no reinicia automáticamente pagos ambiguos.	Wenn kein Hash auffindbar ist, behalte den Eintrag und prüfe zuerst den Wallet-Verlauf. Unklare Zahlungen werden nicht automatisch zurückgesetzt.	Si le hash est introuvable, conservez l’enregistrement et examinez l’historique avant d’agir. L’app ne réinitialise pas automatiquement les paiements ambigus.
+307	05. Privacidad sin sorpresas.	05. Datenschutz ohne Überraschungen.	05. Confidentialité sans surprise.
+308	Planes y pagos se guardan sin cifrar en el almacenamiento local del navegador, por dirección y red. No se sincronizan entre dispositivos. Quien acceda al perfil del navegador podría verlos. Compartir una dirección no autentica ni demuestra propiedad.	Pläne und Zahlungen werden unverschlüsselt im Browser nach Adresse und Netzwerk gespeichert. Keine Gerätesynchronisation. Wer Zugriff auf das Browserprofil hat, kann sie möglicherweise lesen. Adressfreigabe ist weder Anmeldung noch Eigentumsnachweis.	Plans et paiements sont stockés sans chiffrement dans le navigateur, par adresse et réseau. Aucune synchronisation entre appareils. Une personne ayant accès au profil du navigateur pourrait les lire. Le partage d’adresse n’est ni authentification ni preuve de propriété.
+309	Exporta JSON en Ajustes o Actividad. Importar combina registros nuevos de la misma dirección y red, conserva los existentes y exige verificar de nuevo los intentos importados. Borrar datos del navegador puede eliminar el plan y el historial.	Exportiere JSON in Einstellungen oder Aktivität. Importieren ergänzt neue Einträge derselben Adresse und desselben Netzwerks, behält vorhandene und verlangt erneute Prüfung importierter Versuche. Das Löschen von Browserdaten kann Plan und Verlauf entfernen.	Exportez du JSON dans Paramètres ou Activité. L’import ajoute les nouveaux enregistrements de la même adresse et du même réseau, conserve les anciens et exige une nouvelle vérification des tentatives importées. Effacer les données peut supprimer plan et historique.
+310	Las verificaciones envían el hash y tu IP a un operador RPC público. Google Fonts recibe solicitudes e IP; el alojamiento puede guardar registros de acceso. No hay rastreadores publicitarios. La IA opcional envía tu pregunta a Anthropic mediante nuestro servidor solo con consentimiento. Puedes incluir el resumen revisado de saldo, reserva y previsiones, sin títulos, direcciones ni recibos automáticos. No escribas secretos. Los pagos son públicos en la cadena.	Belegprüfungen senden Hash und IP an einen öffentlichen RPC-Betreiber. Google Fonts erhält Schriftanfragen und IP; Hostinganbieter können Zugriffsprotokolle speichern. Keine Werbetracker. Die optionale KI sendet deine Frage nur nach Zustimmung über unseren Server an Anthropic. Optional kannst du die geprüfte Zusammenfassung von Guthaben, Reserve und Prognosen teilen; Titel, Adressen und Belege sind darin nicht automatisch enthalten. Keine Geheimnisse eingeben. Zahlungen sind auf der Blockchain öffentlich.	Les vérifications envoient hash et IP à un opérateur RPC public. Google Fonts reçoit les requêtes de polices et votre IP ; l’hébergeur peut garder des journaux d’accès. Aucun traceur publicitaire. L’IA facultative transmet votre question à Anthropic via notre serveur seulement après consentement. Vous pouvez joindre le résumé vérifié du solde, de la réserve et des prévisions, sans titres, adresses ni reçus automatiques. Ne saisissez aucun secret. Les paiements sont publics sur la chaîne.
+311	06. Recurrencias, tableros compartidos e IA.	06. Wiederholungen, gemeinsame Übersichten und KI.	06. Récurrences, tableaux partagés et IA.
+312	Los compromisos semanales y mensuales aparecen en previsiones de 30, 60 y 90 días. Confirmar crea la próxima ocurrencia. Cada pago requiere aprobación. No hay débito automático.	Wöchentliche und monatliche Verpflichtungen erscheinen in den 30-, 60- und 90-Tage-Prognosen. Bestätigung erzeugt den nächsten Termin. Jede Zahlung benötigt Freigabe. Keine automatische Abbuchung.	Les engagements hebdomadaires et mensuels apparaissent sur 30, 60 et 90 jours. La confirmation crée l’échéance suivante. Chaque paiement exige une approbation. Aucun débit automatique.
+313	Los tableros son copias opcionales guardadas 30 días en Redis. Quien tenga la invitación puede leer títulos, direcciones, importes, fechas y responsables. Comparte solo con personas de confianza. Las etiquetas no verifican identidad. Los cambios privados no se sincronizan. Paga en un solo lugar para evitar duplicados.	Gemeinsame Übersichten sind optionale Kopien, die 30 Tage in Redis liegen. Jeder mit Einladung kann Titel, Adressen, Beträge, Termine und Verantwortliche lesen. Teile nur mit Vertrauenspersonen. Bezeichnungen bestätigen keine Identität. Private Änderungen synchronisieren nicht. Zahle nur an einer Stelle, um Doppelzahlungen zu vermeiden.	Les tableaux sont des copies facultatives conservées 30 jours dans Redis. Toute personne invitée peut lire titres, adresses, montants, dates et responsables. Partagez avec des personnes de confiance. Les libellés ne vérifient pas l’identité. Les changements privés ne se synchronisent pas. Payez à un seul endroit pour éviter les doublons.
+314	Los tableros de cobro dividen solicitudes en partes exactas, cada una con referencia pública. Las partes confirmadas actualizan el total. Cobrar una contribución no paga el compromiso saliente original. Referencia, importe, destinatario y red deben coincidir. Quorail no guarda fondos.	Sammelübersichten teilen Anfragen exakt auf, jeder Anteil hat eine öffentliche Referenz. Bestätigte Anteile aktualisieren die Summe. Ein eingesammelter Beitrag bezahlt nicht die ursprüngliche Verpflichtung. Referenz, Betrag, Empfänger und Netzwerk müssen stimmen. Quorail hält keine Gelder.	Les tableaux de collecte divisent les demandes en parts exactes, chacune avec une référence publique. Les parts confirmées actualisent le total. Recevoir une contribution ne règle pas l’engagement sortant initial. Référence, montant, destinataire et réseau doivent correspondre. Quorail ne détient aucun fonds.
+315	La IA explica, no ejecuta pagos. Puede equivocarse; usa el cálculo de la vista previa. Hay límites de solicitudes y hashes de clientes con sal guardados temporalmente para aplicarlos. Los tableros caducan; conserva JSON local. Una referencia en cadena no restaura un plan.	Die KI erklärt und führt keine Zahlungen aus. Sie kann irren; nutze die berechnete Vorschau. Anfragelimits verwenden vorübergehend gespeicherte, gesalzene Client-Hashes. Gemeinsame Einträge laufen ab; sichere lokal als JSON. Eine Blockchain-Referenz allein stellt keinen Plan wieder her.	L’IA explique sans exécuter de paiements. Elle peut se tromper ; utilisez le calcul de l’aperçu. Des limites de requêtes utilisent temporairement des hashes clients salés. Les tableaux expirent ; gardez une sauvegarde JSON locale. Une référence sur la chaîne ne restaure pas un plan.
+316	07. Un ejemplo es un ejemplo.	07. Ein Beispiel bleibt ein Beispiel.	07. Un exemple reste un exemple.
+317	El espacio de ejemplo permite explorar sin cartera. Saldo y compromisos son ilustrativos. No envía pagos ni crea recibos. Conecta tu cartera para un plan real separado.	Der Beispielbereich funktioniert ohne Wallet. Guthaben und Verpflichtungen sind Beispiele. Er sendet keine Zahlungen und erstellt keine Belege. Verbinde deine Wallet für einen getrennten echten Plan.	L’espace d’exemple fonctionne sans portefeuille. Solde et engagements sont illustratifs. Il n’envoie aucun paiement et ne crée aucun reçu. Connectez votre portefeuille pour un plan réel distinct.
+318	08. Creado por Jayking.	08. Entwickelt von Jayking.	08. Créé par Jayking.
+319	Quorail-Nimiq adapta el concepto original de planificación de consecuencias a una Mini App Nimiq Pay. Sustituye la ejecución específica de la cadena anterior por pagos NIM aprobados por el usuario.	Quorail-Nimiq überträgt die ursprüngliche Folgenplanung in eine Nimiq-Pay-Mini-App. Die frühere kettenbezogene Ausführung wird durch nutzerfreigegebene NIM-Zahlungen ersetzt.	Quorail-Nimiq adapte le concept original de planification des conséquences en Mini App Nimiq Pay. L’ancien modèle d’exécution propre à une chaîne est remplacé par des paiements NIM approuvés par l’utilisateur.
+322	Código abierto bajo licencia MIT. Creado de forma independiente, sin afirmar respaldo oficial de Nimiq.	Open Source unter MIT-Lizenz. Unabhängig entwickelt, ohne Anspruch auf offizielle Unterstützung durch Nimiq.	Code ouvert sous licence MIT. Création indépendante, sans revendiquer de soutien officiel de Nimiq.
