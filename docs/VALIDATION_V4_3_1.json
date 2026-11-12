@@ -1,0 +1,6 @@
+{
+  "tests_passed": 65,
+  "production_build": "passed",
+  "receipt_image_download_on_native_device": "requires live phone check",
+  "live_payment": "user reported successful in V4.3; no funds sent during this update"
+}

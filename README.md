@@ -4,6 +4,10 @@
 
 Quorail helps independent workers and small teams plan NIM commitments, understand the remaining buffer, approve payments in Nimiq Pay and keep matching receipts. Built by Jayking: [GitHub](https://github.com/paulos-ui) · [X](https://x.com/__official__1).
 
+## Version 4.3.1: visible payment receipts
+
+Confirmed payments now open a Quorail receipt with the verified amount, fee, sender, recipient, network, transaction hash and first verification time. Download a PNG image or an HTML printable receipt, which can be opened in a browser and printed to PDF. Receipts include private payment details; share them intentionally. A receipt is a record of an RPC-verified transaction, not a tax invoice. Rechecking preserves the first verification time. Confirmed payments no longer display a hypothetical second deduction from the current balance. Existing confirmed records work without another payment.
+
 ## Version 4.3: native payment balance and broader localization
 
 This is a complete source release, including the previous QR setup, recurring plans, shared boards, AI, games and backups.

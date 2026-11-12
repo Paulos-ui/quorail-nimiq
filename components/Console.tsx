@@ -1,5 +1,6 @@
 "use client";
 import { useLanguage as useUILanguage } from "./Preferences";
+import PaymentReceipt from "./PaymentReceipt";
 import Localized from "@/components/Localized";
 
 import { useLanguage, PreferenceControls } from "./Preferences";
@@ -493,7 +494,7 @@ export default function Console() {
       busyRef.current = false;
     }
   }
-  async function checkReceipt(p: Payment, hash = p.hash) {
+  async function checkReceipt(p: Payment, hash = p.hash, openReceipt = false) {
     if (!hash || busyRef.current) return;
     setBusy(true);
     busyRef.current = true;
@@ -512,9 +513,12 @@ export default function Console() {
         sender: result.sender,
         fee: result.fee ?? p.fee,
         confirmedAt:
-          result.status === "confirmed" ? new Date().toISOString() : undefined,
+          result.status === "confirmed"
+            ? p.confirmedAt || new Date().toISOString()
+            : undefined,
       });
       update(next, true);
+      if (openReceipt && result.status === "confirmed") setSelected(p.id);
       if (result.status === "confirmed" && provider.current) {
         try {
           setBalance(await readWalletBalance(provider.current, address));
@@ -1437,10 +1441,20 @@ export default function Console() {
                               <button
                                 className="button small outline"
                                 disabled={busy}
-                                onClick={() => checkReceipt(p)}
+                                onClick={() =>
+                                  p.status === "confirmed"
+                                    ? setSelected(p.id)
+                                    : checkReceipt(p, p.hash, true)
+                                }
                               >
                                 {" "}
-                                <Localized text={"Check receipt"} />{" "}
+                                <Localized
+                                  text={
+                                    p.status === "confirmed"
+                                      ? "View receipt"
+                                      : "Check receipt"
+                                  }
+                                />{" "}
                               </button>
                             </>
                           )}
@@ -1789,7 +1803,13 @@ export default function Console() {
           >
             <div className="modal-head">
               <span className="eyebrow">
-                <Localized text={"BEFORE YOUR NEXT MOVE"} />
+                <Localized
+                  text={
+                    payment.status === "confirmed"
+                      ? "Payment receipt"
+                      : "BEFORE YOUR NEXT MOVE"
+                  }
+                />
               </span>
               <button
                 className="icon-button"
@@ -1800,128 +1820,138 @@ export default function Console() {
                 <X />
               </button>
             </div>
-            <h2>{payment.title}</h2>
-            {payment.recurrence && (
-              <p className="helper">
-                {" "}
-                <Localized text={"Repeats"} />{" "}
-                <Localized text={payment.recurrence} />
-                <Localized text={". Due"} /> {payment.due}
-                <Localized text={". No automatic wallet debit."} />{" "}
-              </p>
-            )}
-            <p className="recipient">
-              <Localized text={"To"} /> {payment.recipient}
-            </p>
-            <div className="impact-total">
-              {nim(payment.amount)}{" "}
-              <small>
-                <Localized text={"NIM"} />
-              </small>
-            </div>
-            {payment.status === "planned" && (
+            {payment.status === "confirmed" ? (
+              <PaymentReceipt payment={payment} network={network} />
+            ) : (
               <>
-                <ReserveIndicator
-                  available={impact.available}
-                  reserve={plan.reserve}
-                  known={balance !== null}
-                />
-                <label className="reserve-adjust">
-                  {" "}
-                  <Localized text={"Adjust reserve target (NIM)"} />{" "}
-                  <input
-                    key={selected}
-                    inputMode="decimal"
-                    defaultValue={String(plan.reserve / LUNA)}
-                    onChange={(e) => {
-                      try {
-                        const reserve = parseNim(e.target.value);
-                        update({ ...planRef.current, reserve });
-                        setReserveInvalid(false);
-                        setMessage("");
-                      } catch {
-                        setReserveInvalid(true);
-                        setMessage(
-                          "Enter a non-negative reserve with at most 5 decimals.",
-                        );
-                      }
-                    }}
-                  />
-                </label>
-                <p className="helper">
-                  {" "}
-                  <Localized
-                    text={
-                      "Reserve changes save immediately. Your forecast includes"
-                    }
-                  />
-                  <Localized text={" "} />
-                  {plan.horizon}{" "}
-                  <Localized
-                    text={"days and future recurring occurrences."}
-                  />{" "}
+                <h2>{payment.title}</h2>
+                {payment.recurrence && (
+                  <p className="helper">
+                    {" "}
+                    <Localized text={"Repeats"} />{" "}
+                    <Localized text={payment.recurrence} />
+                    <Localized text={". Due"} /> {payment.due}
+                    <Localized text={". No automatic wallet debit."} />{" "}
+                  </p>
+                )}
+                <p className="recipient">
+                  <Localized text={"To"} /> {payment.recipient}
                 </p>
+                <div className="impact-total">
+                  {nim(payment.amount)}{" "}
+                  <small>
+                    <Localized text={"NIM"} />
+                  </small>
+                </div>
+                {payment.status === "planned" && (
+                  <>
+                    <ReserveIndicator
+                      available={impact.available}
+                      reserve={plan.reserve}
+                      known={balance !== null}
+                    />
+                    <label className="reserve-adjust">
+                      {" "}
+                      <Localized text={"Adjust reserve target (NIM)"} />{" "}
+                      <input
+                        key={selected}
+                        inputMode="decimal"
+                        defaultValue={String(plan.reserve / LUNA)}
+                        onChange={(e) => {
+                          try {
+                            const reserve = parseNim(e.target.value);
+                            update({ ...planRef.current, reserve });
+                            setReserveInvalid(false);
+                            setMessage("");
+                          } catch {
+                            setReserveInvalid(true);
+                            setMessage(
+                              "Enter a non-negative reserve with at most 5 decimals.",
+                            );
+                          }
+                        }}
+                      />
+                    </label>
+                    <p className="helper">
+                      {" "}
+                      <Localized
+                        text={
+                          "Reserve changes save immediately. Your forecast includes"
+                        }
+                      />
+                      <Localized text={" "} />
+                      {plan.horizon}{" "}
+                      <Localized
+                        text={"days and future recurring occurrences."}
+                      />{" "}
+                    </p>
+                  </>
+                )}
+                {payment.status === "planned" && (
+                  <div className="impact-lines">
+                    <div>
+                      <span>{tr("Current account balance")}</span>
+                      <b>
+                        <Localized
+                          text={
+                            balance === null
+                              ? "Unavailable"
+                              : nim(balance) + " NIM"
+                          }
+                        />
+                      </b>
+                    </div>
+                    <div>
+                      <span>
+                        <Localized text={"This payment + fee"} />
+                      </span>
+                      <b>
+                        {nim(impact.cost)} <Localized text={"NIM"} />
+                      </b>
+                    </div>
+                    <div>
+                      <span>
+                        <Localized text={"Other commitments in"} />{" "}
+                        {plan.horizon} <Localized text={"days"} />
+                      </span>
+                      <b>
+                        {nim(impact.obligations)} <Localized text={"NIM"} />
+                      </b>
+                    </div>
+                    <div>
+                      <span>
+                        <Localized text={"Balance after this payment"} />
+                      </span>
+                      <b>
+                        {nim(impact.after)} <Localized text={"NIM"} />
+                      </b>
+                    </div>
+                    <div>
+                      <span>
+                        <Localized text={"Reserve target"} />
+                      </span>
+                      <b>
+                        {nim(plan.reserve)} <Localized text={"NIM"} />
+                      </b>
+                    </div>
+                    <div
+                      className={
+                        impact.available < 0
+                          ? "impact-result negative"
+                          : "impact-result"
+                      }
+                    >
+                      <span>
+                        <Localized text={"Room left after this move"} />
+                      </span>
+                      <b>
+                        {nim(impact.available)} <Localized text={"NIM"} />
+                      </b>
+                    </div>
+                  </div>
+                )}
               </>
             )}
-            <div className="impact-lines">
-              <div>
-                <span>{tr("Current account balance")}</span>
-                <b>
-                  <Localized
-                    text={
-                      balance === null ? "Unavailable" : nim(balance) + " NIM"
-                    }
-                  />
-                </b>
-              </div>
-              <div>
-                <span>
-                  <Localized text={"This payment + fee"} />
-                </span>
-                <b>
-                  {nim(impact.cost)} <Localized text={"NIM"} />
-                </b>
-              </div>
-              <div>
-                <span>
-                  <Localized text={"Other commitments in"} /> {plan.horizon}{" "}
-                  <Localized text={"days"} />
-                </span>
-                <b>
-                  {nim(impact.obligations)} <Localized text={"NIM"} />
-                </b>
-              </div>
-              <div>
-                <span>
-                  <Localized text={"Balance after this payment"} />
-                </span>
-                <b>
-                  {nim(impact.after)} <Localized text={"NIM"} />
-                </b>
-              </div>
-              <div>
-                <span>
-                  <Localized text={"Reserve target"} />
-                </span>
-                <b>
-                  {nim(plan.reserve)} <Localized text={"NIM"} />
-                </b>
-              </div>
-              <div
-                className={
-                  impact.available < 0
-                    ? "impact-result negative"
-                    : "impact-result"
-                }
-              >
-                <span>
-                  <Localized text={"Room left after this move"} />
-                </span>
-                <b>
-                  {nim(impact.available)} <Localized text={"NIM"} />
-                </b>
-              </div>
-            </div>
             {message && (
               <p className="form-message" role="status">
                 <Localized text={message} />
@@ -2070,10 +2100,16 @@ export default function Console() {
                     <button
                       className="button outline"
                       disabled={busy}
-                      onClick={() => checkReceipt(payment)}
+                      onClick={() => checkReceipt(payment, payment.hash, true)}
                     >
                       {" "}
-                      <Localized text={"Check receipt"} />{" "}
+                      <Localized
+                        text={
+                          payment.status === "confirmed"
+                            ? "Recheck confirmation"
+                            : "Check receipt"
+                        }
+                      />{" "}
                     </button>
                   </div>
                 ) : (
@@ -2107,13 +2143,15 @@ export default function Console() {
               payment={payment}
               balance={balance}
             />
-            <SharePlan
-              plan={plan}
-              address={address}
-              network={network}
-              payment={payment}
-              demo={demo}
-            />
+            {payment.status === "planned" && (
+              <SharePlan
+                plan={plan}
+                address={address}
+                network={network}
+                payment={payment}
+                demo={demo}
+              />
+            )}
           </section>
         </div>
       )}
