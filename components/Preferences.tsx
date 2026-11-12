@@ -1,5 +1,5 @@
 "use client";
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState, useRef } from "react";
 import { Sun, Moon, Globe2 } from "lucide-react";
 import { translate, type Language } from "@/lib/translations";
 const Context = createContext({
@@ -13,26 +13,33 @@ const Context = createContext({
 export function PreferenceControls() {
   const { tr, language, theme, resolved, setLanguage, setTheme } =
     useLanguage();
+  const menu = useRef<HTMLDetailsElement>(null);
+  useEffect(() => {
+    const dismiss = (event: PointerEvent) => {
+      if (menu.current && !menu.current.contains(event.target as Node))
+        menu.current.open = false;
+    };
+    document.addEventListener("pointerdown", dismiss);
+    return () => document.removeEventListener("pointerdown", dismiss);
+  }, []);
   return (
     <div className="preference-controls">
       <button
         className="icon-button theme-toggle"
         aria-label={tr(resolved === "dark" ? "Light" : "Dark")}
         title={tr(resolved === "dark" ? "Light" : "Dark")}
-        onClick={() =>
-          setTheme(
-            document.documentElement.dataset.resolved === "dark"
-              ? "light"
-              : "dark",
-          )
-        }
+        onClick={() => setTheme(resolved === "dark" ? "light" : "dark")}
       >
         {resolved === "dark" ? <Moon size={19} /> : <Sun size={19} />}
       </button>
       <details
         className="language-menu"
+        ref={menu}
         onKeyDown={(e) => {
-          if (e.key === "Escape") e.currentTarget.removeAttribute("open");
+          if (e.key === "Escape") {
+            e.currentTarget.open = false;
+            e.currentTarget.querySelector("summary")?.focus();
+          }
         }}
       >
         <summary aria-label={tr("Language")} title={tr("Language")}>

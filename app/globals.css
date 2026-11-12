@@ -3735,28 +3735,142 @@ footer .preference-controls {
   background: #242333;
   color: #faf5e8;
 }
-@media (max-width: 600px) {
-  .brand-group {
-    gap: 5px;
+/* Mobile header: deliberate rows, with settings anchored at the screen edge. */
+.wallet-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+.page-context {
+  flex-shrink: 0;
+}
+html[data-theme="dark"] .app-header {
+  background: #201f2a;
+  color: #f4f0e7;
+  border-color: #45424f;
+}
+.preference-controls .icon-button,
+.language-menu > summary {
+  color: inherit;
+}
+.language-menu[open] > summary {
+  background: #7653d51a;
+  border-color: #7653d566;
+}
+.language-options {
+  max-width: calc(100vw - 32px);
+}
+@media (max-width: 760px) {
+  .app-header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    height: auto;
+    min-height: 120px;
+    padding: 12px 20px 16px;
+    gap: 10px 12px;
   }
-  .site-header {
-    flex-wrap: wrap;
-  }
-  .preference-controls .icon-button {
-    display: grid !important;
-    width: 36px;
-    height: 36px;
-  }
-  .language-menu > summary {
-    width: 36px;
-    height: 36px;
+  .app-header .page-context {
+    grid-column: 1;
+    grid-row: 1;
+    font-size: 14px;
+    font-weight: 600;
   }
   .app-header .header-actions {
+    display: contents;
+  }
+  .app-header .preference-controls {
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: end;
+  }
+  .app-header .wallet-controls {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    width: 100%;
+    gap: 8px;
+  }
+  .app-header .wallet-controls .pill {
+    margin-right: auto;
+    font-size: 11px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+  .app-header .wallet-controls .button {
+    min-height: 44px;
+    padding: 10px 14px;
+    border-radius: 14px;
+    font-size: 12px;
+    gap: 8px;
+    white-space: normal;
+  }
+  .app-header .wallet-controls .icon-button {
+    display: grid;
+    width: 44px;
+    min-width: 44px;
+    height: 44px;
+  }
+  .preference-controls {
     gap: 4px;
+  }
+  .preference-controls .icon-button,
+  .language-menu > summary {
+    display: grid !important;
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+  }
+  .language-options {
+    top: 50px;
+    width: 244px;
+    right: 0;
+    max-height: 60vh;
+    overflow-y: auto;
+  }
+  .site-header {
+    display: flex;
+    height: auto;
+    min-height: 112px;
+    padding: 12px 20px 10px;
+    gap: 10px;
     flex-wrap: wrap;
   }
-  .app-header {
-    gap: 6px;
+  .site-header .brand-group {
+    width: 100%;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .site-header .brand > span {
+    display: block;
+  }
+  .site-header .brand {
+    font-size: 25px;
+    gap: 8px;
+  }
+  .site-header .brand-sub {
+    font-size: 8px;
+    letter-spacing: 1.5px;
+  }
+  .site-header > .button {
+    display: none;
+  } /* Primary launch action remains in the hero. */
+  .site-header nav {
+    display: flex !important;
+    order: 2;
+    width: 100%;
+    padding: 0;
+    gap: 8px;
+    justify-content: space-between;
+    font-size: 12px;
+  }
+  .site-header nav a {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    text-align: center;
   }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -3765,4 +3879,98 @@ footer .preference-controls {
   }
 }
 
-.quorail-receipt{background:#fffdf6;border:1px solid #d8d0b9;border-radius:22px;padding:28px;margin:12px 0}.quorail-receipt header{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}.receipt-brand{font-size:28px;letter-spacing:-1px}.quorail-receipt header span{display:flex;align-items:center;gap:7px;color:#28664a;font-size:13px}.quorail-receipt h2{font-size:clamp(32px,7vw,52px);margin:18px 0 8px}.quorail-receipt dl{border-block:1px dashed #c8bfa9;padding:16px 0}.quorail-receipt dl div{margin:15px 0}.quorail-receipt dt{font-size:12px;color:#77716e;margin-bottom:4px}.quorail-receipt dd{margin:0;font-size:14px;overflow-wrap:anywhere;white-space:normal;font-family:monospace}.receipt-actions{display:flex;flex-wrap:wrap;gap:12px}.receipt-actions .button{white-space:normal}.quorail-receipt .helper{font-size:12px}html[data-theme="dark"] .quorail-receipt{background:#242333;color:#faf5e8;border-color:#555065}html[data-theme="dark"] .quorail-receipt dt{color:#bcb7c7}html[data-theme="dark"] .quorail-receipt header span{color:#91d7ac}@media(max-width:600px){.quorail-receipt{padding:18px}.receipt-actions .button{width:100%}}
+.quorail-receipt {
+  background: #fffdf6;
+  border: 1px solid #d8d0b9;
+  border-radius: 22px;
+  padding: 28px;
+  margin: 12px 0;
+}
+.quorail-receipt header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.receipt-brand {
+  font-size: 28px;
+  letter-spacing: -1px;
+}
+.quorail-receipt header span {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: #28664a;
+  font-size: 13px;
+}
+.quorail-receipt h2 {
+  font-size: clamp(32px, 7vw, 52px);
+  margin: 18px 0 8px;
+}
+.quorail-receipt dl {
+  border-block: 1px dashed #c8bfa9;
+  padding: 16px 0;
+}
+.quorail-receipt dl div {
+  margin: 15px 0;
+}
+.quorail-receipt dt {
+  font-size: 12px;
+  color: #77716e;
+  margin-bottom: 4px;
+}
+.quorail-receipt dd {
+  margin: 0;
+  font-size: 14px;
+  overflow-wrap: anywhere;
+  white-space: normal;
+  font-family: monospace;
+}
+.receipt-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.receipt-actions .button {
+  white-space: normal;
+}
+.quorail-receipt .helper {
+  font-size: 12px;
+}
+html[data-theme="dark"] .quorail-receipt {
+  background: #242333;
+  color: #faf5e8;
+  border-color: #555065;
+}
+html[data-theme="dark"] .quorail-receipt dt {
+  color: #bcb7c7;
+}
+html[data-theme="dark"] .quorail-receipt header span {
+  color: #91d7ac;
+}
+@media (max-width: 600px) {
+  .quorail-receipt {
+    padding: 18px;
+  }
+  .receipt-actions .button {
+    width: 100%;
+  }
+}
+
+/* v4.3.3: primary action always occupies the top-right header cell. */
+@media (max-width:760px) {
+ .app-header { grid-template-columns:minmax(0,1fr) auto auto; min-height:112px; }
+ .app-header .wallet-controls { display:contents; }
+ .app-header .wallet-controls > .button { grid-column:2 / 4; grid-row:1; justify-self:end; max-width:190px; margin:0; }
+ .app-header .wallet-controls > .pill { grid-column:1; grid-row:2; align-self:center; }
+ .app-header .wallet-controls > .icon-button { grid-column:2; grid-row:2; }
+ .app-header .preference-controls { grid-column:3; grid-row:2; }
+ .site-header { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:8px 12px; }
+ .site-header .brand-group { display:contents; }
+ .site-header .brand { grid-column:1; grid-row:1; min-width:0; }
+ .site-header > .button.small { display:flex; grid-column:2; grid-row:1; justify-self:end; min-height:44px; padding:10px 12px; font-size:12px; max-width:170px; white-space:normal; box-shadow:none; }
+ .site-header .preference-controls { grid-column:2; grid-row:2; justify-self:end; }
+ .site-header nav { grid-column:1 / -1; grid-row:3; }
+ .site-header .language-options, .app-header .language-options { right:0; }
+}

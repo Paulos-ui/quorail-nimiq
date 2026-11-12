@@ -746,7 +746,7 @@ export default function Console() {
       </aside>
       <div className="app-main">
         <header className="app-header">
-          <div>
+          <div className="page-context">
             <span className="breadcrumb">
               <Localized text={"Workspace /"} />
             </span>{" "}
@@ -754,50 +754,52 @@ export default function Console() {
           </div>
           <div className="header-actions">
             <PreferenceControls />
-            {demo ? (
-              <span className="pill demo-pill">
-                <Localized text={"Example mode"} />
-              </span>
-            ) : address ? (
-              <span className="pill">
-                <i />
-                {network}
-              </span>
-            ) : (
-              <span className="pill">
-                <Localized text={"Wallet not connected"} />
-              </span>
-            )}
-            {ready && (
-              <button
-                className="icon-button"
-                aria-label={ui("Planning settings")}
-                onClick={() => setModal("settings")}
-              >
-                <Settings2 size={19} />
-              </button>
-            )}
-            {address ? (
-              <button
-                className="button small outline"
-                disabled={busy}
-                onClick={disconnect}
-              >
-                <LogOut size={15} />
-                <span>
-                  <Localized text={"Disconnect"} />
+            <div className="wallet-controls">
+              {demo ? (
+                <span className="pill demo-pill">
+                  <Localized text={"Example mode"} />
                 </span>
-              </button>
-            ) : (
-              <button
-                className="button small dark"
-                disabled={busy}
-                onClick={connect}
-              >
-                <Wallet size={16} />
-                <Localized text={busy ? "Connecting…" : "Connect wallet"} />
-              </button>
-            )}
+              ) : address ? (
+                <span className="pill">
+                  <i />
+                  {network}
+                </span>
+              ) : (
+                <span className="pill">
+                  <Localized text={"Wallet not connected"} />
+                </span>
+              )}
+              {ready && (
+                <button
+                  className="icon-button"
+                  aria-label={ui("Planning settings")}
+                  onClick={() => setModal("settings")}
+                >
+                  <Settings2 size={19} />
+                </button>
+              )}
+              {address ? (
+                <button
+                  className="button small outline"
+                  disabled={busy}
+                  onClick={disconnect}
+                >
+                  <LogOut size={15} />
+                  <span>
+                    <Localized text={"Disconnect"} />
+                  </span>
+                </button>
+              ) : (
+                <button
+                  className="button small dark"
+                  disabled={busy}
+                  onClick={connect}
+                >
+                  <Wallet size={16} />
+                  <Localized text={busy ? "Connecting…" : "Connect wallet"} />
+                </button>
+              )}
+            </div>
           </div>
         </header>
         <main className="workspace">
