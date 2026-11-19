@@ -4027,3 +4027,18 @@ html[data-theme="dark"] .quorail-receipt header span {
 .asset-card-error{color:#ffe1b3;font-size:13px;line-height:1.5;margin:12px 0}
 .multi-asset-balance .balance-foot button{color:inherit;cursor:pointer}
 @media(max-width:420px){.asset-card-toggle button{padding:6px 8px}.multi-asset-balance .big-number{font-size:clamp(2.2rem,9vw,4rem)}}
+/* V6.2: compact, action-led USDT balance state */
+.usdt-balance-content{padding:18px 0 4px;min-height:200px}
+.usdt-balance-status{display:flex;align-items:center;gap:9px;color:#dcd9ea;font-size:13px;font-weight:650}
+.usdt-status-dot{width:9px;height:9px;border-radius:50%;background:#e4b45e;flex:none}
+.usdt-status-dot.online{background:#54d8a1}
+.usdt-balance-prompt{color:#fff;font-size:clamp(1.2rem,4.5vw,1.65rem);font-weight:700;line-height:1.35;max-width:370px;margin:20px 0}
+.usdt-card-connect{display:block;width:100%;border:0;border-radius:14px;background:#f7d949;color:#242033;padding:16px 18px;font:inherit;font-size:15px;font-weight:800;cursor:pointer;min-height:54px}
+.usdt-card-connect:disabled{opacity:.7;cursor:wait}
+.usdt-card-connect:focus-visible,.usdt-card-secondary:focus-visible{outline:3px solid #fff;outline-offset:3px}
+.usdt-balance-caption{font-size:12px;color:#c8c3da;line-height:1.6;margin:14px 0 0}
+.usdt-balance-number{margin:18px 0 12px!important;font-size:clamp(2.1rem,9vw,4.4rem)!important}
+.usdt-balance-detail{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;color:#f3efff;font-size:13px;padding:10px 0;border-top:1px solid #ffffff25}
+.usdt-card-secondary{margin-top:12px;border:1px solid #ffffff55;background:transparent;border-radius:10px;color:#fff;padding:9px 13px;font:inherit;font-size:13px;cursor:pointer}
+.multi-asset-balance .asset-card-error{overflow-wrap:anywhere;max-width:100%}
+@media(max-width:480px){.usdt-balance-content{min-height:180px;padding-top:12px}.usdt-balance-prompt{margin:16px 0}.usdt-card-connect{padding:14px}.usdt-balance-number{font-size:clamp(2rem,9vw,3.2rem)!important}}

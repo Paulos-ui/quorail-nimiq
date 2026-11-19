@@ -5,41 +5,67 @@ import { nim } from "@/lib/finance";
 
 type Asset = "NIM" | "USDT";
 type WalletWindow = Window & { ethereum?: EvmProvider };
+type BalanceStatus = "idle" | "loading" | "connected" | "unavailable" | "error";
+
 export default function AssetBalanceCard({ nimBalance, nimCommitted, nimReserve, horizon, onSettings }: {
   nimBalance: number | null; nimCommitted: number; nimReserve: number; horizon: number; onSettings: () => void;
 }) {
   const [asset, setAsset] = useState<Asset>("NIM");
   const [account, setAccount] = useState("");
   const [usdtBalance, setUsdtBalance] = useState<string | null>(null);
+  const [status, setStatus] = useState<BalanceStatus>("idle");
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+
   const refresh = useCallback(async (requestAccess: boolean) => {
+    setStatus("loading"); setError("");
     const provider = (window as WalletWindow).ethereum;
-    if (!provider) { setError("USDT balance requires a compatible Polygon wallet. This Nimiq Pay browser may not expose one."); return; }
-    setLoading(true); setError("");
+    if (!provider) {
+      setAccount(""); setUsdtBalance(null); setStatus("unavailable");
+      setError("This browser has no compatible Polygon wallet. Open Quorail in a supported EVM wallet to view and send USDT.");
+      return;
+    }
     try {
+      const accounts = await provider.request({ method: requestAccess ? "eth_requestAccounts" : "eth_accounts" });
+      if (!Array.isArray(accounts) || !isEvmAddress(accounts[0])) {
+        setAccount(""); setUsdtBalance(null); setStatus("idle");
+        return;
+      }
+      const selected = accounts[0] as string;
       const chain = await provider.request({ method: "eth_chainId" });
       if (chain !== "0x89") {
-        if (!requestAccess) { setError("Connect your Polygon wallet to view USDT."); return; }
+        if (!requestAccess) {
+          setAccount(selected); setUsdtBalance(null); setStatus("idle");
+          setError("Connect on Polygon to check this account's USDT.");
+          return;
+        }
         await provider.request({ method: "wallet_switchEthereumChain", params: [{ chainId: "0x89" }] });
       }
       await requirePolygon(provider);
-      const accounts = await provider.request({ method: requestAccess ? "eth_requestAccounts" : "eth_accounts" });
-      if (!Array.isArray(accounts) || !isEvmAddress(accounts[0])) { setError("Connect a Polygon account to view USDT."); return; }
-      setAccount(accounts[0]);
-      setUsdtBalance(formatUsdt(await polygonBalance(provider, accounts[0])));
-    } catch (e) { setError(e instanceof Error ? e.message : "Could not read USDT balance."); }
-    finally { setLoading(false); }
+      const balance = await polygonBalance(provider, selected);
+      setAccount(selected); setUsdtBalance(formatUsdt(balance)); setStatus("connected");
+    } catch (e) {
+      setUsdtBalance(null); setStatus("error");
+      setError(e instanceof Error ? e.message : "Could not verify the Polygon USDT balance.");
+    }
   }, []);
+
+  useEffect(() => { if (asset === "USDT") void refresh(false); }, [asset, refresh]);
   useEffect(() => {
-    if (asset !== "USDT") return;
-    void refresh(false);
+    const refreshBalance = () => { if (asset === "USDT") void refresh(false); };
+    window.addEventListener("quorail:usdt-confirmed", refreshBalance);
+    const provider = (window as WalletWindow).ethereum as (EvmProvider & {
+      on?: (event: string, cb: (...args: unknown[]) => void) => void;
+      removeListener?: (event: string, cb: (...args: unknown[]) => void) => void;
+    }) | undefined;
+    provider?.on?.("accountsChanged", refreshBalance);
+    provider?.on?.("chainChanged", refreshBalance);
+    return () => {
+      window.removeEventListener("quorail:usdt-confirmed", refreshBalance);
+      provider?.removeListener?.("accountsChanged", refreshBalance);
+      provider?.removeListener?.("chainChanged", refreshBalance);
+    };
   }, [asset, refresh]);
-  useEffect(() => {
-    const listener = () => { if (asset === "USDT") void refresh(false); };
-    window.addEventListener("quorail:usdt-confirmed", listener);
-    return () => window.removeEventListener("quorail:usdt-confirmed", listener);
-  }, [asset, refresh]);
+
   return <section className="balance-card multi-asset-balance" aria-label="Wallet balances">
     <div className="card-label"><span>YOUR WALLET BALANCE</span><div className="asset-card-toggle" role="group" aria-label="Balance currency">
       <button type="button" className={asset === "NIM" ? "selected" : ""} aria-pressed={asset === "NIM"} onClick={() => setAsset("NIM")}>NIM</button>
@@ -50,12 +76,19 @@ export default function AssetBalanceCard({ nimBalance, nimCommitted, nimReserve,
       <div className="allocation-bar"><i style={{width: `${Math.min(100, Math.max(0, (nimCommitted / (nimBalance || 1)) * 100))}%`}} /><i style={{width: `${Math.min(100, Math.max(0, (nimReserve / (nimBalance || 1)) * 100))}%`}} /></div>
       <div className="balance-breakdown"><div><span>● Committed</span><b>{nim(nimCommitted)} <small>NIM</small></b></div><div><span>● Reserve target</span><b>{nim(nimReserve)} <small>NIM</small></b></div></div>
       <div className="balance-foot">{horizon}-day planning window <button type="button" aria-label="Change planning window" onClick={onSettings}>⚙</button></div>
-    </> : <>
-      <div className="big-number">{usdtBalance === null ? "—" : usdtBalance}<span> USDT</span></div>
-      <p className="asset-card-description">Polygon USDT balance, read directly from your connected wallet.</p>
-      <div className="balance-breakdown"><div><span>Network</span><b>Polygon PoS</b></div><div><span>Account</span><b>{account ? `${account.slice(0, 6)}…${account.slice(-4)}` : "Not connected"}</b></div></div>
+    </> : <div className="usdt-balance-content">
+      <div className="usdt-balance-status"><span className={status === "connected" ? "usdt-status-dot online" : "usdt-status-dot"} />{status === "connected" ? "Polygon wallet connected" : status === "loading" ? "Checking your wallet" : "Connect to view your USDT"}</div>
+      {status === "connected" && usdtBalance !== null ? <>
+        <div className="big-number usdt-balance-number">{usdtBalance}<span> USDT</span></div>
+        <div className="usdt-balance-detail"><span>Polygon PoS</span><span title={account}>{account.slice(0, 6)}…{account.slice(-4)}</span></div>
+        <p className="usdt-balance-caption">Balance verified from the Polygon token contract. NIM commitments remain separate.</p>
+        <button type="button" className="usdt-card-secondary" onClick={() => void refresh(false)}>↻ Refresh balance</button>
+      </> : <>
+        <p className="usdt-balance-prompt">See your actual USDT funds on Polygon and get ready to make a payment.</p>
+        <button type="button" className="usdt-card-connect" disabled={status === "loading"} onClick={() => void refresh(true)}>{status === "loading" ? "Connecting…" : "Connect USDT wallet →"}</button>
+        <p className="usdt-balance-caption">Requires a compatible Polygon wallet. Your wallet may ask permission to connect or switch networks.</p>
+      </>}
       {error && <p className="asset-card-error" role="status">{error}</p>}
-      <div className="balance-foot"><span>USDT planning and reserves are not yet available.</span><button type="button" disabled={loading} onClick={() => void refresh(true)}>{loading ? "Checking…" : account ? "Refresh" : "Connect"}</button></div>
-    </>}
+    </div>}
   </section>;
 }
