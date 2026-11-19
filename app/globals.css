@@ -3997,3 +3997,23 @@ html[data-theme="dark"] .quorail-receipt header span {
 .q-usdt-actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:15px}
 .q-usdt a{text-decoration:underline;overflow-wrap:anywhere}
 @media(max-width:640px){.asset-story{margin:32px auto;padding:26px 5%}.asset-story-grid,.q-usdt-grid{grid-template-columns:1fr}.asset-story-grid article{padding:22px}.q-usdt{padding:18px}}
+
+/* V6 consolidated payment UX */
+.asset-switch{display:grid;grid-template-columns:1fr 1fr;gap:7px;padding:5px;border:1px solid var(--line);border-radius:16px;background:var(--paper);margin:12px 0 20px}
+.asset-switch button{border:0;border-radius:12px;padding:12px 10px;background:transparent;color:var(--ink);font:inherit;font-weight:750;cursor:pointer;text-align:center}
+.asset-switch button small{display:block;font-size:.72rem;font-weight:500;opacity:.7;margin-top:2px}
+.asset-switch button.active{background:var(--white);box-shadow:0 2px 12px #00000012;outline:1px solid var(--line)}
+.modal-usdt .q-usdt{border:0;padding:0;margin:0;background:transparent}
+.modal-usdt .q-usdt-header{margin-bottom:10px}
+.modal-usdt .q-usdt-note{max-width:55ch}
+.modal{max-height:min(88dvh,900px);overflow-y:auto;overscroll-behavior:contain}
+.reserve-indicator{position:static!important;max-width:100%;box-shadow:none!important}
+@media(max-width:640px){
+ .q-usdt{padding:16px;border-radius:18px}
+ .q-usdt-title{font-size:1.15rem}
+ .q-usdt-note{font-size:.8rem;line-height:1.45}
+ .q-usdt-actions .button{width:100%;justify-content:center}
+ .modal-usdt .q-usdt{padding:0}
+ .modal{max-height:calc(100dvh - 110px);overflow-y:auto}
+ .asset-switch{margin:8px 0 14px}
+}

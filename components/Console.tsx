@@ -86,6 +86,7 @@ export default function Console() {
   const { tr } = useLanguage();
   const [importPassword, setImportPassword] = useState("");
   const [tab, setTab] = useState<Tab>("Overview");
+  const [paymentAsset, setPaymentAsset] = useState<"NIM" | "USDT">("NIM");
   const [plan, setPlan] = useState<Plan>(emptyPlan);
   const planRef = useRef(plan);
   const [demo, setDemo] = useState(false);
@@ -1277,8 +1278,14 @@ export default function Console() {
               )}
               {tab !== "Activity" ? (
                 <>
-                  {tab === "Payments" && <PolygonUsdt />}
-                  <section className="payment-list">
+                  {tab === "Payments" && (
+                    <div className="asset-switch" role="group" aria-label="Payment currency">
+                      <button type="button" className={paymentAsset === "NIM" ? "active" : ""} aria-pressed={paymentAsset === "NIM"} onClick={() => setPaymentAsset("NIM")}>NIM <small>Nimiq</small></button>
+                      <button type="button" className={paymentAsset === "USDT" ? "active" : ""} aria-pressed={paymentAsset === "USDT"} onClick={() => setPaymentAsset("USDT")}>USDT <small>Polygon</small></button>
+                    </div>
+                  )}
+                  {tab === "Payments" && paymentAsset === "USDT" && <PolygonUsdt />}
+                  {(tab === "Overview" || paymentAsset === "NIM") && <section className="payment-list">
                   {tab === "Payments" && (
                     <div className="list-toolbar">
                       <input
@@ -1375,7 +1382,7 @@ export default function Console() {
                       </button>
                     </div>
                   )}
-                </section>
+                </section>}
                 </>
               ) : (
                 <section className="activity-list">
@@ -1608,7 +1615,15 @@ export default function Console() {
                 <Localized text={message} />
               </p>
             )}
-            {modal === "add" ? (
+            {modal === "add" && !editing && (
+              <div className="asset-switch" role="group" aria-label="Choose payment currency">
+                <button type="button" className={paymentAsset === "NIM" ? "active" : ""} aria-pressed={paymentAsset === "NIM"} onClick={() => setPaymentAsset("NIM")}>NIM <small>Nimiq</small></button>
+                <button type="button" className={paymentAsset === "USDT" ? "active" : ""} aria-pressed={paymentAsset === "USDT"} onClick={() => setPaymentAsset("USDT")}>USDT <small>Polygon</small></button>
+              </div>
+            )}
+            {modal === "add" && !editing && paymentAsset === "USDT" ? (
+              <div className="modal-usdt"><p className="helper">Send USDT from a compatible Polygon wallet. NIM planning balances and reserves remain separate.</p><PolygonUsdt /></div>
+            ) : modal === "add" ? (
               <form
                 onSubmit={addPayment}
                 onChange={() => setFormError("")}
