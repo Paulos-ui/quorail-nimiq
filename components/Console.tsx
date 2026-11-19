@@ -69,6 +69,7 @@ import {
 import { storageKey, loadPlan, savePlan, downloadPlan } from "@/lib/storage";
 import { rpc } from "@/lib/rpc";
 import { verifyReceipt } from "@/lib/receipt";
+import { isNimName, normalizeNimName } from "@/lib/nim-identity";
 
 type Tab = "Overview" | "Payments" | "Activity";
 const icons = {
@@ -94,6 +95,8 @@ export default function Console() {
   const [balanceError, setBalanceError] = useState("");
   const [balanceChecked, setBalanceChecked] = useState("");
   const [formError, setFormError] = useState("");
+  const [recipientName, setRecipientName] = useState("");
+  const [recipientLookup, setRecipientLookup] = useState("");
   const [balance, setBalance] = useState<number | null>(null);
   const [busy, setBusy] = useState(false);
   const busyRef = useRef(false);
@@ -403,6 +406,15 @@ export default function Console() {
           setBalanceError("");
           setBalanceChecked(new Date().toLocaleTimeString());
           setBalance(b);
+          // Re-resolve the name before sending, if this payment was created with a name.
+          // A recipient change must stop the transaction rather than silently redirect funds.
+          if (target.note?.startsWith("nim-name:")) {
+            const name = target.note.slice("nim-name:".length);
+            const response = await fetch(`/api/nim-name?name=${encodeURIComponent(name)}`, { cache: "no-store" });
+            const data = await response.json();
+            if (!response.ok || !validAddress(data.address) || normalAddress(data.address) !== normalAddress(target.recipient))
+              throw new Error("The .nim name could not be verified or now points to another address. Payment blocked. Review the recipient before continuing.");
+          }
           if (b < target.amount + target.fee)
             throw new Error("Insufficient NIM for the payment and fee.");
           const fresh = forecast(b, latest, target);
@@ -556,7 +568,7 @@ export default function Console() {
     }, 12000);
     return () => clearInterval(timer);
   }, [demo, address, network, storageError]);
-  function addPayment(e: FormEvent<HTMLFormElement>) {
+  async function addPayment(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setFormError("");
     try {
@@ -576,7 +588,15 @@ export default function Console() {
           "Fee: enter 0, 0.5 or 5, not 05. Fees are in NIM. Quorail will not guess the amount you intended.",
         );
       }
-      const recipient = String(d.get("recipient")).trim();
+      const typedRecipient = String(d.get("recipient")).trim();
+      let recipient = typedRecipient;
+      if (isNimName(typedRecipient)) {
+        const response = await fetch(`/api/nim-name?name=${encodeURIComponent(normalizeNimName(typedRecipient))}`, { cache: "no-store" });
+        const data = await response.json();
+        if (!response.ok || !validAddress(data.address)) throw new Error(data.error || "Unable to resolve this .nim name.");
+        recipient = data.address;
+        // Store the immutable address for commitments and receipts. The name is display-only.
+      }
       if (!validAddress(recipient))
         throw new Error("Enter a valid Nimiq address, including its checksum.");
       if (amount <= 0)
@@ -587,6 +607,7 @@ export default function Console() {
         id: editing || crypto.randomUUID(),
         title: String(d.get("title")).trim(),
         recipient,
+        note: isNimName(typedRecipient) ? `nim-name:${normalizeNimName(typedRecipient)}` : undefined,
         amount,
         fee,
         due: String(d.get("due")),
@@ -1606,14 +1627,25 @@ export default function Console() {
                   />
                 </label>
                 <label>
-                  {tr("Recipient Nimiq address")}
+                  {tr("Recipient Nimiq address or .nim username")}
                   <input
                     name="recipient"
-                    defaultValue={edited?.recipient}
+                    defaultValue={edited?.note?.startsWith("nim-name:") ? edited.note.slice(9) : edited?.recipient}
                     required
-                    placeholder={ui("NQ…")}
+                    placeholder={ui("NQ… or paul.nim")}
                     autoComplete="off"
+                    onChange={(e) => { setRecipientName(e.target.value); setRecipientLookup(""); }}
                   />
+                  <p className="helper">Names are resolved using the community-run Pigeon registry. Quorail saves the actual wallet address. Confirm the full recipient address in Nimiq Pay.</p>
+                  {isNimName(recipientName) && <button type="button" className="button outline" onClick={async () => {
+                    setRecipientLookup("Checking name…");
+                    try {
+                      const response = await fetch(`/api/nim-name?name=${encodeURIComponent(recipientName)}`, { cache: "no-store" });
+                      const data = await response.json();
+                      setRecipientLookup(response.ok ? `${data.name} → ${data.address}` : data.error || "Name not found.");
+                    } catch { setRecipientLookup("Name registry unavailable."); }
+                  }}>Verify username</button>}
+                  {recipientLookup && <p className="helper" role="status">{recipientLookup}</p>}
                 </label>
                 <div className="form-grid">
                   <label>
@@ -1837,7 +1869,7 @@ export default function Console() {
                   </p>
                 )}
                 <p className="recipient">
-                  <Localized text={"To"} /> {payment.recipient}
+                  <Localized text={"To"} /> {payment.note?.startsWith("nim-name:") ? `${payment.note.slice(9)} (${payment.recipient})` : payment.recipient}
                 </p>
                 <div className="impact-total">
                   {nim(payment.amount)}{" "}

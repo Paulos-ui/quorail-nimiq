@@ -1,5 +1,6 @@
 "use client";
 import Localized from "@/components/Localized";
+import { cleanAssistantAnswer } from "@/lib/ai-presentation";
 
 import { useLanguage } from "./Preferences";
 import { useState } from "react";
@@ -164,7 +165,9 @@ export default function AssistantPanel({
               <b>
                 <Localized text={"Quorail AI"} />
               </b>
-              <p>{answer}</p>
+              {cleanAssistantAnswer(answer).map((paragraph, index) => (
+                <p key={index}>{paragraph}</p>
+              ))}
               <small>
                 {" "}
                 <Localized
