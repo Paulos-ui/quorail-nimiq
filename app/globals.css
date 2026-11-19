@@ -4017,3 +4017,13 @@ html[data-theme="dark"] .quorail-receipt header span {
  .modal{max-height:calc(100dvh - 110px);overflow-y:auto}
  .asset-switch{margin:8px 0 14px}
 }
+
+/* V6 wallet asset balance toggle */
+.asset-card-toggle{display:flex;gap:4px;padding:4px;border:1px solid #ffffff45;border-radius:12px}
+.asset-card-toggle button{font:inherit;font-size:12px;font-weight:750;padding:7px 10px;border:0;border-radius:8px;background:transparent;color:#ffffffb8;cursor:pointer}
+.asset-card-toggle button.selected{background:#f7d949;color:#242033}
+.multi-asset-balance .big-number{overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
+.asset-card-description{color:#ddd9ed;font-size:14px;line-height:1.6;margin:18px 0}
+.asset-card-error{color:#ffe1b3;font-size:13px;line-height:1.5;margin:12px 0}
+.multi-asset-balance .balance-foot button{color:inherit;cursor:pointer}
+@media(max-width:420px){.asset-card-toggle button{padding:6px 8px}.multi-asset-balance .big-number{font-size:clamp(2.2rem,9vw,4rem)}}

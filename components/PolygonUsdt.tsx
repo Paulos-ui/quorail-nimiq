@@ -47,8 +47,8 @@ export default function PolygonUsdt() {
   if (!wallet || !payment) return;
   setBusy(true);setMessage('');
   try { const next=await verifyPolygonUsdt(wallet,payment.hash,payment.from,payment.to,payment.units);setStatus(next);
-    if(next==='confirmed') setBalance(formatUsdt(await polygonBalance(wallet,account)));
-    setMessage(next==='confirmed'?'Confirmed: token, sender, recipient and amount match the on-chain transfer.':next==='pending'?'Still pending. Check again shortly.':next==='failed'?'Transaction failed on chain.':'Transaction details did not match. Inspect PolygonScan before proceeding.');
+    if(next==='confirmed') { setBalance(formatUsdt(await polygonBalance(wallet,account))); window.dispatchEvent(new Event('quorail:usdt-confirmed')); }
+    setMessage(next==='confirmed'?`Payment successful: ${formatUsdt(payment.units)} USDT confirmed on Polygon. Recipient: ${payment.to.slice(0,8)}…${payment.to.slice(-6)}. Transaction: ${payment.hash}.`:next==='pending'?'Still pending. Check again shortly.':next==='failed'?'Transaction failed on chain.':'Transaction details did not match. Inspect PolygonScan before proceeding.');
   } catch(e) {setMessage(e instanceof Error?e.message:'Verification unavailable.');} finally {setBusy(false);}
  }
  return <section className="q-usdt" aria-label="Polygon USDT payments">

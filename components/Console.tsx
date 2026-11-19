@@ -2,6 +2,7 @@
 import { useLanguage as useUILanguage } from "./Preferences";
 import PaymentReceipt from "./PaymentReceipt";
 import PolygonUsdt from "./PolygonUsdt";
+import AssetBalanceCard from "./AssetBalanceCard";
 import Localized from "@/components/Localized";
 
 import { useLanguage, PreferenceControls } from "./Preferences";
@@ -1133,79 +1134,13 @@ export default function Console() {
                     </div>
                   )}
                   <div className="overview-grid">
-                    <section className="balance-card">
-                      <div className="card-label">
-                        <span>
-                          <Localized
-                            text={
-                              demo
-                                ? "EXAMPLE WALLET BALANCE"
-                                : "NIMIQ PAY BALANCE"
-                            }
-                          />
-                        </span>
-                        <span className="nim-symbol">
-                          <Localized text={"⬡ NIM"} />
-                        </span>
-                      </div>
-                      <div className="big-number">
-                        <Localized
-                          text={balance === null ? "Unavailable" : nim(balance)}
-                        />
-                        <span>
-                          <Localized text={balance === null ? "" : "NIM"} />
-                        </span>
-                      </div>
-                      <div className="allocation-bar">
-                        <i
-                          style={{
-                            width: `${Math.min(100, Math.max(0, (total.obligations / (balance || 1)) * 100))}%`,
-                          }}
-                        />
-                        <i
-                          style={{
-                            width: `${Math.min(100, Math.max(0, (plan.reserve / (balance || 1)) * 100))}%`,
-                          }}
-                        />
-                      </div>
-                      <div className="balance-breakdown">
-                        <div>
-                          <span>
-                            <i className="dot gold-dot" />{" "}
-                            <Localized text={"Committed"} />{" "}
-                          </span>
-                          <b>
-                            {nim(total.obligations)}{" "}
-                            <small>
-                              <Localized text={"NIM"} />
-                            </small>
-                          </b>
-                        </div>
-                        <div>
-                          <span>
-                            <i className="dot pale-dot" />{" "}
-                            <Localized text={"Reserve target"} />{" "}
-                          </span>
-                          <b>
-                            {nim(plan.reserve)}{" "}
-                            <small>
-                              <Localized text={"NIM"} />
-                            </small>
-                          </b>
-                        </div>
-                      </div>
-                      <div className="balance-foot">
-                        {plan.horizon}
-                        <Localized text={"-day planning window"} />
-                        <Localized text={" "} />
-                        <button
-                          aria-label={ui("Change planning window")}
-                          onClick={() => setModal("settings")}
-                        >
-                          <SlidersHorizontal size={16} />
-                        </button>
-                      </div>
-                    </section>
+                    <AssetBalanceCard
+                      nimBalance={balance}
+                      nimCommitted={total.obligations}
+                      nimReserve={plan.reserve}
+                      horizon={plan.horizon}
+                      onSettings={() => setModal("settings")}
+                    />
                     <section className="available-card">
                       <div className="card-label">
                         <span>
