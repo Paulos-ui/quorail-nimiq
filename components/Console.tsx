@@ -1,6 +1,7 @@
 "use client";
 import { useLanguage as useUILanguage } from "./Preferences";
 import PaymentReceipt from "./PaymentReceipt";
+import PolygonUsdt from "./PolygonUsdt";
 import Localized from "@/components/Localized";
 
 import { useLanguage, PreferenceControls } from "./Preferences";
@@ -1275,6 +1276,7 @@ export default function Console() {
                 </>
               )}
               {tab !== "Activity" ? (
+                <PolygonUsdt />
                 <section className="payment-list">
                   {tab === "Payments" && (
                     <div className="list-toolbar">
