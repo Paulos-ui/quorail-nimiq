@@ -1275,9 +1275,9 @@ export default function Console() {
                   </section>
                 </>
               )}
-              {tab !== "Activity" && (
+              {tab !== "Activity" ? (
                 <>
-                  <PolygonUsdt />
+                  {tab === "Payments" && <PolygonUsdt />}
                   <section className="payment-list">
                   {tab === "Payments" && (
                     <div className="list-toolbar">
@@ -1376,6 +1376,7 @@ export default function Console() {
                     </div>
                   )}
                 </section>
+                </>
               ) : (
                 <section className="activity-list">
                   <BackupCard
@@ -1513,7 +1514,6 @@ export default function Console() {
                     </div>
                   )}
                   </section>
-                </>
               )}
               {tab === "Overview" && (
                 <div className="insight-strip">

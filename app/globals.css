@@ -3974,3 +3974,26 @@ html[data-theme="dark"] .quorail-receipt header span {
  .site-header nav { grid-column:1 / -1; grid-row:3; }
  .site-header .language-options, .app-header .language-options { right:0; }
 }
+
+/* Quorail V6 multi-asset experience */
+.asset-story{max-width:1180px;margin:70px auto;padding:44px 5%;}
+.asset-story-head{max-width:740px;margin-bottom:28px}
+.asset-story-head h2{font-size:clamp(2rem,4.5vw,3.7rem);margin:14px 0}
+.asset-story-head p,.asset-story-grid p{color:var(--muted);line-height:1.7}
+.asset-story-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-bottom:26px}
+.asset-story-grid article{padding:30px;border:1px solid var(--line);border-radius:24px;background:var(--white)}
+.asset-story-grid h3{font-size:1.4rem;margin:20px 0 10px}
+.asset-chip{display:inline-flex;padding:7px 12px;border-radius:100px;background:#eee9fa;color:#44346d;font-size:.8rem;font-weight:700}
+.q-usdt{padding:22px;border:1px solid var(--line);border-radius:24px;background:var(--white);margin:0 0 22px}
+.q-usdt-header{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:16px}
+.q-usdt-title{font-size:1.3rem;font-weight:750}
+.q-usdt-subtitle{font-size:.86rem;color:var(--muted);margin-top:4px}
+.q-usdt-tag{border-radius:30px;background:#f0ecff;padding:7px 12px;color:#514087;font-weight:700;font-size:.8rem}
+.q-usdt-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.q-usdt label{display:block;font-size:.83rem;font-weight:700;margin:12px 0 4px}
+.q-usdt input{display:block;width:100%;min-width:0;margin-top:6px;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--paper)}
+.q-usdt-note{font-size:.82rem;color:var(--muted);margin:12px 0;line-height:1.6}
+.q-usdt-message{padding:12px;background:#f2f1eb;border-radius:12px;overflow-wrap:anywhere;margin-top:12px}
+.q-usdt-actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:15px}
+.q-usdt a{text-decoration:underline;overflow-wrap:anywhere}
+@media(max-width:640px){.asset-story{margin:32px auto;padding:26px 5%}.asset-story-grid,.q-usdt-grid{grid-template-columns:1fr}.asset-story-grid article{padding:22px}.q-usdt{padding:18px}}

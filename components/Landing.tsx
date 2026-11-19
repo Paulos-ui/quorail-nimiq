@@ -72,7 +72,7 @@ export default function Landing() {
               />{" "}
               <br />{" "}
               <Localized
-                text={"See what a payment changes before you send it."}
+                text={"Plan NIM commitments, send Polygon USDT, and understand what each payment changes before you approve it."}
               />{" "}
             </p>
             <div className="hero-actions">
@@ -384,6 +384,18 @@ export default function Landing() {
               />{" "}
             </small>
           </div>
+        </section>
+        <section className="asset-story" aria-label="NIM and USDT payments">
+          <div className="asset-story-head">
+            <span className="eyebrow">TWO ASSETS. ONE CLEARER PLAN.</span>
+            <h2>Pay in NIM. Send USDT. Stay in control.</h2>
+            <p>Keep Nimiq payments and Polygon USDT transfers in one workspace. Each asset has its own wallet balance, network and confirmation. Quorail never moves funds without wallet approval.</p>
+          </div>
+          <div className="asset-story-grid">
+            <article><span className="asset-chip">NIM · Nimiq</span><h3>Plan your commitments</h3><p>Review your NIM reserve, approve payments in Nimiq Pay and keep verified receipts.</p></article>
+            <article><span className="asset-chip">USDT · Polygon</span><h3>Pay with stablecoins</h3><p>Use a compatible EVM wallet to send Polygon USDT. Confirm the recipient and network before approving.</p></article>
+          </div>
+          <Link className="button dark" href="/console/">Open payments <ArrowUpRight size={18}/></Link>
         </section>
         <section className="judge-path">
           <span className="eyebrow">
