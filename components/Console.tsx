@@ -1275,9 +1275,10 @@ export default function Console() {
                   </section>
                 </>
               )}
-              {tab !== "Activity" ? (
-                <PolygonUsdt />
-                <section className="payment-list">
+              {tab !== "Activity" && (
+                <>
+                  <PolygonUsdt />
+                  <section className="payment-list">
                   {tab === "Payments" && (
                     <div className="list-toolbar">
                       <input
@@ -1511,7 +1512,8 @@ export default function Console() {
                       </p>
                     </div>
                   )}
-                </section>
+                  </section>
+                </>
               )}
               {tab === "Overview" && (
                 <div className="insight-strip">
