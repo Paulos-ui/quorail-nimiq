@@ -4125,3 +4125,15 @@ html[data-theme="dark"] .quorail-receipt header span {
 .usdt-balance-prompt{font-size:15px!important;line-height:1.55!important;font-weight:500!important;margin:4px 0 8px!important;max-width:34ch!important;color:#e5e0ee!important}
 .usdt-card-connect{min-height:48px!important;max-width:100%;padding:12px 16px!important;border-radius:12px!important;box-shadow:none!important;font-size:14px!important}
 .usdt-balance-caption{margin:3px 0 12px!important;font-size:12px!important}
+
+/* Compact multi-asset card and live QR scanner */
+.multi-asset-balance .usdt-balance-content {display:grid;gap:12px;padding-top:16px!important}
+.multi-asset-balance .usdt-balance-status {margin:0}
+.multi-asset-balance .usdt-balance-prompt {max-width:42ch!important;margin:0!important;line-height:1.45!important}
+.multi-asset-balance .usdt-card-connect {width:100%;min-height:48px!important;max-width:100%;margin:0!important}
+.multi-asset-balance .usdt-balance-caption {margin:0!important;line-height:1.5}
+.multi-asset-balance .usdt-balance-content .wallet-currency-controls {margin-top:12px}
+.qr-camera-frame .qr-camera {display:block;width:100%;height:240px;object-fit:cover}
+.qr-camera-overlay {pointer-events:none}
+.qr-scan-panel {max-width:100%;min-width:0}
+.qr-scan-panel .helper {overflow-wrap:anywhere}

@@ -1,4 +1,4 @@
-export type CurrencyRates = { nimUsd: number; usdtUsd: number; usdToLocal: Record<string, number>; asOf: string; source?: string };
+export type CurrencyRates = { nimUsd: number; usdtUsd: number; usdToLocal: Record<string, number>; asOf: string; source?: string; marketAsOf?: string; fxAsOf?: string };
 const fxBounds: Record<string, [number, number]> = {
   USD: [0.999, 1.001], NGN: [100, 10000], EUR: [0.5, 2], GBP: [0.4, 2], INR: [40, 200], CAD: [0.8, 3],
 };
@@ -11,6 +11,14 @@ export function validateCurrencyRates(data: unknown, now = Date.now()): data is 
   if (typeof r.usdtUsd !== 'number' || !Number.isFinite(r.usdtUsd) || r.usdtUsd < 0.8 || r.usdtUsd > 1.2) return false;
   const t = Date.parse(r.asOf || '');
   if (!Number.isFinite(t) || t > now + 300000 || now - t > 4 * 3600000) return false;
+  if (r.marketAsOf !== undefined) {
+    const marketTime = Date.parse(r.marketAsOf);
+    if (!Number.isFinite(marketTime) || marketTime > now + 300000 || now - marketTime > 4 * 3600000) return false;
+  }
+  if (r.fxAsOf !== undefined) {
+    const fxTime = Date.parse(r.fxAsOf);
+    if (!Number.isFinite(fxTime) || fxTime > now + 86400000 || now - fxTime > 4 * 86400000) return false;
+  }
   if (!r.usdToLocal || typeof r.usdToLocal !== 'object') return false;
   for (const [code, rate] of Object.entries(r.usdToLocal)) {
     const bounds = fxBounds[code];

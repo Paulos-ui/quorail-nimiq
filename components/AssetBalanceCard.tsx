@@ -89,7 +89,7 @@ export default function AssetBalanceCard({ nimBalance, nimCommitted, nimReserve,
         <p className="usdt-balance-caption">On-chain USDT balance · Separate from your NIM plan.</p>
         <button type="button" className="usdt-card-secondary" onClick={() => void refresh(false)}>↻ Refresh balance</button>
       </> : <>
-        <p className="usdt-balance-prompt">Connect a compatible wallet to view your USDT balance and make payments.</p>
+        <p className="usdt-balance-prompt">Connect a Polygon wallet to view your USDT balance and make payments.</p>
         <button type="button" className="usdt-card-connect" disabled={status === "loading"} onClick={() => void refresh(true)}>{status === "loading" ? "Connecting…" : "Connect Polygon wallet"}</button>
         <p className="usdt-balance-caption">Polygon network · Wallet approval required for payments.</p>
         <WalletCurrencyControls />
