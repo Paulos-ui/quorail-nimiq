@@ -138,3 +138,10 @@ MIT License. chess.js retains its BSD license in `docs/CHESS-LICENSE.txt`. Indep
 ### V3.1 mobile payment dock
 
 On mobile, the console uses a floating four-action navigation: Overview, Send, Payments, and Activity. The central Send button opens a network-aware asset chooser. NIM opens the existing commitment/payment flow (when connected); USDT opens the existing Polygon payment module. Both continue to require approval in their respective wallets. The dock does not create new transfer logic or imply that Nimiq Pay holds Polygon USDT. Desktop navigation remains unchanged.
+
+
+## Currency and QR safety notes (maintenance release)
+
+Local currency is a **display-only estimate**: NIM amount × validated NIM/USD quote × USD/local FX quote. The app rejects implausible, expired or malformed quotes and never changes the underlying NIM or USDT amounts. A failed quote hides the estimate without blocking payments. Rates refresh during an active session approximately every 30 minutes. USDT is approximated as USD 1 for planning and is not guaranteed to maintain its peg.
+
+The recipient QR camera uses the browser BarcodeDetector API when supported and requires HTTPS and camera permission. Some embedded wallet browsers do not implement this API; users can open the app in a supported browser or paste a QR payload. A scan only fills the recipient field, never authorizes a payment.

@@ -30,21 +30,27 @@ export default function ScanRecipientQR({ network, onRecipient }: { network: "NI
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState("");
   const [manual, setManual] = useState("");
+  const [cameraReady, setCameraReady] = useState(false);
   const video = useRef<HTMLVideoElement>(null);
+  const recipientCallback = useRef(onRecipient);
+  recipientCallback.current = onRecipient;
   useEffect(() => {
     if (!open) return;
     let stopped = false;
+    setCameraReady(false);
     let stream: MediaStream | null = null;
     let frame = 0;
     let timer: ReturnType<typeof setTimeout> | undefined;
     const start = async () => {
       const BarcodeDetector = (window as Window & { BarcodeDetector?: BarcodeConstructor }).BarcodeDetector;
-      if (!BarcodeDetector) { setMessage("Camera QR scanning is not supported in this browser. Paste the QR contents below."); return; }
+      if (!BarcodeDetector) { setMessage("This in-app browser does not support camera QR decoding. Open Quorail in Chrome or paste the QR contents below."); return; }
+      if (!navigator.mediaDevices?.getUserMedia) { setMessage("Camera access is unavailable in this browser. Open Quorail in a supported HTTPS browser or paste the QR contents."); return; }
       try {
         stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" }, audio: false });
         if (stopped || !video.current) { stream.getTracks().forEach(track => track.stop()); return; }
         video.current.srcObject = stream;
-        await video.current.play();
+        try { await video.current.play(); } catch { setMessage("Tap Start camera to enable the live preview, or paste the QR contents below."); return; }
+        if (!stopped) setCameraReady(true);
         const reader = new BarcodeDetector({ formats: ["qr_code"] });
         const scan = async () => {
           if (stopped || !video.current) return;
@@ -52,7 +58,7 @@ export default function ScanRecipientQR({ network, onRecipient }: { network: "NI
             const results = await reader.detect(video.current);
             if (results.length) {
               const recipient = parseRecipientQR(results[0].rawValue, network);
-              if (recipient) { onRecipient(recipient); setOpen(false); return; }
+              if (recipient) { recipientCallback.current(recipient); setOpen(false); return; }
               setMessage(`QR detected, but it is not a supported ${network} recipient. No payment was started.`);
             }
           } catch { /* Retry frame. */ }
@@ -62,8 +68,8 @@ export default function ScanRecipientQR({ network, onRecipient }: { network: "NI
       } catch { setMessage("Camera permission unavailable. Paste the QR contents below."); }
     };
     void start();
-    return () => { stopped = true; if (timer) clearTimeout(timer); stream?.getTracks().forEach(track => track.stop()); };
-  }, [open, network, onRecipient]);
+    return () => { stopped = true; if (timer) clearTimeout(timer); if (video.current) video.current.srcObject = null; stream?.getTracks().forEach(track => track.stop()); };
+  }, [open, network]);
   const apply = () => {
     const recipient = parseRecipientQR(manual, network);
     if (!recipient) { setMessage(`Enter a valid ${network} recipient address or supported QR URI.`); return; }
@@ -72,7 +78,8 @@ export default function ScanRecipientQR({ network, onRecipient }: { network: "NI
   return <div className="qr-recipient-control">
     <button type="button" className="qr-scan-button" onClick={() => { setMessage(""); setOpen(true); }}><Camera size={17}/> Scan recipient QR</button>
     {open && <div className="qr-scan-panel"><div className="qr-scan-heading"><strong>Scan {network} recipient</strong><button type="button" aria-label="Close QR scanner" onClick={() => setOpen(false)}><X size={20}/></button></div>
-      <video ref={video} muted playsInline className="qr-camera" aria-label="QR camera preview" />
+      <div className="qr-camera-frame"><video ref={video} autoPlay muted playsInline controls={false} disablePictureInPicture className="qr-camera" aria-label="Live QR camera preview" />{!cameraReady && <div className="qr-camera-overlay">Camera preview will appear here when access is granted.</div>}</div>
+      {!cameraReady && <button type="button" className="qr-camera-retry" onClick={() => { if (video.current?.srcObject) { void video.current.play().then(() => setCameraReady(true)).catch(() => setMessage("Camera playback blocked. Open in Chrome or paste QR contents.")); } else { setOpen(false); requestAnimationFrame(() => setOpen(true)); } }}>Start camera</button>}
       <p className="helper">Only the recipient address is imported. Always verify it before wallet approval.</p>
       <label>Or paste QR contents<input value={manual} onChange={e => setManual(e.target.value)} placeholder={network === "NIM" ? "NQ… or nimiq:…" : "0x…"}/></label>
       <button type="button" className="button outline" onClick={apply}>Use scanned recipient</button>

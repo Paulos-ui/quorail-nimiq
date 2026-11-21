@@ -80,7 +80,7 @@ export default function AssetBalanceCard({ nimBalance, nimCommitted, nimReserve,
       <div className="balance-breakdown"><div><span>● Committed</span><b>{nim(nimCommitted)} <small>NIM</small></b></div><div><span>● Reserve target</span><b>{nim(nimReserve)} <small>NIM</small></b></div></div>
       <div className="balance-foot">{horizon}-day planning window <button type="button" aria-label="Change planning window" onClick={onSettings}>⚙</button></div>
     </> : <div className="usdt-balance-content">
-      <div className="usdt-balance-status"><span className={status === "connected" ? "usdt-status-dot online" : "usdt-status-dot"} />{status === "connected" ? "Polygon wallet connected" : status === "loading" ? "Checking your wallet" : "Connect to view your USDT"}</div>
+      <div className="usdt-balance-status"><span className={status === "connected" ? "usdt-status-dot online" : "usdt-status-dot"} />{status === "connected" ? "Polygon wallet connected" : status === "loading" ? "Checking your wallet" : "Polygon wallet not connected"}</div>
       {status === "connected" && usdtBalance !== null ? <>
         <div className="big-number usdt-balance-number">{usdtBalance}<span> USDT</span></div>
         <ApproxAmount amount={Number(usdtBalance.replaceAll(",", ""))} asset="USDT" />
@@ -89,9 +89,9 @@ export default function AssetBalanceCard({ nimBalance, nimCommitted, nimReserve,
         <p className="usdt-balance-caption">On-chain USDT balance · Separate from your NIM plan.</p>
         <button type="button" className="usdt-card-secondary" onClick={() => void refresh(false)}>↻ Refresh balance</button>
       </> : <>
-        <p className="usdt-balance-prompt">Connect your Polygon wallet to view your USDT balance.</p>
+        <p className="usdt-balance-prompt">Connect a compatible wallet to view your USDT balance and make payments.</p>
         <button type="button" className="usdt-card-connect" disabled={status === "loading"} onClick={() => void refresh(true)}>{status === "loading" ? "Connecting…" : "Connect Polygon wallet"}</button>
-        <p className="usdt-balance-caption">Polygon network · Your wallet approves every transfer.</p>
+        <p className="usdt-balance-caption">Polygon network · Wallet approval required for payments.</p>
         <WalletCurrencyControls />
       </>}
       {error && <p className="asset-card-error" role="status">{error}</p>}

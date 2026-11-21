@@ -23,11 +23,13 @@ export function LocalCurrencyProvider({ children }: { children: React.ReactNode 
     }catch{}
     setHydrated(true);
     let active=true;
-    fetch("/api/rates",{cache:"no-store"}).then(async r=>{if(!r.ok)throw Error();return await r.json() as Rates;}).then(data=>{
+    const updateRates = () => fetch("/api/rates",{cache:"no-store"}).then(async r=>{if(!r.ok)throw Error();return await r.json() as Rates;}).then(data=>{
       if(!active || !validRates(data))return;
       setRates(data);setStale(false);try{localStorage.setItem("quorail-local-rates-v4",JSON.stringify(data));}catch{}
     }).catch(()=>{});
-    return ()=>{active=false;};
+    void updateRates();
+    const interval = setInterval(() => { void updateRates(); }, 30 * 60 * 1000);
+    return ()=>{active=false;clearInterval(interval);};
   },[]);
   useEffect(()=>{if(!hydrated)return;try{localStorage.setItem("quorail-local-currency",currency);localStorage.setItem("quorail-local-enabled",String(enabled));}catch{}},[currency,enabled,hydrated]);
   return <CurrencyContext.Provider value={{currency,enabled,setCurrency,setEnabled,rates,stale}}>{children}</CurrencyContext.Provider>;
