@@ -4092,3 +4092,15 @@ html[data-theme="dark"] .quorail-receipt header span {
 .usdt-card-connect{width:100%;min-height:54px;font-size:1rem}
 .usdt-balance-caption{max-width:42ch;margin:0;line-height:1.5}
 @media(max-width:480px){.quorail-header-brand{font-size:14px;margin-right:5px}.quorail-header-brand img{width:22px;height:22px}.usdt-balance-content{padding-top:12px;gap:12px}.usdt-balance-prompt{margin:4px 0}}
+
+/* V3.4: local currency selector within wallet balance card */
+.wallet-currency-controls{border-top:1px solid rgba(255,255,255,.15);margin-top:20px;padding-top:18px;display:grid;gap:12px;color:#f8f5ff}
+.wallet-currency-select{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.wallet-currency-select label{font-size:11px;letter-spacing:.12em;color:#c6bfd3}
+.wallet-currency-select select{background:#292438;color:#fff;border:1px solid #706a7d;border-radius:18px;padding:9px 30px 9px 14px;min-width:105px;font:inherit}
+.wallet-currency-check{display:flex;align-items:center;gap:10px;font-size:14px}
+.wallet-currency-check input{accent-color:#ffdc45;width:17px;height:17px}
+.wallet-currency-controls small{font-size:11px;line-height:1.5;color:#b9b3c6}
+.usdt-balance-content{display:grid;gap:14px}
+.usdt-balance-content .usdt-balance-prompt{margin:0;line-height:1.4}
+.usdt-balance-content .usdt-card-connect{margin:0;width:100%;max-width:none}
