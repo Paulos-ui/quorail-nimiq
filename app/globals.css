@@ -4104,3 +4104,14 @@ html[data-theme="dark"] .quorail-receipt header span {
 .usdt-balance-content{display:grid;gap:14px}
 .usdt-balance-content .usdt-balance-prompt{margin:0;line-height:1.4}
 .usdt-balance-content .usdt-card-connect{margin:0;width:100%;max-width:none}
+
+/* Wallet-first overview and camera recipient scanning */
+.overview-after-wallet {grid-column:1 / -1;display:grid;gap:12px}
+.overview-after-wallet .plan-signal {margin:0!important}
+.overview-after-wallet .balance-health {margin:0}
+.qr-recipient-control {margin:8px 0 16px}
+.qr-scan-button {display:inline-flex;align-items:center;gap:8px;border:1px solid currentColor;border-radius:14px;padding:10px 14px;background:transparent;color:inherit;font:inherit;cursor:pointer}
+.qr-scan-panel {padding:14px;border:1px solid #b9b0c6;border-radius:16px;margin-top:12px;background:var(--surface,#fffdf5);color:var(--ink,#211c2f);display:grid;gap:10px}
+.qr-scan-heading {display:flex;justify-content:space-between;align-items:center}.qr-scan-heading button{background:transparent;border:0;cursor:pointer}
+.qr-camera {display:block;width:100%;max-height:250px;min-height:140px;background:#17141f;border-radius:12px;object-fit:cover}
+.qr-scan-panel input{width:100%;box-sizing:border-box}

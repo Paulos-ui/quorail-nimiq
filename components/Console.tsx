@@ -2,6 +2,7 @@
 import { useLanguage as useUILanguage } from "./Preferences";
 import PaymentReceipt from "./PaymentReceipt";
 import PolygonUsdt from "./PolygonUsdt";
+import ScanRecipientQR from "./ScanRecipientQR";
 import AssetBalanceCard from "./AssetBalanceCard";
 import { ApproxAmount } from "./LocalCurrency";
 import Localized from "@/components/Localized";
@@ -970,14 +971,6 @@ export default function Console() {
             </section>
           ) : (
             <>
-              <ConnectionNotice />
-              <div className="plan-signal">
-                <ReserveIndicator
-                  available={total.available}
-                  reserve={plan.reserve}
-                  known={balance !== null}
-                />
-              </div>
               {demo && (
                 <section className="scenario-picker">
                   <label>
@@ -1004,6 +997,85 @@ export default function Console() {
                   </p>
                 </section>
               )}
+              {unresolved && (
+                <div className="notice warning">
+                  <AlertTriangle size={18} />
+                  <span>
+                    {" "}
+                    <Localized
+                      text={
+                        "A payment needs reconciliation. New sends are paused until its outcome is verified."
+                      }
+                    />{" "}
+                  </span>
+                  <button
+                    className="text-link"
+                    onClick={() => setTab("Activity")}
+                  >
+                    {" "}
+                    <Localized text={"View activity"} />{" "}
+                  </button>
+                </div>
+              )}
+              {tab === "Overview" && (
+                <>
+                  <div className="overview-grid">
+                    <AssetBalanceCard
+                      nimBalance={balance}
+                      nimCommitted={total.obligations}
+                      nimReserve={plan.reserve}
+                      horizon={plan.horizon}
+                      onSettings={() => setModal("settings")}
+                    />
+                    <div className="overview-after-wallet">              <ConnectionNotice />
+              <div className="plan-signal">
+                <ReserveIndicator
+                  available={total.available}
+                  reserve={plan.reserve}
+                  known={balance !== null}
+                />
+              </div>
+                  {!demo && (
+                    <div className="balance-health" role="status">
+                      <b>
+                        <Localized
+                          text={network === "testnet" ? "Testnet" : "Mainnet"}
+                        />{" "}
+                        <Localized text={"· Nimiq Pay balance"} />{" "}
+                      </b>
+                      <p>
+                        {tr(
+                          balanceError ||
+                            (balance === null
+                              ? "Balance unavailable. Use Refresh to retry."
+                              : `Last checked ${balanceChecked || "this session"}. Read from Nimiq Pay’s current payment account. Incoming top-ups may still be pending.`),
+                        )}
+                      </p>
+                      {balance === 0 && (
+                        <p>
+                          {" "}
+                          <Localized
+                            text={
+                              "If Nimiq Pay shows funds elsewhere, select the funded account above. A valid zero response is not replaced with an assumed wallet total."
+                            }
+                          />{" "}
+                        </p>
+                      )}
+                      {balance === null && (
+                        <button
+                          className="button outline"
+                          disabled={busy}
+                          onClick={refresh}
+                        >
+                          <Localized
+                            text={busy ? "Checking wallet…" : "Retry balance"}
+                          />
+                        </button>
+                      )}
+                    </div>
+                  )}
+</div>
+                    <div className="overview-guidance">
               <details className="quick-path">
                 <summary>
                   <Localized text={"Your first real payment: four steps"} />
@@ -1084,75 +1156,7 @@ export default function Console() {
                   </button>
                 </div>
               )}
-              {unresolved && (
-                <div className="notice warning">
-                  <AlertTriangle size={18} />
-                  <span>
-                    {" "}
-                    <Localized
-                      text={
-                        "A payment needs reconciliation. New sends are paused until its outcome is verified."
-                      }
-                    />{" "}
-                  </span>
-                  <button
-                    className="text-link"
-                    onClick={() => setTab("Activity")}
-                  >
-                    {" "}
-                    <Localized text={"View activity"} />{" "}
-                  </button>
-                </div>
-              )}
-              {tab === "Overview" && (
-                <>
-                  {!demo && (
-                    <div className="balance-health" role="status">
-                      <b>
-                        <Localized
-                          text={network === "testnet" ? "Testnet" : "Mainnet"}
-                        />{" "}
-                        <Localized text={"· Nimiq Pay balance"} />{" "}
-                      </b>
-                      <p>
-                        {tr(
-                          balanceError ||
-                            (balance === null
-                              ? "Balance unavailable. Use Refresh to retry."
-                              : `Last checked ${balanceChecked || "this session"}. Read from Nimiq Pay’s current payment account. Incoming top-ups may still be pending.`),
-                        )}
-                      </p>
-                      {balance === 0 && (
-                        <p>
-                          {" "}
-                          <Localized
-                            text={
-                              "If Nimiq Pay shows funds elsewhere, select the funded account above. A valid zero response is not replaced with an assumed wallet total."
-                            }
-                          />{" "}
-                        </p>
-                      )}
-                      {balance === null && (
-                        <button
-                          className="button outline"
-                          disabled={busy}
-                          onClick={refresh}
-                        >
-                          <Localized
-                            text={busy ? "Checking wallet…" : "Retry balance"}
-                          />
-                        </button>
-                      )}
                     </div>
-                  )}
-                  <div className="overview-grid">
-                    <AssetBalanceCard
-                      nimBalance={balance}
-                      nimCommitted={total.obligations}
-                      nimReserve={plan.reserve}
-                      horizon={plan.horizon}
-                      onSettings={() => setModal("settings")}
-                    />
                     <section className="available-card">
                       <div className="card-label">
                         <span>
@@ -1603,6 +1607,7 @@ export default function Console() {
                     autoComplete="off"
                     onChange={(e) => { setRecipientName(e.target.value); setRecipientLookup(""); }}
                   />
+                  <ScanRecipientQR network="NIM" onRecipient={(recipient) => { const input=document.querySelector<HTMLInputElement>('input[name="recipient"]'); if(input) input.value=recipient; setRecipientName(recipient); setRecipientLookup(""); }} />
                   <p className="helper">Names are resolved using the community-run Pigeon registry. Quorail saves the actual wallet address. Confirm the full recipient address in Nimiq Pay.</p>
                   {isNimName(recipientName) && <button type="button" className="button outline" onClick={async () => {
                     setRecipientLookup("Checking name…");

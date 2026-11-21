@@ -1,30 +1,49 @@
 import { NextResponse } from "next/server";
 import { validateCurrencyRates } from "@/lib/validateCurrencyRates";
-export const revalidate = 3600;
+export const dynamic = "force-dynamic";
 const currencies = ["USD", "NGN", "EUR", "GBP", "INR", "CAD"] as const;
+const timeout = 5500;
+async function getJson(url: string) {
+  const response = await fetch(url, { cache: "no-store", signal: AbortSignal.timeout(timeout) });
+  if (!response.ok) throw new Error(`Market provider ${response.status}`);
+  return response.json();
+}
+async function nimQuote(): Promise<number> {
+  try {
+    const data = await getJson("https://api.coingecko.com/api/v3/simple/price?ids=nimiq&vs_currencies=usd&include_last_updated_at=true");
+    const value = Number(data?.nimiq?.usd);
+    const timestamp = Number(data?.nimiq?.last_updated_at);
+    if (value > 0 && value < 0.1 && timestamp > 0 && Math.abs(Date.now() / 1000 - timestamp) < 14400) return value;
+  } catch { /* Try independent quote provider. */ }
+  const data = await getJson("https://api.coinpaprika.com/v1/tickers/nim-nimiq?quotes=USD");
+  const value = Number(data?.quotes?.USD?.price);
+  const timestamp = Date.parse(data?.last_updated || "");
+  if (!(value > 0 && value < 0.1) || !Number.isFinite(timestamp) || Math.abs(Date.now() - timestamp) > 14400000) throw new Error("No validated NIM quote");
+  return value;
+}
+async function fxQuotes(): Promise<Record<string, number>> {
+  try {
+    const data = await getJson("https://open.er-api.com/v6/latest/USD");
+    if (data?.result === "success") return data.rates;
+  } catch { /* Try alternative FX provider. */ }
+  const data = await getJson("https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/usd.min.json");
+  if (!data?.usd) throw new Error("FX quotes unavailable");
+  return Object.fromEntries(Object.entries(data.usd).map(([key, value]) => [key.toUpperCase(), value]));
+}
 export async function GET() {
   try {
-    const [coin, fx] = await Promise.all([
-      fetch("https://api.coingecko.com/api/v3/simple/price?ids=nimiq,tether&vs_currencies=usd&include_last_updated_at=true", { next: { revalidate: 3600 }, signal: AbortSignal.timeout(6500) }),
-      fetch("https://open.er-api.com/v6/latest/USD", { next: { revalidate: 3600 }, signal: AbortSignal.timeout(6500) }),
-    ]);
-    if (!coin.ok || !fx.ok) throw new Error("Rates unavailable");
-    const prices = await coin.json();
-    const exchange = await fx.json();
-    const nimUsd = Number(prices?.nimiq?.usd);
-    const usdtUsd = Number(prices?.tether?.usd);
-    if (!(nimUsd > 0 && nimUsd < 0.1) || !(usdtUsd >= 0.8 && usdtUsd <= 1.2) || exchange?.result !== "success") throw new Error("Invalid rates");
-    const rates: Record<string, number> = {};
-    for (const code of currencies) {
-      const rate = code === "USD" ? 1 : Number(exchange.rates?.[code]);
-      if (rate > 0 && Number.isFinite(rate)) rates[code] = rate;
+    const [nimUsd, fx] = await Promise.all([nimQuote(), fxQuotes()]);
+    const usdToLocal: Record<string, number> = { USD: 1 };
+    for (const currency of currencies) {
+      const rate = currency === "USD" ? 1 : Number(fx[currency]);
+      if (!Number.isFinite(rate) || rate <= 0) throw new Error(`Missing FX rate ${currency}`);
+      usdToLocal[currency] = rate;
     }
-    const quoteAge = Date.now() / 1000 - Number(prices?.nimiq?.last_updated_at);
-    if (!Number.isFinite(quoteAge) || quoteAge < -300 || quoteAge > 4 * 3600) throw new Error("Stale NIM market quote");
-    const payload = { nimUsd, usdtUsd, usdToLocal: rates, asOf: new Date().toISOString(), approximate: true, source: "CoinGecko / ExchangeRate-API" };
-    if (!validateCurrencyRates(payload)) throw new Error("Untrusted market or FX quote");
-    return NextResponse.json(payload, { headers: { "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=7200" } });
-  } catch {
-    return NextResponse.json({ error: "Conversion rates temporarily unavailable" }, { status: 503 });
+    // USDT is a planning approximation, not a promise of a guaranteed $1 redemption.
+    const payload = { nimUsd, usdtUsd: 1, usdToLocal, asOf: new Date().toISOString(), source: "Validated NIM market and FX providers" };
+    if (!validateCurrencyRates(payload)) throw new Error("Invalid market data");
+    return NextResponse.json(payload, { headers: { "Cache-Control": "no-store" } });
+  } catch (error) {
+    return NextResponse.json({ error: "Validated conversion rates unavailable", detail: error instanceof Error ? error.message : "Unknown error" }, { status: 503, headers: { "Cache-Control": "no-store" } });
   }
 }
