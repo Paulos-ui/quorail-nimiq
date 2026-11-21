@@ -28,7 +28,15 @@ async function fxQuotes(): Promise<Record<string, number>> {
   } catch { /* Try alternative FX provider. */ }
   const data = await getJson("https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/usd.min.json");
   if (!data?.usd) throw new Error("FX quotes unavailable");
-  return Object.fromEntries(Object.entries(data.usd).map(([key, value]) => [key.toUpperCase(), value]));
+  return Object.fromEntries(
+    Object.entries(data.usd)
+      .filter((entry): entry is [string, number] =>
+        typeof entry[1] === "number" &&
+        Number.isFinite(entry[1]) &&
+        entry[1] > 0
+      )
+      .map(([key, value]) => [key.toUpperCase(), value])
+  ) as Record<string, number>;
 }
 export async function GET() {
   try {
