@@ -1,0 +1,14 @@
+{
+  "tests": 62,
+  "passed": 62,
+  "production_build": "passed",
+  "native_wallet_transfer": "not performed",
+  "browser_visual_review": "blocked by environment",
+  "supported_languages": [
+    "en",
+    "es",
+    "de",
+    "fr"
+  ],
+  "extended_translation_entries": 540
+}
