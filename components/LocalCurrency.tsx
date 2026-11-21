@@ -2,6 +2,13 @@
 import { createContext, useContext, useEffect, useState } from "react";
 type Code = "NGN" | "USD" | "EUR" | "GBP" | "INR" | "CAD";
 type Rates = { nimUsd: number; usdtUsd: number; usdToLocal: Record<string,number>; asOf: string };
+// Guard against corrupt/stale cached quotes and anomalous upstream data.
+function validRates(data: Rates | null): data is Rates {
+  if (!data || !Number.isFinite(data.nimUsd) || data.nimUsd <= 0 || data.nimUsd >= 1 || !Number.isFinite(data.usdtUsd) || data.usdtUsd < 0.8 || data.usdtUsd > 1.2) return false;
+  const timestamp = Date.parse(data.asOf);
+  if (!Number.isFinite(timestamp) || timestamp > Date.now() + 300000 || Date.now() - timestamp > 24 * 3600000) return false;
+  return Object.values(data.usdToLocal || {}).every(v => Number.isFinite(v) && v > 0);
+}
 const codes: Code[] = ["NGN", "USD", "EUR", "GBP", "INR", "CAD"];
 const CurrencyContext = createContext({ currency: "USD" as Code, enabled: true, setCurrency: (_:Code)=>{}, setEnabled: (_:boolean)=>{}, rates: null as Rates|null, stale: false });
 export function LocalCurrencyProvider({ children }: { children: React.ReactNode }) {
@@ -17,11 +24,11 @@ export function LocalCurrencyProvider({ children }: { children: React.ReactNode 
       setCurrency(codes.includes(saved as Code)? saved as Code : map[detected] || "USD");
       setEnabled(localStorage.getItem("quorail-local-enabled")!=="false");
       const cached=localStorage.getItem("quorail-local-rates");
-      if(cached){const data=JSON.parse(cached) as Rates;if(data.nimUsd>0 && data.usdtUsd>0){setRates(data);setStale(Date.now()-Date.parse(data.asOf)>4*3600000);}}
+      if(cached){const data=JSON.parse(cached) as Rates;if(validRates(data)){setRates(data);setStale(Date.now()-Date.parse(data.asOf)>4*3600000);}else{localStorage.removeItem("quorail-local-rates");}}
     }catch{}
     let active=true;
     fetch("/api/rates",{cache:"no-store"}).then(async r=>{if(!r.ok)throw Error();return await r.json() as Rates;}).then(data=>{
-      if(!active || !(data.nimUsd>0) || !(data.usdtUsd>0))return;
+      if(!active || !validRates(data))return;
       setRates(data);setStale(false);try{localStorage.setItem("quorail-local-rates",JSON.stringify(data));}catch{}
     }).catch(()=>{});
     return ()=>{active=false;};
@@ -32,7 +39,7 @@ export function LocalCurrencyProvider({ children }: { children: React.ReactNode 
 export function useLocalCurrency(){return useContext(CurrencyContext);}
 export function ApproxAmount({ amount, asset="NIM" }: { amount:number|null; asset?:"NIM"|"USDT" }){
   const {currency,enabled,rates,stale}=useLocalCurrency();
-  if(!enabled || amount===null || !Number.isFinite(amount) || !rates || !(rates.usdToLocal[currency]>0))return null;
+  if(!enabled || amount===null || !Number.isFinite(amount) || !validRates(rates) || !(rates.usdToLocal[currency]>0))return null;
   const value=amount*(asset==="NIM"?rates.nimUsd:rates.usdtUsd)*rates.usdToLocal[currency];
   if(!Number.isFinite(value))return null;
   const formatted=new Intl.NumberFormat(undefined,{style:"currency",currency,maximumFractionDigits:value<1?4:2}).format(value);

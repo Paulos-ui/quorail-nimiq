@@ -12,13 +12,13 @@ export async function GET() {
     const exchange = await fx.json();
     const nimUsd = Number(prices?.nimiq?.usd);
     const usdtUsd = Number(prices?.tether?.usd);
-    if (!(nimUsd > 0) || !(usdtUsd > 0) || exchange?.result !== "success") throw new Error("Invalid rates");
+    if (!(nimUsd > 0 && nimUsd < 1) || !(usdtUsd >= 0.8 && usdtUsd <= 1.2) || exchange?.result !== "success") throw new Error("Invalid rates");
     const rates: Record<string, number> = {};
     for (const code of currencies) {
       const rate = code === "USD" ? 1 : Number(exchange.rates?.[code]);
       if (rate > 0 && Number.isFinite(rate)) rates[code] = rate;
     }
-    return NextResponse.json({ nimUsd, usdtUsd, usdToLocal: rates, asOf: new Date().toISOString(), approximate: true }, { headers: { "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=7200" } });
+    return NextResponse.json({ nimUsd, usdtUsd, usdToLocal: rates, asOf: new Date().toISOString(), approximate: true, source: "CoinGecko / ExchangeRate-API" }, { headers: { "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=7200" } });
   } catch {
     return NextResponse.json({ error: "Conversion rates temporarily unavailable" }, { status: 503 });
   }

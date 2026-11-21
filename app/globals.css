@@ -4082,3 +4082,13 @@ html[data-theme="dark"] .quorail-receipt header span {
  .quorail-asset-icon.usdt{background:#d8f3e4;color:#16744b}
  .quorail-send-menu p{font-size:11px;color:#746e7c;margin:12px 4px 0;line-height:1.5}
 }
+
+/* V3.2: Compact identity in header, uncluttered USDT wallet panel */
+.quorail-header-brand{display:inline-flex;align-items:center;gap:7px;margin-right:12px;color:var(--ink,#211d32);font-size:16px;letter-spacing:-.045em;white-space:nowrap}
+.quorail-header-brand img{display:block;flex-shrink:0}
+.page-context{display:flex;align-items:center;gap:4px;flex-wrap:wrap}
+.usdt-balance-content{min-height:0;gap:14px;padding:18px 0 8px}
+.usdt-balance-prompt{font-size:clamp(1.15rem,4vw,1.4rem);line-height:1.4;max-width:28ch;margin:8px 0}
+.usdt-card-connect{width:100%;min-height:54px;font-size:1rem}
+.usdt-balance-caption{max-width:42ch;margin:0;line-height:1.5}
+@media(max-width:480px){.quorail-header-brand{font-size:14px;margin-right:5px}.quorail-header-brand img{width:22px;height:22px}.usdt-balance-content{padding-top:12px;gap:12px}.usdt-balance-prompt{margin:4px 0}}

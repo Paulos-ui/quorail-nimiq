@@ -782,7 +782,7 @@ export default function Console() {
       </aside>
       <div className="app-main">
         <header className="app-header">
-          <div className="page-context">
+          <div className="page-context"><span className="quorail-header-brand"><img src="/quorail-mark.svg" alt="" width="25" height="25"/><strong>quorail</strong></span>
             <span className="breadcrumb">
               <Localized text={"Workspace /"} />
             </span>{" "}
@@ -839,7 +839,6 @@ export default function Console() {
           </div>
         </header>
         <main className="workspace">
-          <div className="quorail-console-brand"><img src="/quorail-mark.svg" alt="Quorail logo" width="30" height="30"/><span>quorail <small>FOR NIMIQ PAY</small></span></div>
           <div className="workspace-title">
             <div>
               <span className="eyebrow">

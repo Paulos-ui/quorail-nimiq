@@ -84,12 +84,12 @@ export default function AssetBalanceCard({ nimBalance, nimCommitted, nimReserve,
         <div className="big-number usdt-balance-number">{usdtBalance}<span> USDT</span></div>
         <ApproxAmount amount={Number(usdtBalance.replaceAll(",", ""))} asset="USDT" />
         <div className="usdt-balance-detail"><span>Polygon PoS</span><span title={account}>{account.slice(0, 6)}…{account.slice(-4)}</span></div>
-        <p className="usdt-balance-caption">Balance verified from the Polygon token contract. NIM commitments remain separate.</p>
+        <p className="usdt-balance-caption">On-chain USDT balance · Separate from your NIM plan.</p>
         <button type="button" className="usdt-card-secondary" onClick={() => void refresh(false)}>↻ Refresh balance</button>
       </> : <>
-        <p className="usdt-balance-prompt">See your actual USDT funds on Polygon and get ready to make a payment.</p>
-        <button type="button" className="usdt-card-connect" disabled={status === "loading"} onClick={() => void refresh(true)}>{status === "loading" ? "Connecting…" : "Connect USDT wallet →"}</button>
-        <p className="usdt-balance-caption">Requires a compatible Polygon wallet. Your wallet may ask permission to connect or switch networks.</p>
+        <p className="usdt-balance-prompt">Your Polygon USDT balance, ready when you connect.</p>
+        <button type="button" className="usdt-card-connect" disabled={status === "loading"} onClick={() => void refresh(true)}>{status === "loading" ? "Connecting…" : "Connect Polygon wallet →"}</button>
+        <p className="usdt-balance-caption">Polygon PoS · A compatible EVM wallet is required.</p>
       </>}
       {error && <p className="asset-card-error" role="status">{error}</p>}
     </div>}
