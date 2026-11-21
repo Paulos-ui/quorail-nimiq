@@ -55,6 +55,7 @@ export default function ScanRecipientQR({ network, onRecipient }: { network: "NI
   const [cameraReady, setCameraReady] = useState(false);
   const [retry, setRetry] = useState(0);
   const video = useRef<HTMLVideoElement>(null);
+  const fileInput = useRef<HTMLInputElement>(null);
   const callback = useRef(onRecipient);
   callback.current = onRecipient;
   useEffect(() => {
@@ -113,12 +114,35 @@ export default function ScanRecipientQR({ network, onRecipient }: { network: "NI
       } catch (error) {
         if (stopped) return;
         const reason = error instanceof Error ? error.name : "";
-        setMessage(reason === "NotAllowedError" ? "Camera permission denied. Allow camera access in your browser settings, or paste QR contents." : "Camera or QR decoding is unavailable here. Try a supported browser, or paste QR contents below.");
+        setMessage(reason === "NotAllowedError" ? "Camera access was blocked by this browser or Nimiq Pay webview. Allow camera permission in Android app/site settings, then retry. You can also upload a QR screenshot." : "Camera or QR decoding is unavailable here. Try a supported browser, or paste QR contents below.");
       }
     };
     void start();
     return () => { stopped = true; if (timer) clearTimeout(timer); if (element) element.srcObject = null; stream?.getTracks().forEach(t => t.stop()); };
   }, [open, network, retry]);
+  const scanImage = async (file?: File) => {
+    if (!file) return;
+    try {
+      setMessage("Reading QR image…");
+      const bitmap = await createImageBitmap(file);
+      const canvas = document.createElement("canvas");
+      const scale = Math.min(1, 1200 / Math.max(bitmap.width, bitmap.height));
+      canvas.width = Math.max(1, Math.round(bitmap.width * scale));
+      canvas.height = Math.max(1, Math.round(bitmap.height * scale));
+      const context = canvas.getContext("2d", { willReadFrequently: true });
+      if (!context) throw new Error("Image decoding unavailable");
+      context.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+      bitmap.close();
+      const reader = await loadFallback();
+      const pixels = context.getImageData(0, 0, canvas.width, canvas.height);
+      const raw = reader(pixels.data, pixels.width, pixels.height, { inversionAttempts: "attemptBoth" })?.data;
+      const recipient = raw ? parseRecipientQR(raw, network) : null;
+      if (!recipient) { setMessage("No supported recipient QR found in this image. Try a clearer screenshot or paste the address."); return; }
+      callback.current(recipient);
+      setOpen(false);
+    } catch { setMessage("Could not read that QR image. Try a screenshot or paste the recipient address."); }
+    finally { if (fileInput.current) fileInput.current.value = ""; }
+  };
   const apply = () => {
     const recipient = parseRecipientQR(manual, network);
     if (!recipient) { setMessage(`Enter a valid ${network} address or supported payment QR URI.`); return; }
@@ -129,6 +153,8 @@ export default function ScanRecipientQR({ network, onRecipient }: { network: "NI
     {open && <div className="qr-scan-panel"><div className="qr-scan-heading"><strong>Scan {network} recipient</strong><button type="button" aria-label="Close QR scanner" onClick={() => setOpen(false)}><X size={20}/></button></div>
       <div className="qr-camera-frame"><video ref={video} autoPlay muted playsInline controls={false} disablePictureInPicture className="qr-camera" aria-label="Live QR camera preview" />{!cameraReady && <div className="qr-camera-overlay">Waiting for camera permission…</div>}</div>
       {!cameraReady && <button type="button" className="qr-camera-retry" onClick={() => { setMessage(""); setRetry(v => v + 1); }}>Retry camera</button>}
+      <input ref={fileInput} type="file" accept="image/*" aria-label="Upload recipient QR screenshot" style={{display:"none"}} onChange={event => void scanImage(event.target.files?.[0])} />
+      <button type="button" className="qr-camera-retry" onClick={() => fileInput.current?.click()}>Upload QR screenshot instead</button>
       <p role="status" className="helper">{message || "Only the recipient is imported. Verify the address before approving in your wallet."}</p>
       <label>Or paste QR contents<input value={manual} onChange={e => setManual(e.target.value)} placeholder={network === "NIM" ? "NQ… or nimiq:…" : "0x…"}/></label>
       <button type="button" className="button outline" onClick={apply}>Use recipient</button>

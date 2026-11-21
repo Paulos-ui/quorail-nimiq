@@ -18,14 +18,14 @@ export function LocalCurrencyProvider({ children }: { children: React.ReactNode 
       const map:Record<string,Code>={NG:"NGN",GB:"GBP",IN:"INR",US:"USD",CA:"CAD",DE:"EUR",FR:"EUR",ES:"EUR",IT:"EUR"};
       setCurrency(codes.includes(saved as Code)? saved as Code : map[detected] || "USD");
       setEnabled(localStorage.getItem("quorail-local-enabled")!=="false");
-      const cached=localStorage.getItem("quorail-local-rates-v4");
-      if(cached){const data=JSON.parse(cached) as Rates;if(validRates(data)){setRates(data);setStale(false);}else{localStorage.removeItem("quorail-local-rates-v4");}}
+      const cached=localStorage.getItem("quorail-local-rates-v5");
+      if(cached){const data=JSON.parse(cached) as Rates;if(validRates(data)){setRates(data);setStale(false);}else{localStorage.removeItem("quorail-local-rates-v5");}}
     }catch{}
     setHydrated(true);
     let active=true;
     const updateRates = () => fetch("/api/rates",{cache:"no-store"}).then(async r=>{if(!r.ok)throw Error();return await r.json() as Rates;}).then(data=>{
       if(!active || !validRates(data))return;
-      setRates(data);setStale(false);try{localStorage.setItem("quorail-local-rates-v4",JSON.stringify(data));}catch{}
+      setRates(data);setStale(false);try{localStorage.setItem("quorail-local-rates-v5",JSON.stringify(data));}catch{}
     }).catch(()=>{});
     void updateRates();
     const interval = setInterval(() => { void updateRates(); }, 30 * 60 * 1000);
@@ -50,7 +50,7 @@ export function WalletCurrencyControls(){
  return <div className="wallet-currency-controls">
  <div className="wallet-currency-select"><label htmlFor="wallet-local-currency">DISPLAY CURRENCY</label><select id="wallet-local-currency" value={currency} disabled={!enabled} onChange={e=>setCurrency(e.target.value as Code)}>{codes.map(code=><option key={code} value={code}>{code}</option>)}</select></div>
  <label className="wallet-currency-check"><input type="checkbox" checked={enabled} onChange={e=>setEnabled(e.target.checked)}/> Show local equivalent</label>
- <small>{enabled ? rates && validRates(rates) ? `Approx. for planning only · Rate checked ${new Date(rates.asOf).toLocaleString()}` : "Rate unavailable. No estimate shown." : "Local equivalents are off."}</small>
+ <small>{enabled ? rates && validRates(rates) ? `Approx. only · 1 NIM ≈ $${rates.nimUsd.toPrecision(4)} · NIM quote ${new Date(rates.marketAsOf || rates.asOf).toLocaleString()} · FX ${new Date(rates.fxAsOf || rates.asOf).toLocaleDateString()}` : "Rate unavailable. No estimate shown." : "Local equivalents are off."}</small>
  </div>;
 }
 export function LocalCurrencySetting(){
