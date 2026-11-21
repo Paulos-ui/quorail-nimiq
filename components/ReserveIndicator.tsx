@@ -3,6 +3,7 @@ import Localized from "@/components/Localized";
 
 import { useLanguage } from "./Preferences";
 import { reserveStatus, nim } from "@/lib/finance";
+import { ApproxAmount } from "./LocalCurrency";
 export default function ReserveIndicator({
   available,
   reserve,
@@ -42,6 +43,7 @@ export default function ReserveIndicator({
             }
           />
         </p>
+        {known && <ApproxAmount amount={available} />}
         <small>
           {" "}
           <Localized

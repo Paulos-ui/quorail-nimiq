@@ -2,6 +2,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { formatUsdt, isEvmAddress, polygonBalance, requirePolygon, type EvmProvider } from "@/lib/polygon-usdt";
 import { nim } from "@/lib/finance";
+import { ApproxAmount } from "./LocalCurrency";
 
 type Asset = "NIM" | "USDT";
 type WalletWindow = Window & { ethereum?: EvmProvider };
@@ -73,6 +74,7 @@ export default function AssetBalanceCard({ nimBalance, nimCommitted, nimReserve,
     </div></div>
     {asset === "NIM" ? <>
       <div className="big-number">{nimBalance === null ? "Unavailable" : nim(nimBalance)}<span> NIM</span></div>
+      <ApproxAmount amount={nimBalance} />
       <div className="allocation-bar"><i style={{width: `${Math.min(100, Math.max(0, (nimCommitted / (nimBalance || 1)) * 100))}%`}} /><i style={{width: `${Math.min(100, Math.max(0, (nimReserve / (nimBalance || 1)) * 100))}%`}} /></div>
       <div className="balance-breakdown"><div><span>● Committed</span><b>{nim(nimCommitted)} <small>NIM</small></b></div><div><span>● Reserve target</span><b>{nim(nimReserve)} <small>NIM</small></b></div></div>
       <div className="balance-foot">{horizon}-day planning window <button type="button" aria-label="Change planning window" onClick={onSettings}>⚙</button></div>
@@ -80,6 +82,7 @@ export default function AssetBalanceCard({ nimBalance, nimCommitted, nimReserve,
       <div className="usdt-balance-status"><span className={status === "connected" ? "usdt-status-dot online" : "usdt-status-dot"} />{status === "connected" ? "Polygon wallet connected" : status === "loading" ? "Checking your wallet" : "Connect to view your USDT"}</div>
       {status === "connected" && usdtBalance !== null ? <>
         <div className="big-number usdt-balance-number">{usdtBalance}<span> USDT</span></div>
+        <ApproxAmount amount={Number(usdtBalance.replaceAll(",", ""))} asset="USDT" />
         <div className="usdt-balance-detail"><span>Polygon PoS</span><span title={account}>{account.slice(0, 6)}…{account.slice(-4)}</span></div>
         <p className="usdt-balance-caption">Balance verified from the Polygon token contract. NIM commitments remain separate.</p>
         <button type="button" className="usdt-card-secondary" onClick={() => void refresh(false)}>↻ Refresh balance</button>

@@ -1,6 +1,7 @@
 "use client";
 import { createContext, useContext, useEffect, useState, useRef } from "react";
 import { Sun, Moon, Globe2 } from "lucide-react";
+import { LocalCurrencySetting } from "./LocalCurrency";
 import { translate, type Language } from "@/lib/translations";
 const Context = createContext({
   tr: (text: string) => text,
@@ -68,6 +69,7 @@ export function PreferenceControls() {
               ))}
             </select>
           </label>
+          <LocalCurrencySetting />
         </div>
       </details>
     </div>

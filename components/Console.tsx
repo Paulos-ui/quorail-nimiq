@@ -3,6 +3,7 @@ import { useLanguage as useUILanguage } from "./Preferences";
 import PaymentReceipt from "./PaymentReceipt";
 import PolygonUsdt from "./PolygonUsdt";
 import AssetBalanceCard from "./AssetBalanceCard";
+import { ApproxAmount } from "./LocalCurrency";
 import Localized from "@/components/Localized";
 
 import { useLanguage, PreferenceControls } from "./Preferences";
@@ -27,6 +28,9 @@ import {
   ArrowDownLeft,
   Trash2,
   SlidersHorizontal,
+  Home,
+  Send,
+  UsersRound,
 } from "lucide-react";
 import { readWalletBalance, readWalletSnapshot } from "@/lib/balance";
 import Brand from "./Brand";
@@ -88,6 +92,7 @@ export default function Console() {
   const [importPassword, setImportPassword] = useState("");
   const [tab, setTab] = useState<Tab>("Overview");
   const [paymentAsset, setPaymentAsset] = useState<"NIM" | "USDT">("NIM");
+  const [sendChooser, setSendChooser] = useState(false);
   const [plan, setPlan] = useState<Plan>(emptyPlan);
   const planRef = useRef(plan);
   const [demo, setDemo] = useState(false);
@@ -715,6 +720,13 @@ export default function Console() {
   }
   return (
     <div className="app-shell">
+      <nav className="quorail-mobile-dock" aria-label="Quorail mobile navigation">
+        <button type="button" className={tab === "Overview" ? "dock-item selected" : "dock-item"} aria-current={tab === "Overview" ? "page" : undefined} onClick={() => { setTab("Overview"); setSelected(null); setSendChooser(false); }}><Home size={21}/><span>{tr("Overview")}</span></button>
+        <button type="button" className="dock-item dock-send" aria-label="Send NIM or USDT" aria-expanded={sendChooser} onClick={() => setSendChooser(!sendChooser)}><span className="dock-send-icon"><Send size={23}/></span><span>{ui("Send")}</span></button>
+        <button type="button" className={tab === "Payments" ? "dock-item selected" : "dock-item"} aria-current={tab === "Payments" ? "page" : undefined} onClick={() => { setTab("Payments"); setSelected(null); setSendChooser(false); }}><ListChecks size={21}/><span>{tr("Payments")}</span></button>
+        <button type="button" className={tab === "Activity" ? "dock-item selected" : "dock-item"} aria-current={tab === "Activity" ? "page" : undefined} onClick={() => { setTab("Activity"); setSelected(null); setSendChooser(false); }}><History size={21}/><span>{tr("Activity")}</span></button>
+      </nav>
+      {sendChooser && <div className="quorail-send-layer"><button className="quorail-send-scrim" aria-label="Close send options" onClick={() => setSendChooser(false)}/><section className="quorail-send-menu" aria-label="Choose payment asset"><div className="quorail-send-menu-head"><img src="/quorail-mark.svg" width="29" height="29" alt=""/><strong>{ui("Choose how to pay")}</strong><button type="button" aria-label="Close" onClick={() => setSendChooser(false)}><X size={19}/></button></div><button type="button" onClick={() => {setSendChooser(false);setPaymentAsset("NIM");setTab("Payments");setSelected(null);if(ready){setEditing(null);setModal("add");}}}><span className="quorail-asset-icon">N</span><span><strong>NIM</strong><small>{ui("Nimiq Pay payment")}</small></span><ArrowRight size={18}/></button><button type="button" onClick={() => {setSendChooser(false);setPaymentAsset("USDT");setTab("Payments");setSelected(null);}}><span className="quorail-asset-icon usdt">₮</span><span><strong>USDT</strong><small>{ui("Polygon wallet payment")}</small></span><ArrowRight size={18}/></button><p>{ui("Every transfer requires approval in the relevant wallet.")}</p></section></div>}
       <aside className="sidebar">
         <Brand />
         <div className="sidebar-label">
@@ -827,6 +839,7 @@ export default function Console() {
           </div>
         </header>
         <main className="workspace">
+          <div className="quorail-console-brand"><img src="/quorail-mark.svg" alt="Quorail logo" width="30" height="30"/><span>quorail <small>FOR NIMIQ PAY</small></span></div>
           <div className="workspace-title">
             <div>
               <span className="eyebrow">
@@ -1274,6 +1287,7 @@ export default function Console() {
                         </span>
                         <span className="payment-amount">
                           {nim(p.amount)}{" "}
+                          <ApproxAmount amount={p.amount} />
                           <small>
                             <Localized text={"NIM"} />
                           </small>
@@ -1911,7 +1925,7 @@ export default function Console() {
                         <Localized text={"Balance after this payment"} />
                       </span>
                       <b>
-                        {nim(impact.after)} <Localized text={"NIM"} />
+                        {nim(impact.after)} <Localized text={"NIM"} /><ApproxAmount amount={impact.after} />
                       </b>
                     </div>
                     <div>

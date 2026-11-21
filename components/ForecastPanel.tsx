@@ -3,6 +3,7 @@ import Localized from "@/components/Localized";
 
 import { useState } from "react";
 import { projection, nim, type Plan } from "@/lib/finance";
+import { ApproxAmount } from "./LocalCurrency";
 export default function ForecastPanel({
   plan,
   balance,
@@ -44,6 +45,7 @@ export default function ForecastPanel({
             {nim(f.total)} <Localized text={"NIM"} />
           </strong>
           <small>
+            <ApproxAmount amount={f.total} />
             {f.count} <Localized text={"scheduled occurrences"} />
           </small>
         </div>
@@ -59,6 +61,7 @@ export default function ForecastPanel({
             />
           </strong>
           <small>
+            <ApproxAmount amount={balance===null?null:f.remaining} />
             <Localized text={"Assumes no new income or spending"} />
           </small>
         </div>
@@ -72,6 +75,7 @@ export default function ForecastPanel({
             />
           </strong>
           <small>
+            <ApproxAmount amount={balance===null?null:f.buffer} />
             <Localized
               text={
                 balance === null

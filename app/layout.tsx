@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import Preferences from "@/components/Preferences";
+import { LocalCurrencyProvider } from "@/components/LocalCurrency";
 import WalletSetup from "@/components/WalletSetup";
 export const metadata: Metadata = {
   title: "Quorail | See what a payment leaves behind",
@@ -19,10 +20,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <body>
-        <Preferences>
+        <Preferences><LocalCurrencyProvider>
           {children}
           <WalletSetup />
-        </Preferences>
+        </LocalCurrencyProvider></Preferences>
       </body>
     </html>
   );

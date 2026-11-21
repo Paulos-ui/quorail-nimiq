@@ -121,3 +121,20 @@ npm run build
 Automated tests cover monetary precision, recurrence anchors, duplicate confirmation, receipt mismatches, board references, AI privacy and limits, and game rules. Live Anthropic, Redis and native wallet acceptance require deployment credentials and device testing. See [testing checklist](docs/TESTING.md).
 
 MIT License. chess.js retains its BSD license in `docs/CHESS-LICENSE.txt`. Independently built; no claim of official Nimiq endorsement.
+
+
+## V3.1: Local currency context (display and planning only)
+
+- Supported display currencies: NGN, USD, EUR, GBP, INR and CAD. Set from the language menu, with browser-region default and local override.
+- NIM and Polygon USDT remain separate real assets. No fiat payments, custody, swaps or on/off-ramps are implemented.
+- Approximate equivalents appear below NIM and USDT wallet balances, NIM commitments, reserve signals, payment impact and 30/60/90-day projections.
+- `/api/rates` reads NIM/USD and USDT/USD quotes from CoinGecko and USD FX reference rates from open.er-api.com. Server response caches for one hour. Client caches the last successful response; older cached rates are labeled.
+- Rate failures never block a payment, and estimates are hidden if no valid rate is available. Estimates are not guaranteed exchange quotes.
+- Connected dashboard branding reuses the existing `/public/icon.svg` artwork.
+- No change to wallet transaction authorization or settlement contracts. Polygon USDT still requires a compatible EVM wallet.
+- Live payment confirmation requires an actual funded wallet and recipient. Build and unit tests cannot independently prove real transfers.
+
+
+### V3.1 mobile payment dock
+
+On mobile, the console uses a floating four-action navigation: Overview, Send, Payments, and Activity. The central Send button opens a network-aware asset chooser. NIM opens the existing commitment/payment flow (when connected); USDT opens the existing Polygon payment module. Both continue to require approval in their respective wallets. The dock does not create new transfer logic or imply that Nimiq Pay holds Polygon USDT. Desktop navigation remains unchanged.
