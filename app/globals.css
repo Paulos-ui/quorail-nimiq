@@ -4232,3 +4232,11 @@ html:not([data-theme="dark"]) .app-header {
   border-bottom-color: #e3d5ae;
 }
 html:not([data-theme="dark"]) .overview-title p { color: #57554b; }
+
+.request-inbox {display:grid;gap:14px;min-width:0}
+.request-inbox :is(article,form,.request-share) {display:grid;gap:10px;min-width:0;overflow-wrap:anywhere}
+.request-inbox article {border-top:1px solid var(--line);padding-top:12px}
+.request-inbox details > summary {cursor:pointer;padding:10px 0;font-weight:600}
+.request-inbox button,.request-inbox a {justify-self:start}
+.request-inbox input:not([type=checkbox]) {width:100%;max-width:100%;box-sizing:border-box}
+.request-share img {image-rendering:pixelated;max-width:100%;height:auto}

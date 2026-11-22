@@ -1,4 +1,4 @@
-import { normalAddress, validAddress } from "./finance";
+import { normalAddress, validAddress, validDate } from "./finance";
 export type BoardRow = {
   id: string;
   sourceId?: string;
@@ -11,11 +11,13 @@ export type BoardRow = {
   hash?: string;
   sender?: string;
   claim?: string;
+  verifiedFee?: number;
+  splitRemainder?: string;
 };
 export type Board = {
   id: string;
   title: string;
-  kind: "team" | "collection";
+  kind: "team" | "collection" | "request";
   network: "mainnet" | "testnet";
   created: number;
   expires: number;
@@ -23,11 +25,16 @@ export type Board = {
 };
 export const boardMemo = (id: string, row: string) =>
   `QR:${id.slice(0, 16)}:${row}`;
+export function matchesBoardMemo(data:unknown,id:string,row:string) {
+  const encoded = Array.from(new TextEncoder().encode(boardMemo(id,row)))
+    .map(n=>n.toString(16).padStart(2,"0")).join("");
+  return typeof data==="string" && data.toLowerCase().replace(/^0x/,"")===encoded;
+}
 export function validateBoardInput(input: unknown) {
   if (!input || typeof input !== "object") throw new Error("Invalid board");
   const b = input as Board;
   if (
-    !["team", "collection"].includes(b.kind) ||
+    !["team", "collection", "request"].includes(b.kind) ||
     !["mainnet", "testnet"].includes(b.network) ||
     typeof b.title !== "string" ||
     !b.title.trim() ||
@@ -37,6 +44,7 @@ export function validateBoardInput(input: unknown) {
     b.rows.length > 20
   )
     throw new Error("Use a title and 1 to 20 commitments.");
+  if (b.kind === "request" && (b.rows.length !== 1 || !validDate(b.rows[0]?.due))) throw new Error("Use one bill and a valid due date.");
   const rows = b.rows.map((r, i) => {
     if (
       !r ||
@@ -83,10 +91,6 @@ export function verifyBoardReceipt(
     t.blockNumber < 1
   )
     throw new Error("No successful included transaction yet.");
-  const memo = boardMemo(board.id, row.id);
-  const encoded = Array.from(new TextEncoder().encode(memo))
-    .map((n) => n.toString(16).padStart(2, "0"))
-    .join("");
   if (
     t.networkId !== (board.network === "mainnet" ? 24 : 5) ||
     typeof t.to !== "string" ||
@@ -94,8 +98,7 @@ export function verifyBoardReceipt(
     t.value !== row.amount ||
     typeof t.from !== "string" ||
     !validAddress(t.from) ||
-    typeof t.recipientData !== "string" ||
-    t.recipientData.toLowerCase().replace(/^0x/, "") !== encoded
+    !matchesBoardMemo(t.recipientData, board.id, row.id)
   )
     throw new Error(
       "Receipt does not match recipient, amount, network and unique reference.",

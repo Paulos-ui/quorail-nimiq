@@ -8,6 +8,7 @@ import {
   publicBoard,
   type Board,
 } from "@/lib/boards";
+import { requestRowId, splitRequest, undoRequestSplit } from "@/lib/payment-requests";
 import { rpc } from "@/lib/rpc";
 export const runtime = "nodejs";
 export const maxDuration = 30;
@@ -46,6 +47,7 @@ export async function POST(req: Request) {
         created: Date.now(),
         expires: Date.now() + 30 * 86400000,
       };
+      if (board.kind === "request") board.rows[0].sourceId = requestRowId(id, "1");
       await redis([
         "SET",
         boardKey(secret),
@@ -70,6 +72,7 @@ export async function POST(req: Request) {
     if (data.action === "claim") {
       if (row.state !== "open")
         throw new Error("This commitment is already pending or confirmed.");
+      if (board.kind === "request") splitRequest(board,row,data.amount,data.expected);
       claim = randomBytes(24).toString("hex");
       row.claim = claim;
       row.state = "pending";
@@ -81,6 +84,7 @@ export async function POST(req: Request) {
         row.hash
       )
         throw new Error("Cannot release this payment.");
+      undoRequestSplit(board, row);
       row.state = "open";
       delete row.claim;
     } else if (data.action === "submit") {
@@ -91,6 +95,7 @@ export async function POST(req: Request) {
         !/^[a-f0-9]{64}$/i.test(data.hash)
       )
         throw new Error("Invalid payment attempt.");
+      if (row.hash && row.hash !== data.hash.toLowerCase()) throw new Error("Transaction already submitted.");
       row.hash = data.hash.toLowerCase();
     } else if (data.action === "verify") {
       const hash = String(data.hash || row.hash || "").toLowerCase();
@@ -100,8 +105,11 @@ export async function POST(req: Request) {
         return reply({ board: publicBoard(board) });
       const tx = await rpc(board.network, "getTransactionByHash", [hash]);
       row.sender = verifyBoardReceipt(tx, board, row, hash);
+      const fee=(tx as {fee?:unknown}).fee;
+      if(typeof fee==="number" && Number.isSafeInteger(fee) && fee>=0) row.verifiedFee=fee;
       row.state = "confirmed";
       row.hash = hash;
+      delete row.splitRemainder;
       delete row.claim;
     } else throw new Error("Unknown action.");
     const result = await redis([

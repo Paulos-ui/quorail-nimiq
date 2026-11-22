@@ -18,7 +18,8 @@ import {
   explorerUrl,
   type Provider,
 } from "@/lib/wallet";
-import { nim, normalAddress, forecast, type Payment } from "@/lib/finance";
+import { rememberRequest, reconcileRequest } from "@/lib/payment-requests";
+import { nim, parseNim, dateAfter, normalAddress, forecast, type Plan, type Payment } from "@/lib/finance";
 import { loadPlan, savePlan, storageKey } from "@/lib/storage";
 export default function SharedBoard() {
   const { tr } = useLanguage();
@@ -33,10 +34,49 @@ export default function SharedBoard() {
     [saved, setSaved] = useState<{ url: string; title: string }[]>([]);
   const [preview, setPreview] = useState<{
     row: string;
+    expected:number;
     balance: number;
     reserve: number;
     impact: ReturnType<typeof forecast>;
   } | null>(null);
+  const [installments,setInstallments] = useState<Record<string,string>>({});
+  function quote(plan:Plan, board:Board, row:BoardRow, balance:number) {
+    const original = sharedCandidate(plan,board,row);
+    const amount = board.kind === "request" && installments[row.id]?.trim()
+      ? parseNim(installments[row.id].trim()) : row.amount;
+    if(amount<=0 || amount>row.amount) throw new Error("Choose an amount within this unpaid installment.");
+    const payment = {...original,amount};
+    const impact = forecast(balance,plan,payment);
+    // The unpaid portion of a previously planned bill still counts against the reserve.
+    const saved=plan.payments.some(p=>p.id===original.id);
+    if(saved && amount<row.amount && original.due<=dateAfter(plan.horizon)) {
+      impact.obligations+=row.amount-amount;
+      impact.available-=row.amount-amount;
+      impact.shortfall=Math.max(0,-impact.available);
+    }
+    return {payment,impact,saved};
+  }
+  async function saveForLater() {
+    if(!board || !address || board.kind!=="request" || busyRef.current) return;
+    busyRef.current=true; setBusy(true);
+    try {
+      await rememberRequest(board.network,address,secret);
+      if(normalAddress(address)!==board.rows[0].recipient) {
+        const key=storageKey(board.network,address);
+        await navigator.locks.request(key,async()=>{
+          const fresh:Board=(await api("read")).board;
+          const plan=loadPlan(key);
+          for(const row of fresh.rows.filter(r=>r.state==="open")){
+            const candidate=sharedCandidate(plan,fresh,row);
+            if(!plan.payments.some(p=>p.id===candidate.id)) plan.payments.push(candidate);
+          }
+          savePlan(key,plan);
+        });
+      }
+      setError("Saved. Find this request under Payments in your wallet.");
+    } catch(e){setError(errorMessage(e));}
+    finally {busyRef.current=false;setBusy(false);}
+  }
   const receiptCursor = useRef(0);
   const host = useRef<Provider | null>(null),
     busyRef = useRef(false);
@@ -90,6 +130,15 @@ export default function SharedBoard() {
     }, 15000);
     return () => clearInterval(timer);
   }, [secret]);
+  useEffect(()=>{
+    if(!address || !board || board.kind!=="request" || !navigator.locks)return;
+    const key=storageKey(board.network,address);
+    void navigator.locks.request(key,()=>{
+      const plan=loadPlan(key);
+      const next=reconcileRequest(plan,board);
+      if(next!==plan)savePlan(key,next);
+    }).catch(e=>setError(errorMessage(e)));
+  },[address,board]);
   async function connect() {
     if (!(window as Window & { nimiq?: unknown }).nimiq) {
       window.dispatchEvent(new Event("quorail-wallet-setup"));
@@ -126,16 +175,16 @@ export default function SharedBoard() {
       if (!navigator.onLine)
         throw new Error("Reconnect before reviewing a payment.");
       checkNetwork(board.network);
-      const plan = loadPlan(storageKey(board.network, address)),
-        candidate = sharedCandidate(plan, board, row);
+      const plan = loadPlan(storageKey(board.network,address));
       const balance = await readWalletBalance(host.current, address);
       if (!Number.isSafeInteger(balance) || balance < 0)
         throw new Error("Wallet balance unavailable.");
       setPreview({
+        expected:row.amount,
         row: row.id,
         balance,
         reserve: plan.reserve,
-        impact: forecast(balance, plan, candidate),
+        impact: quote(plan, board, row, balance).impact,
       });
     } catch (e) {
       setError(errorMessage(e));
@@ -149,7 +198,7 @@ export default function SharedBoard() {
       setError("Reconnect before sending a payment.");
       return;
     }
-    if (preview?.row !== row.id) return;
+    if (preview?.row !== row.id || preview.expected !== row.amount) {setPreview(null);setAck(false);setError("Request changed. Preview again.");return;}
     if (!board || !host.current || !address || !ack || busyRef.current) return;
     busyRef.current = true;
     setBusy(true);
@@ -176,20 +225,21 @@ export default function SharedBoard() {
             throw new Error(
               "Resolve pending payments in your private plan first.",
             );
-          const payment = sharedCandidate(latest, board, row);
+
           if (normalAddress(address) === normalAddress(row.recipient))
             throw new Error("Choose an account other than the recipient.");
           const snapshot = await readWalletSnapshot(provider, address);
           const balance = snapshot.balance;
+          const {payment, impact:currentImpact, saved} = quote(latest,board,row,balance);
           if (
             !Number.isSafeInteger(balance) ||
             balance < 0 ||
-            forecast(balance, latest, payment).shortfall > 0
+            currentImpact.shortfall > 0
           )
             throw new Error(
               "This payment exceeds your recorded commitments or reserve. Review your private plan first.",
             );
-          const currentImpact = forecast(balance, latest, payment);
+
           if (
             balance !== preview.balance ||
             latest.reserve !== preview.reserve ||
@@ -202,7 +252,8 @@ export default function SharedBoard() {
               "Your balance or plan changed. Preview this share again before approving.",
             );
           }
-          const claimed = await api("claim", { row: row.id });
+          if(board.kind==="request") await rememberRequest(board.network,address,secret);
+          const claimed = await api("claim", { row: row.id, amount:payment.amount, expected:row.amount });
           setBoard(claimed.board);
           const pendingPlan = {
             ...latest,
@@ -215,6 +266,10 @@ export default function SharedBoard() {
               },
             ],
           };
+          if(saved && payment.amount<row.amount) {
+            const remaining=(claimed.board as Board).rows.at(-1)!;
+            pendingPlan.payments.push(sharedCandidate(latest,claimed.board,remaining));
+          }
           try {
             savePlan(key, pendingPlan);
           } catch {
@@ -225,7 +280,7 @@ export default function SharedBoard() {
           try {
             hash = await provider.sendBasicTransactionWithData({
               recipient: row.recipient,
-              value: row.amount,
+              value: payment.amount,
               fee: payment.fee,
               data: boardMemo(board.id, row.id),
             });
@@ -242,7 +297,9 @@ export default function SharedBoard() {
                 row: row.id,
                 claim: claimed.claim,
               });
+              if (board.kind === "request") savePlan(key, latest);
               setBoard(released.board);
+              setPreview(null);setAck(false);
             }
             throw e;
           }
@@ -310,7 +367,7 @@ export default function SharedBoard() {
       <main className="shared-page">
         <ConnectionNotice />
         <span className="eyebrow">
-          <Localized text={"QUORAIL / SHARED PAYMENT BOARD"} />
+          <Localized text={board?.kind==="request" ? "QUORAIL / PAYMENT REQUEST" : "QUORAIL / SHARED PAYMENT BOARD"} />
         </span>
         <h1>{board?.title || "A plan you can share."}</h1>
         {error && (
@@ -342,7 +399,7 @@ export default function SharedBoard() {
             <p>
               <Localized
                 text={
-                  board.kind === "collection"
+                  board.kind === "request" ? "Review the bill and its impact on your reserve before approving a payment." : board.kind === "collection"
                     ? "Collect contributions into the requester’s wallet. This does not pay the original outgoing bill."
                     : "A shared snapshot with live payment receipts. Each payer approves their own transaction."
                 }
@@ -417,6 +474,10 @@ export default function SharedBoard() {
                 </label>
               </>
             )}
+            {board.kind === "request" && address && <>
+              <button className="button outline" disabled={busy} onClick={saveForLater}>Save for later</button>
+              <Link href="/console/?tab=payments" className="text-link">Open payment inbox</Link>
+            </>}
             <div className="shared-rows">
               {board.rows.map((row) => (
                 <article key={row.id}>
@@ -452,6 +513,10 @@ export default function SharedBoard() {
                   </small>
                   {row.state === "open" && (
                     <>
+                      {board.kind==="request" && <label>Amount to pay (NIM)
+                        <input inputMode="decimal" placeholder={String(row.amount/100000)} disabled={busy} value={installments[row.id]??""}
+                          onChange={e=>{setInstallments({...installments,[row.id]:e.target.value});setAck(false);setPreview(null);}} />
+                      </label>}
                       <button
                         className="button outline"
                         disabled={busy || !address}
@@ -544,7 +609,7 @@ export default function SharedBoard() {
                         onClick={() => pay(row)}
                       >
                         {" "}
-                        <Localized text={"Pay this share in Nimiq Pay"} />{" "}
+                        <Localized text={board.kind==="request"?"Approve installment in Nimiq Pay":"Pay this share in Nimiq Pay"} />{" "}
                       </button>
                     </>
                   )}

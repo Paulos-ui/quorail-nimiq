@@ -1,3 +1,4 @@
+import { matchesBoardMemo } from "./boards";
 import { normalAddress, type Payment } from "./finance";
 export function verifyReceipt(
   raw: unknown,
@@ -34,6 +35,10 @@ export function verifyReceipt(
     t.value !== payment.amount
   )
     return { status: "mismatch", sender };
+  if (payment.id.startsWith("request:")) {
+    const parts = /^request:([a-f0-9]{32}):([1-9]\d*)$/.exec(payment.id);
+    if (!parts || !matchesBoardMemo(t.recipientData, parts[1], parts[2])) return {status:"mismatch",sender};
+  }
   if (t.executionResult === false) return { status: "failed", sender };
   if (t.executionResult !== true) return { status: "pending" };
   return {

@@ -3,6 +3,7 @@ import { useLanguage as useUILanguage } from "./Preferences";
 import PaymentReceipt from "./PaymentReceipt";
 import PolygonUsdt from "./PolygonUsdt";
 import ScanRecipientQR from "./ScanRecipientQR";
+import RequestInbox from "./RequestInbox";
 import AssetBalanceCard from "./AssetBalanceCard";
 import { ApproxAmount } from "./LocalCurrency";
 import Localized from "@/components/Localized";
@@ -132,6 +133,7 @@ export default function Console() {
   );
   useEffect(() => {
     const params = new URLSearchParams(location.search);
+    if(params.get("tab")==="payments") setTab("Payments");
     if (params.get("demo") === "1") {
       const s = params.get("scenario");
       startDemo(s === "team" || s === "personal" ? s : "freelancer");
@@ -393,6 +395,7 @@ export default function Console() {
             throw new Error(
               "This payment has already been attempted. Check Activity.",
             );
+          if(target.id.startsWith("request:")) throw new Error("Pay this bill from its request link in the payment inbox.");
           if (
             latest.payments.some((x) =>
               ["submitting", "pending", "uncertain", "mismatch"].includes(
@@ -1237,6 +1240,8 @@ export default function Console() {
                       <button type="button" className={paymentAsset === "USDT" ? "active" : ""} aria-pressed={paymentAsset === "USDT"} onClick={() => setPaymentAsset("USDT")}>USDT <small>Polygon</small></button>
                     </div>
                   )}
+                  {tab === "Payments" && paymentAsset === "NIM" && !demo && address &&
+                    <RequestInbox key={key} address={address} network={network} balance={balance} plan={plan}/>}
                   {tab === "Payments" && paymentAsset === "USDT" && <PolygonUsdt />}
                   {(tab === "Overview" || paymentAsset === "NIM") && <section className="payment-list">
                   {tab === "Payments" && (
@@ -2039,12 +2044,11 @@ export default function Console() {
                 )}
                 <button
                   className="button dark full"
-                  onClick={send}
+                  onClick={payment.id.startsWith("request:") ? () => {setSelected(null);setTab("Payments");setPaymentAsset("NIM");} : send}
                   disabled={
                     demo ||
                     busy ||
-                    !ack ||
-                    impact.shortfall > 0 ||
+                    (!payment.id.startsWith("request:") && (!ack || impact.shortfall > 0)) ||
                     reserveInvalid ||
                     balance === null ||
                     unresolved ||
@@ -2057,14 +2061,14 @@ export default function Console() {
                         ? "Example only. No funds move."
                         : busy
                           ? "Waiting for wallet…"
-                          : tr("Pay with Nimiq Pay")
+                          : payment.id.startsWith("request:") ? "Open payment inbox" : tr("Pay with Nimiq Pay")
                     }
                   />
                   <ArrowUpRight size={17} />
                 </button>
                 <button
                   className="text-link delete-link"
-                  disabled={busy}
+                  disabled={busy || payment.id.startsWith("request:")}
                   onClick={() => {
                     setEditing(payment.id);
                     setSelected(null);

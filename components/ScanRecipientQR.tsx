@@ -1,6 +1,7 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Camera, X } from "lucide-react";
+import { requestToken } from "@/lib/payment-requests";
 import { parseRecipientQR } from "@/lib/recipient-qr";
 
 type BarcodeResult = { rawValue: string };
@@ -35,7 +36,11 @@ function loadFallback(): Promise<JsQr> {
   return fallbackPromise;
 }
 
-export default function ScanRecipientQR({ network, onRecipient }: { network: "NIM" | "USDT"; onRecipient: (address: string) => void }) {
+function parseScan(raw:string,network:"NIM"|"USDT"|"Request") {
+  if(network==="Request") return requestToken(raw,location.origin) ? raw : null;
+  return parseRecipientQR(raw,network);
+}
+export default function ScanRecipientQR({ network, onRecipient }: { network: "NIM" | "USDT" | "Request"; onRecipient: (address: string) => void }) {
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState("");
   const [manual, setManual] = useState("");
@@ -143,7 +148,7 @@ export default function ScanRecipientQR({ network, onRecipient }: { network: "NI
             const raw = await detect();
             if (stopped) return;
             if (raw) {
-              const recipient = parseRecipientQR(raw, network);
+              const recipient = parseScan(raw, network);
               if (recipient) { finish(recipient); return; }
               if (raw !== lastInvalid) { lastInvalid = raw; setMessage(`QR detected, but it does not contain a supported ${network} recipient. No payment was started.`); }
             }
@@ -190,26 +195,26 @@ export default function ScanRecipientQR({ network, onRecipient }: { network: "NI
       if (attempt !== session.current) return;
       const pixels = context.getImageData(0, 0, canvas.width, canvas.height);
       const raw = reader(pixels.data, pixels.width, pixels.height, { inversionAttempts: "attemptBoth" })?.data;
-      const recipient = raw ? parseRecipientQR(raw, network) : null;
+      const recipient = raw ? parseScan(raw, network) : null;
       if (!recipient) { setMessage("No supported recipient QR found in this image. Try a clearer screenshot or paste the address."); return; }
       finish(recipient);
     } catch { if (attempt === session.current) setMessage("Could not read that QR image. Try a screenshot or paste the recipient address."); }
     finally { bitmap?.close(); if (input && attempt === session.current) input.value = ""; }
   };
   const apply = () => {
-    const recipient = parseRecipientQR(manual, network);
+    const recipient = parseScan(manual, network);
     if (!recipient) { setMessage(`Enter a valid ${network} address or supported payment QR URI.`); return; }
     finish(recipient); setManual("");
   };
   return <div className="qr-recipient-control">
-    {!open && <button type="button" className="qr-scan-button" onClick={() => { complete.current = false; setMessage(""); setOpen(true); }}><Camera size={17}/> Scan recipient QR</button>}
+    {!open && <button type="button" className="qr-scan-button" onClick={() => { complete.current = false; setMessage(""); setOpen(true); }}><Camera size={17}/> {network==="Request"?"Scan request QR":"Scan recipient QR"}</button>}
     {open && <div className="qr-scan-panel"><div className="qr-scan-heading"><strong>Scan {network} recipient</strong><button type="button" aria-label="Close QR scanner" onClick={() => finish()}><X size={20}/></button></div>
       <div className="qr-camera-frame"><video ref={video} autoPlay muted playsInline controls={false} disablePictureInPicture className="qr-camera" aria-label="Live QR camera preview" />{!cameraReady && <div className="qr-camera-overlay">{cameraState === "starting" ? "Requesting camera permission…" : cameraState === "blocked" ? "Camera permission unavailable" : "Camera unavailable"}</div>}</div>
       {!cameraReady && cameraState !== "starting" && <button type="button" className="qr-camera-retry" onClick={() => { setMessage(""); setRetry(v => v + 1); }}>Retry camera</button>}
       <input ref={fileInput} type="file" accept="image/*" aria-label="Upload recipient QR screenshot" style={{display:"none"}} onChange={event => void scanImage(event.target.files?.[0])} />
       <button type="button" className="qr-camera-retry" onClick={() => fileInput.current?.click()}>Upload QR screenshot instead</button>
       <p role="status" className="helper">{message || "Verify the imported recipient address before approving in your wallet."}</p>
-      <label>Or paste QR contents<input value={manual} onChange={e => setManual(e.target.value)} placeholder={network === "NIM" ? "NQ… or nimiq:…" : "0x…"}/></label>
+      <label>Or paste QR contents<input value={manual} onChange={e => setManual(e.target.value)} placeholder={network==="Request" ? "Quorail request link" : network === "NIM" ? "NQ… or nimiq:…" : "0x…"}/></label>
       <button type="button" className="button outline" onClick={apply}>Use recipient</button>
     </div>}
   </div>;

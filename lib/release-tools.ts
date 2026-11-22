@@ -107,7 +107,7 @@ export function sharedCandidate(
     );
   return (
     existing || {
-      id: `board:${board.id}:${row.id}`,
+      id: board.kind === "request" ? `request:${board.id}:${row.id}` : `board:${board.id}:${row.id}`,
       title: row.title,
       recipient: row.recipient,
       amount: row.amount,
