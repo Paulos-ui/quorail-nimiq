@@ -53,6 +53,7 @@ export default function ScanRecipientQR({ network, onRecipient }: { network: "NI
   const [message, setMessage] = useState("");
   const [manual, setManual] = useState("");
   const [cameraReady, setCameraReady] = useState(false);
+  const [cameraState, setCameraState] = useState<"starting" | "ready" | "blocked" | "unavailable">("starting");
   const [retry, setRetry] = useState(0);
   const video = useRef<HTMLVideoElement>(null);
   const fileInput = useRef<HTMLInputElement>(null);
@@ -65,15 +66,27 @@ export default function ScanRecipientQR({ network, onRecipient }: { network: "NI
     let timer: ReturnType<typeof setTimeout> | undefined;
     const element = video.current;
     setCameraReady(false);
+    setCameraState("starting");
     const start = async () => {
-      if (!navigator.mediaDevices?.getUserMedia) { setMessage("Camera access is unavailable in this browser. Open Quorail in a secure browser or paste QR contents below."); return; }
+      if (!window.isSecureContext || !navigator.mediaDevices?.getUserMedia) { setCameraState("unavailable"); setMessage("This Nimiq Pay view does not expose secure camera access. Use the QR image option or ask Nimiq Pay to enable camera support for Mini Apps."); return; }
       try {
-        stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: "environment" } }, audio: false });
+        // WebView permission requests can remain pending if the host does not
+        // implement Android WebChromeClient.onPermissionRequest. A timeout
+        // updates the UI, while late camera streams are still stopped safely.
+        let timedOut = false;
+        const request = navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: "environment" } }, audio: false });
+        const pending = new Promise<never>((_, reject) => {
+          timer = setTimeout(() => { timedOut = true; reject(new DOMException("Camera permission did not receive a response", "TimeoutError")); }, 12000);
+        });
+        request.then(lateStream => { if (timedOut || stopped) lateStream.getTracks().forEach(track => track.stop()); }).catch(() => {});
+        stream = await Promise.race([request, pending]);
+        if (timer) { clearTimeout(timer); timer = undefined; }
         if (stopped || !element) { stream.getTracks().forEach(t => t.stop()); return; }
         element.srcObject = stream;
         await element.play();
         if (stopped) return;
         setCameraReady(true);
+        setCameraState("ready");
         setMessage("Point your camera at the recipient QR code.");
         const Detector = (window as ScanWindow).BarcodeDetector;
         let detect: () => Promise<string | null>;
@@ -114,7 +127,14 @@ export default function ScanRecipientQR({ network, onRecipient }: { network: "NI
       } catch (error) {
         if (stopped) return;
         const reason = error instanceof Error ? error.name : "";
-        setMessage(reason === "NotAllowedError" ? "Camera access was blocked by this browser or Nimiq Pay webview. Allow camera permission in Android app/site settings, then retry. You can also upload a QR screenshot." : "Camera or QR decoding is unavailable here. Try a supported browser, or paste QR contents below.");
+        setCameraReady(false);
+        setCameraState(reason === "NotAllowedError" || reason === "PermissionDeniedError" || reason === "TimeoutError" ? "blocked" : "unavailable");
+        setMessage(reason === "TimeoutError"
+          ? "Nimiq Pay did not respond to the camera permission request. Its Android WebView may need camera permission support. You can upload a QR image instead."
+          : reason === "NotAllowedError" || reason === "PermissionDeniedError"
+          ? "Camera permission was denied by Nimiq Pay or Android. Enable camera access for Nimiq Pay in Android Settings, then retry. If it remains blocked, the host app must support WebView camera permission requests."
+          : reason === "NotFoundError" ? "No camera was found on this device."
+          : "Camera could not start in this Nimiq Pay view. Upload a QR image or paste QR contents instead.");
       }
     };
     void start();
@@ -151,7 +171,7 @@ export default function ScanRecipientQR({ network, onRecipient }: { network: "NI
   return <div className="qr-recipient-control">
     <button type="button" className="qr-scan-button" onClick={() => { setMessage(""); setOpen(true); }}><Camera size={17}/> Scan recipient QR</button>
     {open && <div className="qr-scan-panel"><div className="qr-scan-heading"><strong>Scan {network} recipient</strong><button type="button" aria-label="Close QR scanner" onClick={() => setOpen(false)}><X size={20}/></button></div>
-      <div className="qr-camera-frame"><video ref={video} autoPlay muted playsInline controls={false} disablePictureInPicture className="qr-camera" aria-label="Live QR camera preview" />{!cameraReady && <div className="qr-camera-overlay">Waiting for camera permission…</div>}</div>
+      <div className="qr-camera-frame"><video ref={video} autoPlay muted playsInline controls={false} disablePictureInPicture className="qr-camera" aria-label="Live QR camera preview" />{!cameraReady && <div className="qr-camera-overlay">{cameraState === "starting" ? "Requesting camera permission…" : cameraState === "blocked" ? "Camera permission unavailable" : "Camera unavailable"}</div>}</div>
       {!cameraReady && <button type="button" className="qr-camera-retry" onClick={() => { setMessage(""); setRetry(v => v + 1); }}>Retry camera</button>}
       <input ref={fileInput} type="file" accept="image/*" aria-label="Upload recipient QR screenshot" style={{display:"none"}} onChange={event => void scanImage(event.target.files?.[0])} />
       <button type="button" className="qr-camera-retry" onClick={() => fileInput.current?.click()}>Upload QR screenshot instead</button>
