@@ -1,15 +1,14 @@
 "use client";
 import { createContext, useContext, useEffect, useState } from "react";
-type Code = "NGN" | "USD" | "EUR" | "GBP" | "INR" | "CAD";
-import { validateCurrencyRates, type CurrencyRates as Rates } from "@/lib/validateCurrencyRates";
+import { convertLocalAmount, formatLocalAmount, selectedRate, validateCurrencyRates, type Asset, type CurrencyCode as Code, type CurrencyRates as Rates } from "@/lib/validateCurrencyRates";
 const validRates = validateCurrencyRates;
 const codes: Code[] = ["NGN", "USD", "EUR", "GBP", "INR", "CAD"];
-const CurrencyContext = createContext({ currency: "USD" as Code, enabled: true, setCurrency: (_:Code)=>{}, setEnabled: (_:boolean)=>{}, rates: null as Rates|null, stale: false });
+const CurrencyContext = createContext({ currency: "USD" as Code, enabled: true, setCurrency: (_:Code)=>{}, setEnabled: (_:boolean)=>{}, rates: null as Rates|null, now: 0 });
 export function LocalCurrencyProvider({ children }: { children: React.ReactNode }) {
   const [currency,setCurrency] = useState<Code>("USD");
   const [enabled,setEnabled] = useState(true);
   const [rates,setRates] = useState<Rates|null>(null);
-  const [stale,setStale] = useState(false);
+  const [now, setNow] = useState(0);
   const [hydrated,setHydrated] = useState(false);
   useEffect(()=>{
     try {
@@ -18,45 +17,71 @@ export function LocalCurrencyProvider({ children }: { children: React.ReactNode 
       const map:Record<string,Code>={NG:"NGN",GB:"GBP",IN:"INR",US:"USD",CA:"CAD",DE:"EUR",FR:"EUR",ES:"EUR",IT:"EUR"};
       setCurrency(codes.includes(saved as Code)? saved as Code : map[detected] || "USD");
       setEnabled(localStorage.getItem("quorail-local-enabled")!=="false");
-      const cached=localStorage.getItem("quorail-local-rates-v5");
-      if(cached){const data=JSON.parse(cached) as Rates;if(validRates(data)){setRates(data);setStale(false);}else{localStorage.removeItem("quorail-local-rates-v5");}}
-    }catch{}
+      localStorage.removeItem("quorail-local-rates-v5");
+    } catch {}
     setHydrated(true);
-    let active=true;
-    const updateRates = () => fetch("/api/rates",{cache:"no-store"}).then(async r=>{if(!r.ok)throw Error();return await r.json() as Rates;}).then(data=>{
-      if(!active || !validRates(data))return;
-      setRates(data);setStale(false);try{localStorage.setItem("quorail-local-rates-v5",JSON.stringify(data));}catch{}
-    }).catch(()=>{});
+    setNow(Date.now());
+    const controller = new AbortController();
+    let refreshing = false;
+    async function updateRates() {
+      if (refreshing) return;
+      refreshing = true;
+      try {
+        const response = await fetch("/api/rates", {
+          cache: "no-store",
+          signal: controller.signal,
+        });
+        const data: unknown = response.ok ? await response.json() : null;
+        if (!controller.signal.aborted) setRates(validRates(data) ? data : null);
+      } catch {
+        if (!controller.signal.aborted) setRates(null);
+      } finally {
+        refreshing = false;
+      }
+    }
     void updateRates();
-    const interval = setInterval(() => { void updateRates(); }, 30 * 60 * 1000);
-    return ()=>{active=false;clearInterval(interval);};
+    const interval = setInterval(updateRates, 5 * 60 * 1000);
+    const updateTime = () => setNow(Date.now());
+    const clock = setInterval(updateTime, 1000);
+    document.addEventListener("visibilitychange", updateTime);
+    return () => {
+      controller.abort();
+      clearInterval(interval);
+      clearInterval(clock);
+      document.removeEventListener("visibilitychange", updateTime);
+    };
   },[]);
   useEffect(()=>{if(!hydrated)return;try{localStorage.setItem("quorail-local-currency",currency);localStorage.setItem("quorail-local-enabled",String(enabled));}catch{}},[currency,enabled,hydrated]);
-  return <CurrencyContext.Provider value={{currency,enabled,setCurrency,setEnabled,rates,stale}}>{children}</CurrencyContext.Provider>;
+  return <CurrencyContext.Provider value={{currency,enabled,setCurrency,setEnabled,rates,now}}>{children}</CurrencyContext.Provider>;
 }
 export function useLocalCurrency(){return useContext(CurrencyContext);}
-export function ApproxAmount({ amount, asset="NIM" }: { amount:number|null; asset?:"NIM"|"USDT" }){
-  const {currency,enabled,rates,stale}=useLocalCurrency();
-  if(!enabled || amount===null || !Number.isFinite(amount) || !validRates(rates) || !(rates.usdToLocal[currency]>0))return null;
-  const value=amount*(asset==="NIM"?rates.nimUsd:rates.usdtUsd)*rates.usdToLocal[currency];
-  if(!Number.isFinite(value) || value < 0)return null;
-  const formatted=new Intl.NumberFormat(undefined,{style:"currency",currency,maximumFractionDigits:value<1?4:2}).format(value);
-  return <span className="quorail-approx" title={`Approx. for planning only. Rate checked ${new Date(rates.asOf).toLocaleString()}.`}>
-    ≈ {formatted} <span>· Approx. for planning only{stale?" · Cached rate":""}</span>
+export function ApproxAmount({ amount, asset = "NIM" }: { amount: number | null; asset?: Asset }) {
+  const { currency, enabled, rates, now } = useLocalCurrency();
+  if (!enabled || amount === null) return null;
+  const rate = selectedRate(rates, asset, currency, now);
+  const value = rate ? convertLocalAmount(amount, asset, rate) : null;
+  if (value === null || !rates) return <span className="quorail-approx">Rate temporarily unavailable</span>;
+  return <span className="quorail-approx" title={`Rate checked ${new Date(rates.asOf).toLocaleString()}`}>
+    ≈ {formatLocalAmount(value, currency)} <span>· Approx. for planning only</span>
   </span>;
 }
-export function WalletCurrencyControls(){
- const {currency,enabled,setCurrency,setEnabled,rates}=useLocalCurrency();
+export function WalletCurrencyControls({ asset = "NIM" }: { asset?: Asset }) {
+ const {currency,enabled,setCurrency,setEnabled,rates,now}=useLocalCurrency();
+ const rate = selectedRate(rates, asset, currency, now);
  return <div className="wallet-currency-controls">
  <div className="wallet-currency-select"><label htmlFor="wallet-local-currency">DISPLAY CURRENCY</label><select id="wallet-local-currency" value={currency} disabled={!enabled} onChange={e=>setCurrency(e.target.value as Code)}>{codes.map(code=><option key={code} value={code}>{code}</option>)}</select></div>
  <label className="wallet-currency-check"><input type="checkbox" checked={enabled} onChange={e=>setEnabled(e.target.checked)}/> Show local equivalent</label>
- <small>{enabled ? rates && validRates(rates) ? `Approx. only · 1 NIM ≈ $${rates.nimUsd.toPrecision(4)} · NIM quote ${new Date(rates.marketAsOf || rates.asOf).toLocaleString()} · FX ${new Date(rates.fxAsOf || rates.asOf).toLocaleDateString()}` : "Rate unavailable. No estimate shown." : "Local equivalents are off."}</small>
+ <small>{enabled
+   ? rate && rates
+     ? `Approx. only · 1 ${asset} ≈ US$${rate.quote.value.toPrecision(4)} · Checked ${new Date(rates.asOf).toLocaleString()}`
+     : "Rate temporarily unavailable"
+   : "Local equivalents are off."}</small>
  </div>;
 }
 export function LocalCurrencySetting(){
- const {currency,enabled,setCurrency,setEnabled,rates,stale}=useLocalCurrency();
+ const {currency,enabled,setCurrency,setEnabled,rates}=useLocalCurrency();
  return <div className="quorail-local-settings"><div><strong>Local currency display</strong><small>Approx. for planning only. No fiat payments or conversion.</small></div>
  <label><input type="checkbox" checked={enabled} onChange={e=>setEnabled(e.target.checked)}/> Show estimates</label>
  <label>Currency <select value={currency} disabled={!enabled} onChange={e=>setCurrency(e.target.value as Code)}>{codes.map(code=><option key={code} value={code}>{code}</option>)}</select></label>
- <small>{rates?`Rates checked ${new Date(rates.asOf).toLocaleString()}${stale?" · cached":""}`:"Conversion estimates unavailable. Payments still work."}</small></div>;
+ <small>{rates?`Rates checked ${new Date(rates.asOf).toLocaleString()}`:"Conversion estimates unavailable. Payments still work."}</small></div>;
 }

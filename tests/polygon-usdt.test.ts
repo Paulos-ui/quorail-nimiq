@@ -1,6 +1,6 @@
 import {test} from 'node:test';
 import {strict as assert} from 'node:assert';
-import {parseUsdt,formatUsdt,transferData,requirePolygon,verifyPolygonUsdt,POLYGON_USDT} from '../lib/polygon-usdt.ts';
+import {parseUsdt,formatUsdt,polygonBalance,transferData,requirePolygon,verifyPolygonUsdt,POLYGON_USDT} from '../lib/polygon-usdt';
 const from='0x1111111111111111111111111111111111111111';
 const to='0x2222222222222222222222222222222222222222';
 test('USDT exact decimal arithmetic',()=>{assert.equal(parseUsdt('1.000001'),1000001n);assert.equal(formatUsdt(1000001n),'1.000001');for(const bad of ['1.0000001','-1','0','1e4','abc'])assert.throws(()=>parseUsdt(bad));});
@@ -13,4 +13,16 @@ test('receipt requires exact transfer event',async()=>{
  const wallet={request:async({method}:{method:string})=>method==='eth_chainId'?'0x89':method==='eth_getTransactionByHash'?tx:receipt};
  assert.equal(await verifyPolygonUsdt(wallet,hash,from,to,units),'confirmed');
  assert.equal(await verifyPolygonUsdt(wallet,hash,from,to,units+1n),'mismatch');
+});
+test('reads the six-decimal USDT token balance on Polygon only', async () => {
+ const methods: string[] = [];
+ const provider = { request: async ({method, params}: {method: string; params?: unknown[]}) => {
+   methods.push(method);
+   if (method === 'eth_chainId') return '0x89';
+   assert.deepEqual(params, [{to: POLYGON_USDT, data: '0x70a08231' + from.slice(2).padStart(64, '0')}, 'latest']);
+   return '0x' + 12_345_678n.toString(16).padStart(64, '0');
+ }};
+ assert.equal(formatUsdt(await polygonBalance(provider, from)), '12.345678');
+ assert.deepEqual(methods, ['eth_chainId', 'eth_call']);
+ await assert.rejects(polygonBalance({request: async () => '0x1'}, from));
 });

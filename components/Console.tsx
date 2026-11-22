@@ -106,6 +106,7 @@ export default function Console() {
   const [formError, setFormError] = useState("");
   const [recipientName, setRecipientName] = useState("");
   const [recipientLookup, setRecipientLookup] = useState("");
+  const recipientInput = useRef<HTMLInputElement>(null);
   const [balance, setBalance] = useState<number | null>(null);
   const [busy, setBusy] = useState(false);
   const busyRef = useRef(false);
@@ -1600,6 +1601,7 @@ export default function Console() {
                 <label>
                   {tr("Recipient Nimiq address or .nim username")}
                   <input
+                    ref={recipientInput}
                     name="recipient"
                     defaultValue={edited?.note?.startsWith("nim-name:") ? edited.note.slice(9) : edited?.recipient}
                     required
@@ -1607,18 +1609,18 @@ export default function Console() {
                     autoComplete="off"
                     onChange={(e) => { setRecipientName(e.target.value); setRecipientLookup(""); }}
                   />
-                  <ScanRecipientQR network="NIM" onRecipient={(recipient) => { const input=document.querySelector<HTMLInputElement>('input[name="recipient"]'); if(input) input.value=recipient; setRecipientName(recipient); setRecipientLookup(""); }} />
-                  <p className="helper">Names are resolved using the community-run Pigeon registry. Quorail saves the actual wallet address. Confirm the full recipient address in Nimiq Pay.</p>
-                  {isNimName(recipientName) && <button type="button" className="button outline" onClick={async () => {
-                    setRecipientLookup("Checking name…");
-                    try {
-                      const response = await fetch(`/api/nim-name?name=${encodeURIComponent(recipientName)}`, { cache: "no-store" });
-                      const data = await response.json();
-                      setRecipientLookup(response.ok ? `${data.name} → ${data.address}` : data.error || "Name not found.");
-                    } catch { setRecipientLookup("Name registry unavailable."); }
-                  }}>Verify username</button>}
-                  {recipientLookup && <p className="helper" role="status">{recipientLookup}</p>}
                 </label>
+                <ScanRecipientQR network="NIM" onRecipient={(recipient) => { if (recipientInput.current) recipientInput.current.value = recipient; setRecipientName(recipient); setRecipientLookup(""); setFormError(""); }} />
+                <p className="helper">Names are resolved using the community-run Pigeon registry. Quorail saves the actual wallet address. Confirm the full recipient address in Nimiq Pay.</p>
+                {isNimName(recipientName) && <button type="button" className="button outline" onClick={async () => {
+                  setRecipientLookup("Checking name…");
+                  try {
+                    const response = await fetch(`/api/nim-name?name=${encodeURIComponent(recipientName)}`, { cache: "no-store" });
+                    const data = await response.json();
+                    setRecipientLookup(response.ok ? `${data.name} → ${data.address}` : data.error || "Name not found.");
+                  } catch { setRecipientLookup("Name registry unavailable."); }
+                }}>Verify username</button>}
+                {recipientLookup && <p className="helper" role="status">{recipientLookup}</p>}
                 <div className="form-grid">
                   <label>
                     {tr("Amount in NIM")}
