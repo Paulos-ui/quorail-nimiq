@@ -74,6 +74,8 @@ npm run dev
 
 Open http://localhost:3000. `/console/?demo=1` is an illustrative workspace with payments disabled. Native wallet operations require opening the deployed HTTPS app inside Nimiq Pay.
 
+For Polygon USDT shared requests, set the server-only `POLYGON_RPC_URL` to a Polygon PoS mainnet endpoint that supports finalized blocks. The inbox uses the existing shared-board Redis settings. Each installment requires wallet approval and includes a public random-looking payment reference in the transfer data. Bills update after the server matches the sender, recipient, amount, token transfer event and reference to a finalized Polygon receipt.
+
 For AI, set `ANTHROPIC_API_KEY`, `ANTHROPIC_MODEL`, `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN` and optionally `AI_DAILY_REQUEST_LIMIT`. Shared boards require the two Redis values. The private planner and games work without these services. Never prefix server secrets with `NEXT_PUBLIC_`.
 
 ## Deploy

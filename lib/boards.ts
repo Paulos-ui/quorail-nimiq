@@ -1,3 +1,4 @@
+import { isEvmAddress } from "./polygon-usdt";
 import { normalAddress, validAddress, validDate } from "./finance";
 export type BoardRow = {
   id: string;
@@ -11,6 +12,8 @@ export type BoardRow = {
   hash?: string;
   sender?: string;
   claim?: string;
+  reference?: string;
+  payer?: string;
   verifiedFee?: number;
   splitRemainder?: string;
 };
@@ -18,6 +21,7 @@ export type Board = {
   id: string;
   title: string;
   kind: "team" | "collection" | "request";
+  asset?: "NIM" | "USDT";
   network: "mainnet" | "testnet";
   created: number;
   expires: number;
@@ -45,10 +49,12 @@ export function validateBoardInput(input: unknown) {
   )
     throw new Error("Use a title and 1 to 20 commitments.");
   if (b.kind === "request" && (b.rows.length !== 1 || !validDate(b.rows[0]?.due))) throw new Error("Use one bill and a valid due date.");
+  const usdt = b.asset === "USDT";
+  if ((b.asset !== undefined && !["NIM","USDT"].includes(b.asset)) || (usdt && (b.kind!=="request" || b.network!=="mainnet"))) throw new Error("Unsupported request asset or network.");
   const rows = b.rows.map((r, i) => {
     if (
       !r ||
-      !validAddress(r.recipient) ||
+      (usdt ? !isEvmAddress(r.recipient) || /^0x0{40}$/i.test(r.recipient) : !validAddress(r.recipient)) ||
       !Number.isSafeInteger(r.amount) ||
       r.amount <= 0 ||
       r.amount > 1e13 ||
@@ -65,14 +71,14 @@ export function validateBoardInput(input: unknown) {
       sourceId:
         typeof r.sourceId === "string" ? r.sourceId.slice(0, 100) : undefined,
       title: r.title,
-      recipient: normalAddress(r.recipient),
+      recipient: usdt ? r.recipient.toLowerCase() : normalAddress(r.recipient),
       amount: r.amount,
       due: r.due,
       responsible: r.responsible,
       state: "open" as const,
     };
   });
-  return { title: b.title.trim(), kind: b.kind, network: b.network, rows };
+  return { ...(usdt ? {asset:"USDT" as const} : {}), title: b.title.trim(), kind: b.kind, network: b.network, rows };
 }
 export function verifyBoardReceipt(
   raw: unknown,

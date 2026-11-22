@@ -8,6 +8,7 @@ import ReserveIndicator from "./ReserveIndicator";
 import ConnectionNotice from "./ConnectionNotice";
 import { sharedCandidate, nextPendingReceipt } from "@/lib/release-tools";
 import { readWalletBalance, readWalletSnapshot } from "@/lib/balance";
+import UsdtRequestBill from "./UsdtRequestBill";
 import Brand from "./Brand";
 import { type Board, type BoardRow, boardMemo } from "@/lib/boards";
 import {
@@ -350,6 +351,7 @@ export default function SharedBoard() {
       busyRef.current = false;
     }
   }
+  if(board?.asset==="USDT")return <UsdtRequestBill board={board} secret={secret} update={setBoard}/>;
   const total = board?.rows.reduce((s, r) => s + r.amount, 0) || 0,
     paid =
       board?.rows

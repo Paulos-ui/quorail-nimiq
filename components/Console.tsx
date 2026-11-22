@@ -133,6 +133,7 @@ export default function Console() {
   );
   useEffect(() => {
     const params = new URLSearchParams(location.search);
+    if(params.get("asset")==="usdt") setPaymentAsset("USDT");
     if(params.get("tab")==="payments") setTab("Payments");
     if (params.get("demo") === "1") {
       const s = params.get("scenario");
@@ -724,6 +725,10 @@ export default function Console() {
       setMessage(errorMessage(e));
     }
   }
+  const assetSelector = (                    <div className="asset-switch" role="group" aria-label="Payment currency">
+                      <button type="button" className={paymentAsset === "NIM" ? "active" : ""} aria-pressed={paymentAsset === "NIM"} onClick={() => setPaymentAsset("NIM")}>NIM <small>Nimiq</small></button>
+                      <button type="button" className={paymentAsset === "USDT" ? "active" : ""} aria-pressed={paymentAsset === "USDT"} onClick={() => setPaymentAsset("USDT")}>USDT <small>Polygon</small></button>
+                    </div>);
   return (
     <div className="app-shell">
       <nav className="quorail-mobile-dock" aria-label="Quorail mobile navigation">
@@ -907,7 +912,8 @@ export default function Console() {
               </button>
             </div>
           )}
-          {!ready ? (
+          {!ready && tab==="Payments" && assetSelector}
+          {!ready && tab==="Payments" && paymentAsset==="USDT" ? <PolygonUsdt inbox/> : !ready ? (
             <section className="connect-panel">
               <div className="connect-art">
                 <span className="large-glyph">
@@ -1235,14 +1241,11 @@ export default function Console() {
               {tab !== "Activity" ? (
                 <>
                   {tab === "Payments" && (
-                    <div className="asset-switch" role="group" aria-label="Payment currency">
-                      <button type="button" className={paymentAsset === "NIM" ? "active" : ""} aria-pressed={paymentAsset === "NIM"} onClick={() => setPaymentAsset("NIM")}>NIM <small>Nimiq</small></button>
-                      <button type="button" className={paymentAsset === "USDT" ? "active" : ""} aria-pressed={paymentAsset === "USDT"} onClick={() => setPaymentAsset("USDT")}>USDT <small>Polygon</small></button>
-                    </div>
+                    assetSelector
                   )}
                   {tab === "Payments" && paymentAsset === "NIM" && !demo && address &&
                     <RequestInbox key={key} address={address} network={network} balance={balance} plan={plan}/>}
-                  {tab === "Payments" && paymentAsset === "USDT" && <PolygonUsdt />}
+                  {tab === "Payments" && paymentAsset === "USDT" && <PolygonUsdt inbox={!demo} />}
                   {(tab === "Overview" || paymentAsset === "NIM") && <section className="payment-list">
                   {tab === "Payments" && (
                     <div className="list-toolbar">

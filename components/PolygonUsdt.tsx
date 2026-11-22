@@ -10,6 +10,7 @@ import {
   verifyPolygonUsdt,
   type EvmProvider,
 } from "@/lib/polygon-usdt";
+import RequestInbox from "./RequestInbox";
 import ScanRecipientQR from "./ScanRecipientQR";
 type WalletWindow = Window & { ethereum?: EvmProvider };
 const storageKey = "quorail-polygon-usdt-pending";
@@ -56,7 +57,7 @@ function persistAttempt(p: Attempt) {
     JSON.stringify({ ...p, units: p.units.toString() }),
   );
 }
-export default function PolygonUsdt() {
+export default function PolygonUsdt({inbox=false}:{inbox?:boolean}={}) {
   const [wallet, setWallet] = useState<EvmProvider | null>(null);
   const [account, setAccount] = useState("");
   const [balance, setBalance] = useState("");
@@ -308,6 +309,8 @@ export default function PolygonUsdt() {
     }
   }
   return (
+    <>
+    {inbox && wallet && account && <RequestInbox key={account} wallet={wallet} address={account}/>}
     <section className="q-usdt" aria-label="Polygon USDT payments">
       <div className="q-usdt-header">
         <div>
@@ -462,6 +465,6 @@ export default function PolygonUsdt() {
           {message}
         </p>
       )}
-    </section>
+    </section></>
   );
 }

@@ -16,6 +16,13 @@ import {
   requestToken,
   requestTotals,
 } from "@/lib/payment-requests";
+import {
+  formatUsdt,
+  parseUsdt,
+  polygonBalance,
+  type EvmProvider,
+} from "@/lib/polygon-usdt";
+import { usdtInboxNetwork } from "@/lib/usdt-request";
 import ScanRecipientQR from "./ScanRecipientQR";
 
 type Entry = { secret: string; board: Board };
@@ -48,7 +55,7 @@ function ShareRequest({ url }: { url: string }) {
     <div className="request-share">
       <img
         src={image}
-        alt="Scan to review this NIM request"
+        alt="Scan to review this payment request"
         width="180"
         height="180"
       />
@@ -73,17 +80,22 @@ function ShareRequest({ url }: { url: string }) {
     </div>
   );
 }
-export default function RequestInbox({
-  address,
-  network,
-  balance,
-  plan,
-}: {
-  address: string;
-  network: string;
-  balance: number | null;
-  plan: Plan;
-}) {
+type InboxProps =
+  | {
+      address: string;
+      network: string;
+      balance: number | null;
+      plan: Plan;
+      wallet?: undefined;
+    }
+  | { address: string; wallet: EvmProvider };
+export default function RequestInbox(props: InboxProps) {
+  const { address, wallet } = props;
+  const asset = wallet ? "USDT" : "NIM";
+  const network = wallet ? usdtInboxNetwork : props.network;
+  const [tokens, setTokens] = useState<bigint | null>(null);
+  const format = (units: number) =>
+    wallet ? formatUsdt(BigInt(units)) : nim(units);
   const [direction, setDirection] = useState<"Incoming" | "Outgoing">(
     "Incoming",
   );
@@ -99,6 +111,14 @@ export default function RequestInbox({
   const refresh = useCallback(async () => {
     const id = ++version.current;
     try {
+      if (wallet) {
+        let value: bigint | null = null;
+        try {
+          value = await polygonBalance(wallet, address);
+        } catch {}
+        if (id !== version.current) return;
+        setTokens(value);
+      }
       const links = readLinks(network, address);
       const loaded = await Promise.allSettled(
         links.map(async (secret) => ({
@@ -108,7 +128,10 @@ export default function RequestInbox({
       );
       if (version.current !== id) return;
       const valid = loaded.flatMap((r) =>
-        r.status === "fulfilled" && r.value.board.network === network
+        r.status === "fulfilled" &&
+        (r.value.board.asset === "USDT"
+          ? usdtInboxNetwork
+          : r.value.board.network) === network
           ? [r.value]
           : [],
       );
@@ -122,7 +145,7 @@ export default function RequestInbox({
       if (version.current === id)
         setWarning(e instanceof Error ? e.message : "Inbox unavailable.");
     }
-  }, [address, network]);
+  }, [address, network, wallet]);
   useEffect(() => {
     void refresh();
     const update = () => {
@@ -138,23 +161,39 @@ export default function RequestInbox({
       window.removeEventListener("focus", update);
     };
   }, [refresh]);
-  const outgoing = (b: Board) => normalAddress(address) === b.rows[0].recipient;
+  const outgoing = (b: Board) =>
+    (wallet ? address.toLowerCase() : normalAddress(address)) ===
+    b.rows[0].recipient;
   const visible = entries.filter(
     (e) => outgoing(e.board) === (direction === "Outgoing"),
   );
   const chosen = visible.filter((e) => selected.includes(e.secret));
   let preview: ReturnType<typeof compareRequests> | undefined,
     reason = "";
+  let tokenPreview: { cost: bigint; left: bigint } | undefined;
   if (direction === "Incoming" && selected.length) {
     if (chosen.length !== selected.length)
       reason = "Refresh and select available bills again.";
-    else if (balance === null)
+    else if (wallet) {
+      if (tokens === null) reason = "USDT balance unavailable.";
+      else if (
+        chosen.some((e) => e.board.rows.some((r) => r.state === "pending"))
+      )
+        reason = "A selected bill has an installment awaiting verification.";
+      else {
+        const cost = chosen.reduce(
+          (sum, e) => sum + BigInt(requestTotals(e.board).remaining),
+          0n,
+        );
+        tokenPreview = { cost, left: tokens - cost };
+      }
+    } else if (props.balance === null)
       reason = "Refresh your wallet balance to compare bills.";
     else
       try {
         preview = compareRequests(
-          balance,
-          plan,
+          props.balance,
+          props.plan,
           chosen.map((e) => e.board),
         );
       } catch (e) {
@@ -182,7 +221,9 @@ export default function RequestInbox({
       if (!secret)
         throw new Error("Use a Quorail request link from this site.");
       const { board } = await boardApi({ action: "read", secret });
-      if (board.network !== network)
+      if (
+        (board.asset === "USDT" ? usdtInboxNetwork : board.network) !== network
+      )
         throw new Error("Switch to the request’s wallet network first.");
       await rememberRequest(network, address, secret);
       setDirection(outgoing(board) ? "Outgoing" : "Incoming");
@@ -203,15 +244,25 @@ export default function RequestInbox({
             void run(async () => {
               const title = String(data.get("purpose")).trim(),
                 due = String(data.get("due")),
-                amount = parseNim(String(data.get("amount")));
-              if (!title || amount <= 0)
-                throw new Error("Enter a purpose and a positive NIM amount.");
+                amount = wallet
+                  ? Number(parseUsdt(String(data.get("amount"))))
+                  : parseNim(String(data.get("amount")));
+              if (
+                !title ||
+                !Number.isSafeInteger(amount) ||
+                amount <= 0 ||
+                amount > 1e13
+              )
+                throw new Error(
+                  "Enter a purpose and a valid positive bill amount.",
+                );
               const result = await boardApi({
                 action: "create",
                 board: {
                   kind: "request",
                   title,
-                  network,
+                  asset,
+                  network: wallet ? "mainnet" : network,
                   rows: [
                     {
                       title,
@@ -241,7 +292,7 @@ export default function RequestInbox({
             />
           </label>
           <label>
-            Amount in NIM
+            Amount in {asset}
             <input required name="amount" inputMode="decimal" />
           </label>
           <label>
@@ -320,8 +371,8 @@ export default function RequestInbox({
           <article key={secret}>
             <strong>{board.title}</strong>
             <small>
-              Due {board.rows[0].due} · {nim(sums.paid)} NIM paid ·{" "}
-              {nim(sums.remaining)} NIM outstanding
+              Due {board.rows[0].due} · {format(sums.paid)} {asset} paid ·{" "}
+              {format(sums.remaining)} {asset} outstanding
             </small>
             {direction === "Incoming" && sums.remaining > 0 && (
               <label>
@@ -350,6 +401,16 @@ export default function RequestInbox({
           </article>
         );
       })}
+      {tokenPreview && (
+        <p role="status">
+          Selected bills: {formatUsdt(tokenPreview.cost)} USDT.{" "}
+          {formatUsdt(
+            tokenPreview.left < 0n ? -tokenPreview.left : tokenPreview.left,
+          )}{" "}
+          USDT {tokenPreview.left < 0n ? "short" : "left after payment"}. POL
+          fees are checked per installment.
+        </p>
+      )}
       {preview && (
         <p role="status">
           Selected payments: {nim(preview.cost)} NIM.{" "}
