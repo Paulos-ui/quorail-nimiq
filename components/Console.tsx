@@ -32,6 +32,7 @@ import {
   Home,
   Send,
   UsersRound,
+  Gamepad2,
 } from "lucide-react";
 import { readWalletBalance, readWalletSnapshot } from "@/lib/balance";
 import Brand from "./Brand";
@@ -757,13 +758,13 @@ export default function Console() {
             );
           })}
         </nav>
-        <Link href="/play/" className="button outline">
-          {" "}
-          <Localized text={"Play room ↗"} />{" "}
+        <Link href="/play/" className="button outline sidebar-shortcut" aria-label={ui("Play room ↗")} title={ui("Play room ↗")}>
+          <Gamepad2 size={20} aria-hidden="true" />
+          <span><Localized text="Play room ↗" /></span>
         </Link>
-        <Link className="button outline" href="/shared/">
-          {" "}
-          <Localized text={"Shared boards ↗"} />{" "}
+        <Link href="/shared/" className="button outline sidebar-shortcut" aria-label={ui("Shared boards ↗")} title={ui("Shared boards ↗")}>
+          <UsersRound size={20} aria-hidden="true" />
+          <span><Localized text="Shared boards ↗" /></span>
         </Link>
         <div className="sidebar-bottom">
           <div className="sidebar-note">

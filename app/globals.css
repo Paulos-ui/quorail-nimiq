@@ -4170,3 +4170,27 @@ html[data-theme="dark"] .quorail-receipt header span {
 .wallet-display-settings[open] summary::after {transform:rotate(225deg);margin-top:4px}
 .multi-asset-balance .wallet-display-settings .wallet-currency-controls {margin:0 0 12px;padding-top:4px;border:0}
 .multi-asset-balance .usdt-balance-content .wallet-display-settings {margin-top:8px}
+
+.sidebar-shortcut > svg { display: none; }
+
+@media (min-width: 761px) and (max-width: 800px) {
+  .sidebar > .sidebar-shortcut {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 8px;
+  }
+  .sidebar-shortcut > svg { display: block; }
+  .sidebar-shortcut > span { display: none; }
+}
+
+@media (max-width: 760px) {
+  .overview-grid { grid-template-columns: minmax(0, 1fr); }
+}
+
+@media (min-width: 761px) {
+  .overview-grid { grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); align-items: start; }
+  .overview-after-wallet { grid-column: 2; min-width: 0; }
+  .overview-guidance { grid-column: 1 / -1; }
+}
