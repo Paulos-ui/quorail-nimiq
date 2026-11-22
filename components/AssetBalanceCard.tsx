@@ -90,26 +90,24 @@ export default function AssetBalanceCard({ nimBalance, nimCommitted, nimReserve,
     {asset === "NIM" ? <>
       <div className="big-number">{nimBalance === null ? "Unavailable" : nim(nimBalance)}<span> NIM</span></div>
       <ApproxAmount amount={nimBalance} />
-      <WalletCurrencyControls />
       <div className="allocation-bar"><i style={{width: `${Math.min(100, Math.max(0, (nimCommitted / (nimBalance || 1)) * 100))}%`}} /><i style={{width: `${Math.min(100, Math.max(0, (nimReserve / (nimBalance || 1)) * 100))}%`}} /></div>
       <div className="balance-breakdown"><div><span>● Committed</span><b>{nim(nimCommitted)} <small>NIM</small></b></div><div><span>● Reserve target</span><b>{nim(nimReserve)} <small>NIM</small></b></div></div>
+      <WalletCurrencyControls />
       <div className="balance-foot">{horizon}-day planning window <button type="button" aria-label="Change planning window" onClick={onSettings}>⚙</button></div>
     </> : <div className={`usdt-balance-content${status === "connected" ? "" : " usdt-balance-disconnected"}`}>
       <div className="usdt-balance-status"><span className={status === "connected" ? "usdt-status-dot online" : "usdt-status-dot"} />{status === "connected" ? "Polygon wallet connected" : status === "loading" ? "Checking your wallet" : status === "wrong-network" ? "Switch your wallet to Polygon" : "Polygon wallet not connected"}</div>
       {status === "connected" && usdtBalance !== null ? <>
         <div className="big-number usdt-balance-number">{usdtBalance}<span> USDT</span></div>
         <ApproxAmount amount={Number(usdtBalance)} asset="USDT" />
-        <WalletCurrencyControls asset="USDT" />
         <div className="usdt-balance-detail"><span>Polygon PoS</span><span title={account}>{account.slice(0, 6)}…{account.slice(-4)}</span></div>
-        <p className="usdt-balance-caption">On-chain USDT balance · Separate from your NIM plan.</p>
         <button type="button" className="usdt-card-secondary" onClick={() => void refresh(false)}>↻ Refresh balance</button>
       </> : <>
-        <p className="usdt-balance-prompt">Connect a compatible wallet to view your USDT balance and make payments.</p>
+        <p className="usdt-balance-prompt">Connect to view your USDT balance.</p>
         <button type="button" className="usdt-card-connect" disabled={status === "loading"} onClick={() => void refresh(true)}>{status === "loading" ? "Connecting…" : status === "wrong-network" ? "Switch to Polygon" : "Connect Polygon wallet"}</button>
-        <p className="usdt-balance-caption">Polygon network · Wallet approval required for payments</p>
-        <WalletCurrencyControls asset="USDT" />
+        <p className="usdt-balance-caption">Payments require wallet approval.</p>
       </>}
       {error && <p className="asset-card-error" role="status">{error}</p>}
+      <WalletCurrencyControls asset="USDT" />
     </div>}
   </section>;
 }

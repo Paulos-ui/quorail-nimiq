@@ -4144,3 +4144,29 @@ html[data-theme="dark"] .quorail-receipt header span {
   justify-self:start;width:auto;min-height:44px!important;padding:8px 14px!important
 }
 .multi-asset-balance .usdt-balance-disconnected .wallet-currency-controls {margin-top:4px}
+
+.workspace-title.overview-title {
+  border-inline-start: 4px solid var(--gold);
+  padding: 10px 0 10px 14px;
+  background: linear-gradient(105deg, rgba(245, 192, 64, .13), transparent 72%);
+  margin-bottom: 14px;
+}
+.multi-asset-balance .big-number {margin: 14px 0 2px!important;line-height:1.12}
+.multi-asset-balance .allocation-bar {margin-top:18px}
+.multi-asset-balance .balance-breakdown {
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:12px 0 16px;
+}
+.wallet-display-settings {border-top:1px solid #ffffff26;margin-top:8px}
+.wallet-display-settings summary {
+  display:flex;align-items:center;gap:10px;min-height:46px;cursor:pointer;
+  list-style:none;font-size:13px;color:#e6e0ed;
+}
+.wallet-display-settings summary::-webkit-details-marker {display:none}
+.wallet-display-settings summary strong {margin-inline-start:auto;font-size:13px;color:#fff}
+.wallet-display-settings summary::after {
+  content:"";width:7px;height:7px;border:solid currentColor;border-width:0 1.5px 1.5px 0;
+  transform:rotate(45deg);margin:-3px 3px 0 0;
+}
+.wallet-display-settings[open] summary::after {transform:rotate(225deg);margin-top:4px}
+.multi-asset-balance .wallet-display-settings .wallet-currency-controls {margin:0 0 12px;padding-top:4px;border:0}
+.multi-asset-balance .usdt-balance-content .wallet-display-settings {margin-top:8px}

@@ -68,7 +68,9 @@ export function ApproxAmount({ amount, asset = "NIM" }: { amount: number | null;
 export function WalletCurrencyControls({ asset = "NIM" }: { asset?: Asset }) {
  const {currency,enabled,setCurrency,setEnabled,rates,now}=useLocalCurrency();
  const rate = selectedRate(rates, asset, currency, now);
- return <div className="wallet-currency-controls">
+ return <details className="wallet-display-settings">
+ <summary><span>Display currency</span><strong>{enabled ? currency : "Off"}</strong></summary>
+ <div className="wallet-currency-controls">
  <div className="wallet-currency-select"><label htmlFor="wallet-local-currency">DISPLAY CURRENCY</label><select id="wallet-local-currency" value={currency} disabled={!enabled} onChange={e=>setCurrency(e.target.value as Code)}>{codes.map(code=><option key={code} value={code}>{code}</option>)}</select></div>
  <label className="wallet-currency-check"><input type="checkbox" checked={enabled} onChange={e=>setEnabled(e.target.checked)}/> Show local equivalent</label>
  <small>{enabled
@@ -76,7 +78,7 @@ export function WalletCurrencyControls({ asset = "NIM" }: { asset?: Asset }) {
      ? `Approx. only · 1 ${asset} ≈ US$${rate.quote.value.toPrecision(4)} · Checked ${new Date(rates.asOf).toLocaleString()}`
      : "Rate temporarily unavailable"
    : "Local equivalents are off."}</small>
- </div>;
+ </div></details>;
 }
 export function LocalCurrencySetting(){
  const {currency,enabled,setCurrency,setEnabled,rates}=useLocalCurrency();

@@ -841,7 +841,7 @@ export default function Console() {
           </div>
         </header>
         <main className="workspace">
-          <div className="workspace-title">
+          <div className={tab === "Overview" ? "workspace-title overview-title" : "workspace-title"}>
             <div>
               <span className="eyebrow">
                 <Localized
