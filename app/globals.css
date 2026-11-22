@@ -4194,3 +4194,29 @@ html[data-theme="dark"] .quorail-receipt header span {
   .overview-after-wallet { grid-column: 2; min-width: 0; }
   .overview-guidance { grid-column: 1 / -1; }
 }
+
+/* Pair the forecast surfaces and text when the dark palette is active. */
+html[data-theme="dark"] .forecast-metrics > div {
+  background: #302c3d;
+  color: var(--ink);
+}
+html[data-theme="dark"] .forecast-metrics :is(span, small) { color: #d6cfdf; }
+html[data-theme="dark"] .forecast-metrics .danger-text { color: var(--red); }
+html[data-theme="dark"] .period-tabs button {
+  background: #393344;
+  color: #f4f0e7;
+}
+html[data-theme="dark"] .period-tabs button[aria-pressed="true"] {
+  background: #f8d451;
+  color: #211d32;
+}
+html[data-theme="dark"] .overview-title p { color: #d6cfdf; }
+html[data-theme="dark"] .app-header {
+  background: linear-gradient(105deg, #302a28, #201f2a 48%);
+  border-bottom-color: #62563d;
+}
+html[data-theme="dark"] .quorail-header-brand img {
+  background: #f8d451;
+  border-radius: 6px;
+  padding: 3px;
+}
