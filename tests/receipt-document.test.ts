@@ -10,6 +10,7 @@ const p: Payment = {
   confirmedAt: "2026-11-12T07:25:00.000Z",
   amount: 100000000,
   fee: 39300,
+  feeVerified: true,
 };
 test("receipt uses exact settled amount and fee and first verification timestamp", () => {
   const d = receiptData(p, "mainnet");
@@ -33,4 +34,12 @@ test("printable receipt escapes hostile user titles and preserves transaction id
   assert.ok(html.includes("&lt;script&gt;"));
   assert.ok(html.includes(p.hash!));
   assert.ok(html.includes("2026-11-12T07:25:00.000Z"));
+});
+
+test("missing fee evidence never prints the planned fee or total", () => {
+  for (const feeVerified of [undefined, false]) {
+    const receipt = receiptData({ ...p, feeVerified }, "mainnet");
+    assert.equal(receipt.fee, "Unverified");
+    assert.equal(receipt.total, "Unavailable");
+  }
 });

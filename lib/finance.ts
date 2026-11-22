@@ -22,6 +22,7 @@ export type Payment = {
   sender?: string;
   expectedSender?: string;
   confirmedAt?: string;
+  feeVerified?: boolean;
   note?: string;
   recurrence?: "weekly" | "monthly";
   anchorDay?: number;
@@ -162,6 +163,7 @@ export function settlePayment(
         sender: undefined,
         expectedSender: undefined,
         confirmedAt: undefined,
+        feeVerified: undefined,
         created: new Date().toISOString(),
       });
     payments = payments.map((p) =>

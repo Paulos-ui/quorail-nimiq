@@ -458,7 +458,6 @@ export default function Console() {
                       status: cancelled(e)
                         ? ("planned" as const)
                         : ("uncertain" as const),
-                      note: errorMessage(e),
                     }
                   : x,
               ),
@@ -534,6 +533,7 @@ export default function Console() {
         status: result.status,
         sender: result.sender,
         fee: result.fee ?? p.fee,
+        feeVerified: result.fee !== undefined,
         confirmedAt:
           result.status === "confirmed"
             ? p.confirmedAt || new Date().toISOString()

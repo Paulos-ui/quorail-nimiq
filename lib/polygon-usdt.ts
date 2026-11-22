@@ -32,7 +32,7 @@ export async function polygonBalance(wallet: EvmProvider, account: string) {
   if (typeof raw !== 'string' || !/^0x[0-9a-fA-F]+$/.test(raw)) throw new Error('Could not read the USDT balance.');
   return BigInt(raw);
 }
-export async function submitPolygonUsdt(wallet: EvmProvider, from: string, to: string, amount: string) {
+export async function submitPolygonUsdt(wallet: EvmProvider, from: string, to: string, amount: string, beforeApproval?: () => void) {
   if (!isEvmAddress(from) || !isEvmAddress(to)) throw new Error('Check the sender and recipient Polygon addresses.');
   if (from.toLowerCase() === to.toLowerCase()) throw new Error('Sender and recipient cannot be the same.');
   const units = parseUsdt(amount);
@@ -40,6 +40,11 @@ export async function submitPolygonUsdt(wallet: EvmProvider, from: string, to: s
   const available = await polygonBalance(wallet,from);
   if (available < units) throw new Error('Insufficient USDT balance.');
   await requirePolygon(wallet);
+  const accounts = await wallet.request({method:'eth_accounts'});
+  if (!Array.isArray(accounts) || typeof accounts[0] !== 'string' || accounts[0].toLowerCase() !== from.toLowerCase())
+    throw new Error('The sending account changed. Reconnect before paying.');
+  await requirePolygon(wallet);
+  beforeApproval?.();
   const hash = await wallet.request({method:'eth_sendTransaction',params:[{from,to:POLYGON_USDT,data:transferData(to,units),value:'0x0'}]});
   if (typeof hash !== 'string' || !/^0x[a-fA-F0-9]{64}$/.test(hash)) throw new Error('Wallet returned no valid transaction hash. Check wallet history before retrying.');
   return {hash,from,to,units,contract:POLYGON_USDT};
@@ -47,11 +52,13 @@ export async function submitPolygonUsdt(wallet: EvmProvider, from: string, to: s
 export async function verifyPolygonUsdt(wallet: EvmProvider, hash: string, from: string, to: string, units: bigint) {
   if (!/^0x[a-fA-F0-9]{64}$/.test(hash)) throw new Error('Invalid transaction hash.');
   await requirePolygon(wallet);
-  const tx = await wallet.request({method:'eth_getTransactionByHash',params:[hash]}) as null | {from?:string;to?:string;input?:string};
-  const receipt = await wallet.request({method:'eth_getTransactionReceipt',params:[hash]}) as null | {status?:string;to?:string;logs?:Array<{address?:string;topics?:string[];data?:string}>};
+  const tx = await wallet.request({method:'eth_getTransactionByHash',params:[hash]}) as null | {hash?:string;from?:string;to?:string;input?:string};
+  const receipt = await wallet.request({method:'eth_getTransactionReceipt',params:[hash]}) as null | {transactionHash?:string;status?:string;to?:string;logs?:Array<{address?:string;topics?:string[];data?:string}>};
   if (!tx || !receipt) return 'pending' as const;
-  if (receipt.status !== '0x1') return 'failed' as const;
+  if (tx.hash?.toLowerCase() !== hash.toLowerCase() || receipt.transactionHash?.toLowerCase() !== hash.toLowerCase()) return 'mismatch' as const;
   if (tx.from?.toLowerCase() !== from.toLowerCase() || tx.to?.toLowerCase() !== POLYGON_USDT.toLowerCase() || receipt.to?.toLowerCase() !== POLYGON_USDT.toLowerCase() || tx.input?.toLowerCase() !== transferData(to,units).toLowerCase()) return 'mismatch' as const;
+  if (receipt.status === '0x0') return 'failed' as const;
+  if (receipt.status !== '0x1') return 'pending' as const;
   const transferTopic = '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef';
   const matched = receipt.logs?.some(log => log.address?.toLowerCase() === POLYGON_USDT.toLowerCase() && log.topics?.[0]?.toLowerCase() === transferTopic && log.topics?.[1]?.slice(-40).toLowerCase() === from.slice(2).toLowerCase() && log.topics?.[2]?.slice(-40).toLowerCase() === to.slice(2).toLowerCase() && typeof log.data === 'string' && BigInt(log.data) === units);
   return matched ? 'confirmed' as const : 'mismatch' as const;

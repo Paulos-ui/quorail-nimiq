@@ -8,11 +8,15 @@ test('ERC20 calldata',()=>{assert.equal(transferData(to,1000000n),'0xa9059cbb'+t
 test('wrong chain blocks payments',async()=>{await assert.rejects(()=>requirePolygon({request:async()=> '0x1'}));});
 test('receipt requires exact transfer event',async()=>{
  const units=1000000n, hash='0x'+'a'.repeat(64);
- const tx={from,to:POLYGON_USDT,input:transferData(to,units)};
- const receipt={status:'0x1',to:POLYGON_USDT,logs:[{address:POLYGON_USDT,topics:['0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef','0x'+from.slice(2).padStart(64,'0'),'0x'+to.slice(2).padStart(64,'0')],data:'0x'+units.toString(16)}]};
+ const tx={hash,from,to:POLYGON_USDT,input:transferData(to,units)};
+ const receipt={transactionHash:hash,status:'0x1',to:POLYGON_USDT,logs:[{address:POLYGON_USDT,topics:['0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef','0x'+from.slice(2).padStart(64,'0'),'0x'+to.slice(2).padStart(64,'0')],data:'0x'+units.toString(16)}]};
  const wallet={request:async({method}:{method:string})=>method==='eth_chainId'?'0x89':method==='eth_getTransactionByHash'?tx:receipt};
  assert.equal(await verifyPolygonUsdt(wallet,hash,from,to,units),'confirmed');
  assert.equal(await verifyPolygonUsdt(wallet,hash,from,to,units+1n),'mismatch');
+ receipt.status='0x0';
+ assert.equal(await verifyPolygonUsdt(wallet,hash,from,to,units),'failed');
+ receipt.transactionHash='0x'+'b'.repeat(64);
+ assert.equal(await verifyPolygonUsdt(wallet,hash,from,to,units),'mismatch');
 });
 test('reads the six-decimal USDT token balance on Polygon only', async () => {
  const methods: string[] = [];

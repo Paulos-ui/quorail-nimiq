@@ -12,8 +12,8 @@ export function receiptData(p: Payment, network: "mainnet" | "testnet") {
   return {
     title: p.title,
     amount: nim(p.amount) + " NIM",
-    fee: nim(p.fee) + " NIM",
-    total: nim(p.amount + p.fee) + " NIM",
+    fee: p.feeVerified === true ? nim(p.fee) + " NIM" : "Unverified",
+    total: p.feeVerified === true ? nim(p.amount + p.fee) + " NIM" : "Unavailable",
     sender: p.sender,
     recipient: p.recipient,
     hash: p.hash,
