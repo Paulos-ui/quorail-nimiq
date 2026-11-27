@@ -75,4 +75,7 @@ test("pending verification rotates beyond a stuck receipt", () => {
   assert.equal(nextPendingReceipt(rows, 1)?.id, "2");
   assert.equal(nextPendingReceipt(rows, 2)?.id, "1");
   assert.equal(nextPendingReceipt([], 0), undefined);
+  const missing = [{ ...rows[0], hash: undefined }];
+  assert.equal(nextPendingReceipt(missing, 0, true)?.id, "1");
+  assert.equal(nextPendingReceipt(missing, 0), undefined);
 });

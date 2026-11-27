@@ -118,6 +118,7 @@ export default function SharedBoard() {
         const p = nextPendingReceipt(
           (d.board as Board).rows,
           receiptCursor.current++,
+          d.board.asset !== "USDT",
         );
         if (p) {
           const verified = await api("verify", { row: p.id });
@@ -239,14 +240,12 @@ export default function SharedBoard() {
 
           if (
             balance !== preview.balance ||
-            latest.reserve !== preview.reserve ||
-            currentImpact.cost !== preview.impact.cost ||
-            currentImpact.obligations !== preview.impact.obligations
+            currentImpact.cost !== preview.impact.cost
           ) {
             setPreview(null);
             setAck(false);
             throw new Error(
-              "Your balance or plan changed. Preview this share again before approving.",
+              "Your balance or payment cost changed. Preview this share again before approving.",
             );
           }
           if(board.kind==="request") await rememberRequest(board.network,address,secret);
@@ -302,15 +301,18 @@ export default function SharedBoard() {
           }
           if (!/^[a-f0-9]{64}$/i.test(hash))
             throw new Error(
-              "Wallet result unclear. Recover the hash from wallet history; do not resend.",
+              "Waiting for a receipt. Keep this request open while Quorail checks for the payment.",
             );
           setHashes((h) => ({ ...h, [row.id]: hash }));
-          savePlan(key, {
-            ...pendingPlan,
-            payments: pendingPlan.payments.map((p) =>
-              p.id === payment.id ? { ...p, status: "pending", hash } : p,
-            ),
-          });
+          let localSaved = true;
+          try {
+            savePlan(key, {
+              ...pendingPlan,
+              payments: pendingPlan.payments.map((p) =>
+                p.id === payment.id ? { ...p, status: "pending", hash } : p,
+              ),
+            });
+          } catch { localSaved = false; }
           const submitted = await api("submit", {
             row: row.id,
             hash,
@@ -318,7 +320,7 @@ export default function SharedBoard() {
           });
           setBoard(submitted.board);
           setError(
-            "Payment pending. The board checks the receipt while this page is open. Your private plan also retains the payment.",
+            localSaved ? "Checking your payment receipt." : "Checking your payment receipt. The transaction hash is on the board, but the local backup could not be saved.",
           );
         },
       );
@@ -340,6 +342,7 @@ export default function SharedBoard() {
         hash: hashes[row.id] || row.hash,
       });
       setBoard(d.board);
+      if (d.awaitingReceipt) setError("No matching receipt found yet. The request will keep checking while open.");
     } catch (e) {
       setError(errorMessage(e));
     } finally {
@@ -437,7 +440,7 @@ export default function SharedBoard() {
                     ? "Fully paid"
                     : paid > 0
                       ? "Partially paid"
-                      : "Awaiting payments"
+                      : board.rows.some(r => r.state === "pending") ? "Checking payment receipt" : "Awaiting payments"
                 }
               />
               <Localized text={" "} /> <Localized text={"· Link expires"} />{" "}
@@ -631,7 +634,7 @@ export default function SharedBoard() {
                         {" "}
                         <Localized
                           text={
-                            "A pending attempt is locked to prevent duplicates. If approval was interrupted, inspect wallet history. Do not resend."
+                            row.state === "pending" ? "Quorail checks for this payment automatically while the page is open. If it appears in wallet history, you can also paste its transaction hash here. Do not send again while it is pending." : "Paste the transaction hash from wallet history to check an existing payment."
                           }
                         />{" "}
                       </p>

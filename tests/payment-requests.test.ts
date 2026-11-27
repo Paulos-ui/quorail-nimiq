@@ -13,6 +13,7 @@ import {
   boardMemo,
   validateBoardInput,
   verifyBoardReceipt,
+  findBoardReceipt,
   type Board,
 } from "../lib/boards";
 import { emptyPlan, dateAfter } from "../lib/finance";
@@ -76,6 +77,11 @@ test("installments preserve the total and uniquely identify each settled amount"
     recipientData: Buffer.from(boardMemo(board.id, row.id)).toString("hex"),
   };
   assert.equal(verifyBoardReceipt(tx, board, row, hash), address);
+  const unrelated = { ...tx, recipientData: "" };
+  assert.equal(findBoardReceipt([unrelated, tx], board, row)?.hash, hash);
+  assert.equal(findBoardReceipt([unrelated, { ...tx, executionResult: false }], board, row), undefined);
+  assert.equal(findBoardReceipt([tx], board, board.rows[1]), undefined);
+  assert.throws(() => findBoardReceipt(null, board, row));
   assert.throws(() => verifyBoardReceipt(tx, board, board.rows[1], hash));
   const payment = { ...sharedCandidate(emptyPlan(), board, row), hash };
   assert.equal(

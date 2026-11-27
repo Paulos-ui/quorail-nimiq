@@ -113,6 +113,20 @@ export function verifyBoardReceipt(
     throw new Error("Receipt already used.");
   return normalAddress(t.from);
 }
+// Search only confirmed transfers that pass the same checks as a pasted hash.
+export function findBoardReceipt(history: unknown, board: Board, row: BoardRow) {
+  if (!Array.isArray(history)) throw new Error("Receipt history is temporarily unavailable.");
+  for (const tx of history) {
+    if (typeof tx?.hash !== "string" || !/^[a-f0-9]{64}$/.test(tx.hash)) continue;
+    try {
+      verifyBoardReceipt(tx, board, row, tx.hash);
+      return tx as { hash: string; fee?: number };
+    } catch {
+      // History also contains unrelated incoming and outgoing transactions.
+    }
+  }
+  return undefined;
+}
 export function publicBoard(b: Board): Board {
   return {
     ...b,

@@ -5,6 +5,7 @@ import { redis, boardKey, smallJson } from "@/lib/server-store";
 import {
   validateBoardInput,
   verifyBoardReceipt,
+  findBoardReceipt,
   publicBoard,
   type Board,
 } from "@/lib/boards";
@@ -131,11 +132,17 @@ export async function POST(req: Request) {
         throw new Error("Transaction already submitted.");
       row.hash = data.hash.toLowerCase();
     } else if (data.action === "verify") {
-      const hash = String(data.hash || row.hash || "").toLowerCase();
+      if (row.state === "confirmed") return reply({ board: publicBoard(board) });
+      let hash = String(data.hash || row.hash || "").toLowerCase();
+      let recovered;
+      if (!usdt && !hash && row.state === "pending") {
+        const history = await rpc(board.network, "getTransactionsByAddress", [row.recipient, 100]);
+        recovered = findBoardReceipt(history, board, row);
+        if (!recovered) return reply({ board: publicBoard(board), awaitingReceipt: true });
+        hash = recovered.hash;
+      }
       if (!hashPattern.test(hash))
         throw new Error("Enter a 64-character transaction hash.");
-      if (row.state === "confirmed")
-        return reply({ board: publicBoard(board) });
       if (usdt) {
         if (
           row.state !== "pending" ||
@@ -172,7 +179,7 @@ export async function POST(req: Request) {
               : "Transfer does not match this installment.",
           );
       } else {
-        const tx = await rpc(board.network, "getTransactionByHash", [hash]);
+        const tx = recovered ?? await rpc(board.network, "getTransactionByHash", [hash]);
         row.sender = verifyBoardReceipt(tx, board, row, hash);
         const fee = (tx as { fee?: unknown }).fee;
         if (typeof fee === "number" && Number.isSafeInteger(fee) && fee >= 0)

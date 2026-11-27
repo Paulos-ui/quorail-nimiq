@@ -119,7 +119,7 @@ export function sharedCandidate(
     }
   );
 }
-export function nextPendingReceipt(rows: BoardRow[], cursor: number) {
-  const pending = rows.filter((r) => r.state === "pending" && r.hash);
+export function nextPendingReceipt(rows: BoardRow[], cursor: number, searchMissingHash = false) {
+  const pending = rows.filter((r) => r.state === "pending" && (r.hash || searchMissingHash));
   return pending.length ? pending[cursor % pending.length] : undefined;
 }
