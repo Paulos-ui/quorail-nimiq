@@ -20,7 +20,7 @@ import {
   type Provider,
 } from "@/lib/wallet";
 import { rememberRequest, reconcileRequest } from "@/lib/payment-requests";
-import { nim, parseNim, dateAfter, normalAddress, forecast, type Plan, type Payment } from "@/lib/finance";
+import { nim, parseNim, dateAfter, normalAddress, forecast, canFundPayment, type Plan, type Payment } from "@/lib/finance";
 import { loadPlan, savePlan, storageKey } from "@/lib/storage";
 export default function SharedBoard() {
   const { tr } = useLanguage();
@@ -232,13 +232,9 @@ export default function SharedBoard() {
           const snapshot = await readWalletSnapshot(provider, address);
           const balance = snapshot.balance;
           const {payment, impact:currentImpact, saved} = quote(latest,board,row,balance);
-          if (
-            !Number.isSafeInteger(balance) ||
-            balance < 0 ||
-            currentImpact.shortfall > 0
-          )
+          if (!canFundPayment(balance, currentImpact.cost))
             throw new Error(
-              "This payment exceeds your recorded commitments or reserve. Review your private plan first.",
+              "Insufficient NIM for the payment and fee.",
             );
 
           if (
@@ -606,7 +602,7 @@ export default function SharedBoard() {
                           !address ||
                           !ack ||
                           preview?.row !== row.id ||
-                          preview.impact.shortfall > 0
+                          !canFundPayment(preview.balance, preview.impact.cost)
                         }
                         onClick={() => pay(row)}
                       >

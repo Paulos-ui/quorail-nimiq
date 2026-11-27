@@ -61,11 +61,11 @@ export function selectedRate(rates: CurrencyRates | null, asset: Asset, currency
 }
 
 /** NIM amounts come from the wallet and plan in Luna. USDT amounts are whole tokens. */
-export function convertLocalAmount(amount: number, asset: Asset, rate: NonNullable<ReturnType<typeof selectedRate>>) {
+export function convertLocalAmount(amount: number, asset: Asset, rate: NonNullable<ReturnType<typeof selectedRate>>, signed = false) {
   const value = (asset === "NIM" ? amount / LUNA : amount) * rate.quote.value * rate.fx;
-  return Number.isFinite(value) && value >= 0 ? value : null;
+  return Number.isFinite(value) && (signed || amount >= 0) ? value : null;
 }
 
 export function formatLocalAmount(value: number, currency: CurrencyCode, locale?: string) {
-  return new Intl.NumberFormat(locale, { style: "currency", currency, maximumFractionDigits: value < 1 ? 4 : 2 }).format(value);
+  return new Intl.NumberFormat(locale, { style: "currency", currency, maximumFractionDigits: Math.abs(value) < 1 ? 4 : 2 }).format(value);
 }

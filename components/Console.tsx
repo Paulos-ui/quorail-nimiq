@@ -60,6 +60,7 @@ import {
   normalAddress,
   dateAfter,
   forecast,
+  canFundPayment,
   settlePayment,
   emptyPlan,
   validatePlan,
@@ -430,13 +431,8 @@ export default function Console() {
             if (!response.ok || !validAddress(data.address) || normalAddress(data.address) !== normalAddress(target.recipient))
               throw new Error("The .nim name could not be verified or now points to another address. Payment blocked. Review the recipient before continuing.");
           }
-          if (b < target.amount + target.fee)
+          if (!canFundPayment(b, target.amount + target.fee))
             throw new Error("Insufficient NIM for the payment and fee.");
-          const fresh = forecast(b, latest, target);
-          if (fresh.shortfall > 0)
-            throw new Error(
-              "This payment would cross your reserve target. Adjust the payment or your plan first.",
-            );
           const claimed = {
             ...latest,
             payments: latest.payments.map((x) =>
@@ -1197,7 +1193,7 @@ export default function Console() {
                         <Localized
                           text={
                             total.available < 0
-                              ? "Your current plan exceeds the balance and reserve target. Adjust a commitment before paying."
+                              ? "Your upcoming commitments exceed the amount available above your reserve."
                               : "The balance left after recorded payments and your reserve target."
                           }
                         />
@@ -1741,7 +1737,7 @@ export default function Console() {
                   {" "}
                   <Localized
                     text={
-                      "A reserve is your planning preference. Quorail blocks payments through this app that cross it. You can still spend directly in your wallet."
+                      "Your reserve is a planning target. You can approve a payment below target if your wallet covers the amount and fee."
                     }
                   />{" "}
                 </p>
@@ -1940,7 +1936,7 @@ export default function Console() {
                         <Localized text={"Balance after this payment"} />
                       </span>
                       <b>
-                        {nim(impact.after)} <Localized text={"NIM"} /><ApproxAmount amount={impact.after} />
+                        {nim(impact.after)} <Localized text={"NIM"} /><ApproxAmount amount={impact.after} signed />
                       </b>
                     </div>
                     <div>
@@ -1962,7 +1958,7 @@ export default function Console() {
                         <Localized text={"Room left after this move"} />
                       </span>
                       <b>
-                        {nim(impact.available)} <Localized text={"NIM"} />
+                        {nim(impact.available)} <Localized text={"NIM"} /><ApproxAmount amount={balance === null ? null : impact.available} signed />
                       </b>
                     </div>
                   </div>
@@ -1985,7 +1981,7 @@ export default function Console() {
                       <Localized text={" "} />
                       {nim(impact.shortfall)}{" "}
                       <Localized
-                        text={"NIM. Adjust your plan before sending."}
+                        text={"NIM. Your reserve is a planning target."}
                       />{" "}
                     </span>
                   </div>
@@ -2028,8 +2024,8 @@ export default function Console() {
                                 ? "Payment paused: resolve the earlier attempt in Activity first."
                                 : reserveInvalid
                                   ? "Payment paused: enter a valid reserve target."
-                                  : impact.shortfall > 0
-                                    ? "Payment paused: this plan crosses your reserve target. Review the commitments or reserve."
+                                  : !canFundPayment(balance, impact.cost)
+                                    ? "Insufficient NIM for the payment and fee."
                                     : !ack
                                       ? "Before paying, tick the account confirmation above."
                                       : "Ready for your approval in Nimiq Pay. Nothing is sent until you approve."
@@ -2051,7 +2047,7 @@ export default function Console() {
                   disabled={
                     demo ||
                     busy ||
-                    (!payment.id.startsWith("request:") && (!ack || impact.shortfall > 0)) ||
+                    (!payment.id.startsWith("request:") && (!ack || !canFundPayment(balance, impact.cost))) ||
                     reserveInvalid ||
                     balance === null ||
                     unresolved ||

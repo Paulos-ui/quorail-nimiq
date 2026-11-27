@@ -106,6 +106,10 @@ export function occurrences(
 export function committed(p: Payment, horizon: number, now = new Date()) {
   return p.status !== "confirmed" && p.due <= dateAfter(horizon, now);
 }
+export function canFundPayment(balance: number | null, cost: number) {
+  return balance !== null && Number.isSafeInteger(balance) &&
+    Number.isSafeInteger(cost) && cost > 0 && balance >= cost;
+}
 export function forecast(
   balance: number,
   plan: Plan,

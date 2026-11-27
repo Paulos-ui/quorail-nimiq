@@ -61,7 +61,7 @@ export default function ForecastPanel({
             />
           </strong>
           <small>
-            <ApproxAmount amount={balance===null?null:f.remaining} />
+            <ApproxAmount amount={balance===null?null:f.remaining} signed />
             <Localized text={"Assumes no new income or spending"} />
           </small>
         </div>
@@ -75,7 +75,7 @@ export default function ForecastPanel({
             />
           </strong>
           <small>
-            <ApproxAmount amount={balance===null?null:f.buffer} />
+            <ApproxAmount amount={balance===null?null:f.buffer} signed />
             <Localized
               text={
                 balance === null

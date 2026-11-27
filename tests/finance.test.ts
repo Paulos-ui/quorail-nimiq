@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import {
   parseNim,
   forecast,
+  canFundPayment,
   validAddress,
   validatePlan,
   demoPlan,
@@ -172,4 +173,19 @@ test("HTLC sender captured before submission verifies independently of stable wa
       .status,
     "mismatch",
   );
+});
+
+test("a funded payment can be submitted across a planning shortfall, including an exact-balance send", () => {
+  const template = demoPlan().payments[0];
+  const bill = {...template, id:"bill", amount:200*LUNA, fee:0, recurrence:undefined};
+  const other = {...bill, id:"other", amount:2000*LUNA, due:dateAfter(0)};
+  const plan = {...demoPlan(), reserve:5*LUNA, payments:[bill,other]};
+  const balance=1000*LUNA;
+  const impact=forecast(balance,plan,bill);
+  assert.equal(impact.after,800*LUNA);
+  assert.equal(impact.available,-1205*LUNA);
+  assert.equal(canFundPayment(balance,impact.cost),true);
+  assert.equal(canFundPayment(impact.cost,impact.cost),true);
+  assert.equal(canFundPayment(impact.cost,impact.cost+1),false);
+  assert.equal(canFundPayment(null,impact.cost),false);
 });

@@ -62,3 +62,13 @@ test("expired or unavailable quotes affect only the relevant conversion while op
   assert.equal(selectedRate(expiredFx, "NIM", "CAD", now), null);
   assert.ok(selectedRate(expiredFx, "NIM", "USD", now));
 });
+
+test("signed forecast deficits use the same fresh quote and precision as positive forecasts", () => {
+  for (const code of Object.keys(expected) as CurrencyCode[]) {
+    const rate = selectedRate(rates, "NIM", code, now)!;
+    const positive = convertLocalAmount(1205*100000, "NIM", rate)!;
+    assert.equal(convertLocalAmount(-1205*100000, "NIM", rate, true), -positive);
+    assert.equal(convertLocalAmount(-1205*100000, "NIM", rate), null);
+  }
+  assert.equal(formatLocalAmount(-123.4567,"USD","en-US"),"-$123.46");
+});

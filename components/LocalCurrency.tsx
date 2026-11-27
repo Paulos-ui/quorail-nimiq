@@ -34,7 +34,7 @@ export function LocalCurrencyProvider({ children }: { children: React.ReactNode 
         const data: unknown = response.ok ? await response.json() : null;
         if (!controller.signal.aborted) setRates(validRates(data) ? data : null);
       } catch {
-        if (!controller.signal.aborted) setRates(null);
+        // A transport failure does not invalidate the previous quote. selectedRate enforces expiry.
       } finally {
         refreshing = false;
       }
@@ -55,11 +55,11 @@ export function LocalCurrencyProvider({ children }: { children: React.ReactNode 
   return <CurrencyContext.Provider value={{currency,enabled,setCurrency,setEnabled,rates,now}}>{children}</CurrencyContext.Provider>;
 }
 export function useLocalCurrency(){return useContext(CurrencyContext);}
-export function ApproxAmount({ amount, asset = "NIM" }: { amount: number | null; asset?: Asset }) {
+export function ApproxAmount({ amount, asset = "NIM", signed = false }: { amount: number | null; asset?: Asset; signed?: boolean }) {
   const { currency, enabled, rates, now } = useLocalCurrency();
   if (!enabled || amount === null) return null;
   const rate = selectedRate(rates, asset, currency, now);
-  const value = rate ? convertLocalAmount(amount, asset, rate) : null;
+  const value = rate ? convertLocalAmount(amount, asset, rate, signed) : null;
   if (value === null || !rates) return <span className="quorail-approx">Rate temporarily unavailable</span>;
   return <span className="quorail-approx" title={`Rate checked ${new Date(rates.asOf).toLocaleString()}`}>
     ≈ {formatLocalAmount(value, currency)} <span>· Approx. for planning only</span>

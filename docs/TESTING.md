@@ -7,7 +7,7 @@ Run `npm ci`, `npm test`, `npm run typecheck`, `npm run build`. Tests use determ
 ## Browser
 
 - Open `/console/?demo=1`. Switch 30/60/90 days. Monthly studio rent should increase future commitments.
-- Preview a payment and adjust the reserve. Invalid input must prevent payment; risky totals remain blocked.
+- Preview a payment and adjust the reserve. Confirm that a funded payment with a projected reserve shortfall can reach wallet approval. An amount plus fee exceeding the wallet balance must remain blocked.
 - Add weekly/monthly commitments. Inspect due dates, fees and horizon totals. Month-end anchors should recover after February.
 - Open Quorail AI. Submit requires consent. Numeric context is opt-in and previewed. Missing deployment settings show a clear error.
 - Open `/play/`, choose chess, play a white move and observe a legal black reply. Undo, restart and friend mode work. No rewards are advertised.

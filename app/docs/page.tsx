@@ -130,7 +130,7 @@ export default function Docs() {
             {" "}
             <Localized
               text={
-                "Your reserve is a planning target, not a vault. Quorail blocks its own payment flow if a payment would cross that target. It cannot prevent direct wallet spending or enforce restrictions outside this app. Only ordinary spendable NIM accounts are supported. Contract balances may not be spendable."
+                "Your reserve is a planning target. You can approve a payment below target if your wallet covers the amount and fee. Your wallet and its cosigner must authorize each payment."
               }
             />{" "}
           </p>

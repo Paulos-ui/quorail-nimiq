@@ -43,7 +43,7 @@ export default function ReserveIndicator({
             }
           />
         </p>
-        {known && <ApproxAmount amount={available} />}
+        {known && <ApproxAmount amount={available} signed />}
         <small>
           {" "}
           <Localized
